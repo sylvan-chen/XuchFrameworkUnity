@@ -1,31 +1,10 @@
-# Personal settings
-vFolders Data.asset*
-
 # Generated files
 Gen/
 Gen.meta
 BuildGenerated*
-Generated_TerrainData*
-GeneratedGeometry*
 
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
-
-#Addressable Content State
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Windows/
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Windows.meta
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Android/
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Android.meta
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/iOS/
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/iOS.meta
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml.meta
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/AssetGroups/Protos*
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/AssetGroups/LuaScripts*
-
-# Build generated
-/[Aa]ssets/BuildGenerated
-/[Aa]ssets/BuildGenerated.meta
 
 #ProjectSettings/
 TextMesh Pro/

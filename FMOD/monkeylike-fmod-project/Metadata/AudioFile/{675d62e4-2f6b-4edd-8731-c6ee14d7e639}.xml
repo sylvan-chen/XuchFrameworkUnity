@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{675d62e4-2f6b-4edd-8731-c6ee14d7e639}">
+		<property name="assetPath">
+			<value>temp_beep.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.10414965986394557</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{6726d9e2-2147-4318-8953-84c0b620f885}</destination>
+		</relationship>
+	</object>
+</objects>

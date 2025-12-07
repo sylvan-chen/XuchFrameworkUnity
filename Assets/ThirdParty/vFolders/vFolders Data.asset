@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb9c12a8c6c949f7af83a3d238359d0, type: 3}
+  m_Name: vFolders Data
+  m_EditorClassIdentifier: 
+  folderDatas_byGuid:
+    keys:
+    - 794906ebd9a24484ca70df3f39a1fa91
+    - 17a093779944484e8fc7babd0cd537df
+    - 97121b963fe81f749afec751f46441d8
+    - 6bee9693609162044b11d70f89366d3f
+    - 833d4276384eaf4499549d8cd9593e20
+    - 900bccd7c1b93ee41be4a1b8ec8524e5
+    - 709f11a7f3c4041caa4ef136ea32d874
+    - e906b76d671edf749aecb0bc45ac7316
+    - f29229f3650919d4e8f09bf4cca3b96b
+    - 900eb7f8e2430c64b8812f4d918a963f
+    - 2986e405443da214bacedd62990dabbd
+    - 1acc79d3c258a134e887d9cbbe946e0e
+    - c350f7128e674d148af5b935c38652ae
+    - e26c79b2a56dd5e41a75d18dda980b6a
+    values:
+    - iconNameOrGuid: 
+      colorIndex: 7
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 5
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 6
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 3
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 2
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 10
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 8
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 9
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 6
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 10
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 3
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 2
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 4
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 7
+      isIconRecursive: 0
+      isColorRecursive: 1
+  bookmarks:
+  - guid: 2986e405443da214bacedd62990dabbd
+  - guid: f29229f3650919d4e8f09bf4cca3b96b
+  - guid: c350f7128e674d148af5b935c38652ae
+  - guid: e26c79b2a56dd5e41a75d18dda980b6a
