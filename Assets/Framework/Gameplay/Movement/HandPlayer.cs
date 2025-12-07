@@ -51,7 +51,7 @@ namespace DigiEden.Gameplay
         private Transform _bodyFollower;
         [BoxGroup("Player"), SerializeField, LabelText("Body Position Offset")]
         private Vector3 _bodyFollowerPositionOffset = Vector3.zero;
-        [BoxGroup("Player"), SerializeField, LabelText("Body Rtotation Offset")]
+        [BoxGroup("Player"), SerializeField, LabelText("Body Rotation Offset")]
         private Vector3 _bodyFollowerRotationOffset = Vector3.zero;
 
         [HorizontalGroup("Arms"), BoxGroup("Arms/LeftHand"), SerializeField]

@@ -31,5 +31,4 @@ MonoBehaviour:
           isColorRecursive: 0
   bookmarks: []
   bookmarkedScenePaths:
-  - Assets/Res/core/scenes/boot.unity
   - Assets/Res/game/scenes/game001.unity
