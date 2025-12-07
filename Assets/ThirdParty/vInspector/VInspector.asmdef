@@ -1,0 +1,20 @@
+{
+    "name": "VInspector",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "",
+            "define": "VINSPECTOR_ATTRIBUTES_DISABLED"
+        }
+    ],
+    "noEngineReferences": false
+}

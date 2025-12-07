@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0042b47e534913b75abaae52c0ea46, type: 3}
+  m_Name: vTabs Settings
+  m_EditorClassIdentifier: 
+  dragndropEnabled: 1
+  addTabButtonEnabled: 1
+  closeTabButtonEnabled: 1
+  dividersEnabled: 1
+  hideLockButtonEnabled: 0
+  tabStyle: 0
+  backgroundStyle: 0
+  switchTabShortcutEnabled: 1
+  addTabShortcutEnabled: 1
+  closeTabShortcutEnabled: 1
+  reopenTabShortcutEnabled: 1
+  slideScrollEnabled: 1
+  slideScrollSensitivity: 1
+  reverseScrollDirectionEnabled: 0
+  pluginDisabled: 0

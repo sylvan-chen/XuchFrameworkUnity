@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cca7856941204ee1a5ed49ea9d16ef73, type: 3}
+  m_Name: vFolders Settings
+  m_EditorClassIdentifier: 
+  navigationBarEnabled: 1
+  twoLineNamesEnabled: 1
+  autoIconsEnabled: 1
+  hierarchyLinesEnabled: 1
+  zebraStripingEnabled: 1
+  contentMinimapEnabled: 1
+  backgroundColorsEnabled: 0
+  minimalModeEnabled: 0
+  foldersFirstEnabled: 0
+  toggleExpandedEnabled: 1
+  collapseEverythingElseEnabled: 1
+  collapseEverythingEnabled: 1
+  _pluginDisabled: 0
