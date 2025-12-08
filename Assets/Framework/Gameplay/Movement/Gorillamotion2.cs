@@ -38,7 +38,7 @@ namespace DigiEden.Gameplay
         [SerializeField, Indent, EnableIf(nameof(EnableMovement), nameof(_checkHeadClipping))]
         private SphereCollider _headCollider;
         [SerializeField, EnableIf(nameof(EnableMovement))]
-        private float _gravityStength = 10f;
+        private float _gravityStrength = 10f;
         [SerializeField, Tooltip("Distance between frames threshold to unstick from a surface")]
         private float _unstickDistance = 1f;
         [SerializeField, Tooltip("The default slide factor"), Range(0f, 1f)]
@@ -150,7 +150,7 @@ namespace DigiEden.Gameplay
             var currentLeftHandPos = GetHandPosition(_leftHand);
             var currentRightHandPos = GetHandPosition(_rightHand);
 
-            var gravityOffset = Physics.gravity * (_gravityStength * Time.deltaTime * Time.deltaTime);
+            var gravityOffset = Physics.gravity * (_gravityStrength * Time.deltaTime * Time.deltaTime);
 
             // Apply hand movement
 

@@ -161,7 +161,6 @@ namespace DigiEden.Framework
             }
 
             _purchaseState = PurchaseState.Purchasing;
-            // TODO: 显示等待界面
             PurchaseProductInternal(productId).Forget();
         }
 
@@ -207,7 +206,6 @@ namespace DigiEden.Framework
             }
 
             _restoreState = RestoreState.Restoring;
-            // TODO: 显示等待界面
 
             _storeController.RestoreTransactions((success, error) =>
             {
@@ -247,7 +245,6 @@ namespace DigiEden.Framework
             else
                 Debug.LogError($"[IAPProvider] Failed to restore purchases process. Error: {error}");
 
-            // TODO: 隐藏等待界面
             _restoreState = RestoreState.Idle;
             callback?.Invoke(success);
         }

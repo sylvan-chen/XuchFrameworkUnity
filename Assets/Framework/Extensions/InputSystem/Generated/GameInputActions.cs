@@ -74,7 +74,7 @@ namespace Xuch.Framework.Internal
     /// }
     /// </code>
     /// </example>
-    public partial class @GeneratedInputActions: IInputActionCollection2, IDisposable
+    public partial class @GameInputActions: IInputActionCollection2, IDisposable
     {
         /// <summary>
         /// Provides access to the underlying asset instance.
@@ -84,7 +84,7 @@ namespace Xuch.Framework.Internal
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        public @GeneratedInputActions()
+        public @GameInputActions()
         {
             asset = InputActionAsset.FromJson(@"{
     ""version"": 1,
@@ -1645,11 +1645,11 @@ namespace Xuch.Framework.Internal
             m_XR_SecondaryReleasedL = m_XR.FindAction("Secondary Released (L)", throwIfNotFound: true);
         }
 
-        ~@GeneratedInputActions()
+        ~@GameInputActions()
         {
-            UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, GeneratedInputActions.Player.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, GeneratedInputActions.UI.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_XR.enabled, "This will cause a leak and performance issues, GeneratedInputActions.XR.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, GameInputActions.Player.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, GameInputActions.UI.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_XR.enabled, "This will cause a leak and performance issues, GameInputActions.XR.Disable() has not been called.");
         }
 
         /// <summary>
@@ -1740,12 +1740,12 @@ namespace Xuch.Framework.Internal
         /// </summary>
         public struct PlayerActions
         {
-            private @GeneratedInputActions m_Wrapper;
+            private @GameInputActions m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public PlayerActions(@GeneratedInputActions wrapper) { m_Wrapper = wrapper; }
+            public PlayerActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "Player/Move".
             /// </summary>
@@ -1935,12 +1935,12 @@ namespace Xuch.Framework.Internal
         /// </summary>
         public struct UIActions
         {
-            private @GeneratedInputActions m_Wrapper;
+            private @GameInputActions m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public UIActions(@GeneratedInputActions wrapper) { m_Wrapper = wrapper; }
+            public UIActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "UI/Navigate".
             /// </summary>
@@ -2142,12 +2142,12 @@ namespace Xuch.Framework.Internal
         /// </summary>
         public struct XRActions
         {
-            private @GeneratedInputActions m_Wrapper;
+            private @GameInputActions m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public XRActions(@GeneratedInputActions wrapper) { m_Wrapper = wrapper; }
+            public XRActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "XR/GripPressedR".
             /// </summary>

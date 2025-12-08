@@ -125,7 +125,6 @@ namespace DigiEden.Framework
             Debug.Log($"[IAPProvider] Purchase succeeded for product {productId}.");
             OnPurchaseFinished.Invoke(productId, true);
             _purchaseState = PurchaseState.Idle;
-            // TODO: 隐藏等待界面
             RefetchPurchases();
         }
 
@@ -134,7 +133,6 @@ namespace DigiEden.Framework
             Debug.LogError($"[IAPProvider] Purchase failed for product {productId}. Reason: {reason}");
             OnPurchaseFinished.Invoke(productId, false);
             _purchaseState = PurchaseState.Idle;
-            // TODO: 隐藏等待界面
         }
 
         private void RefetchPurchases()

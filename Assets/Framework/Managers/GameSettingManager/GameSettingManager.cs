@@ -132,7 +132,6 @@ namespace DigiEden.Framework
         private void OnLowMemory()
         {
             Log.Warning("[XFramework] [GameSetting] Low memory reported...");
-            // TODO: 处理内存不足的情况
         }
     }
 }
