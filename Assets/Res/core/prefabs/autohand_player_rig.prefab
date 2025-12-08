@@ -1707,247 +1707,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6431662642797848524}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2559278783091095364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6606362217675199840}
-  - component: {fileID: 9005352006030232090}
-  - component: {fileID: 3960352590985233696}
-  - component: {fileID: 4498339872271394560}
-  - component: {fileID: 7260537432202684320}
-  m_Layer: 8
-  m_Name: Controller Input
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6606362217675199840
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559278783091095364}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8897725582385068401}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9005352006030232090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559278783091095364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0a0b8441c4cca543a7a89c0403302ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 601579686097380552}
-  grabAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Grab Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 64a90f9c-db4a-45d5-9f68-54b747ec38e7
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 9219773864534680305, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  squeezeAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Squeeze Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: bfb42ed0-0ab5-4f58-ab2b-f7e0496aa125
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 4892747028673902059, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  grabAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Grab
-      m_Type: 0
-      m_ExpectedControlType: Button
-      m_Id: c57b07e7-35c8-4b72-b7f1-7d16f4df9dba
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -4456888692727725139, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  releaseAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Release
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 657bee44-9794-4364-b9f0-b847ff55ae52
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -3694457766066378137, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  squeezeAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Squeeze
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 83cc27e4-e25d-4964-ad4b-0e5bdf97e4d6
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 8650556816782149517, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  stopSqueezeAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Stop Squeeze
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 23d26ae9-469d-497e-9ff0-988f3aeac58d
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -1398031799169746360, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  hapticAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Haptic
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: fffd213f-d156-4c5e-90c8-638c207d823c
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: f274f675-e7bf-4313-8728-ff22b63b517d
-        m_Path: <OculusTouchController>{RightHand}/haptic
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Haptic
-        m_Flags: 0
-      - m_Name: 
-        m_Id: c676c4fc-1323-4824-8fe2-c4a36d4e9cd6
-        m_Path: <ViveController>{RightHand}/haptic
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Haptic
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 2556429049151273212, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
---- !u!114 &3960352590985233696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559278783091095364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 601579686097380552}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 0c45f5bc-2d01-45e4-ac78-2a4577fa952f
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 4892747028673902059, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 1
-  - 0
-  - 0
-  - 0
-  - 0
---- !u!114 &4498339872271394560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559278783091095364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 601579686097380552}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9e412e55-4658-4782-9571-0f530803fb45
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 9219773864534680305, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 0
-  - 1
-  - 1
-  - 1
-  - 0
---- !u!114 &7260537432202684320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559278783091095364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 601579686097380552}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9e412e55-4658-4782-9571-0f530803fb45
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -2312345087674482032, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 1
 --- !u!1 &2561460095794073631
 GameObject:
   m_ObjectHideFlags: 0
@@ -2454,7 +2213,6 @@ Transform:
   m_Children:
   - {fileID: 4061632279208114286}
   - {fileID: 6707020758229117113}
-  - {fileID: 6606362217675199840}
   - {fileID: 9121481669634879831}
   - {fileID: 3336058262070175998}
   m_Father: {fileID: 7651522875064270714}
@@ -2728,6 +2486,7 @@ MonoBehaviour:
   left: 0
   reachDistance: 0.2
   enableMovement: 1
+  forwardFollow: 0
   follow: {fileID: 7461262803933703313}
   throwPower: 1.25
   gentleGrabSpeed: 1
@@ -3770,7 +3529,6 @@ GameObject:
   - component: {fileID: 1160188017717154129}
   - component: {fileID: 4329542220498671031}
   - component: {fileID: 8025784107983101320}
-  - component: {fileID: 200493011425129096}
   m_Layer: 8
   m_Name: TeleporterPointer
   m_TagString: GameController
@@ -3848,7 +3606,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_ColorSpace: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 3
   cantTeleportColor:
@@ -3872,13 +3630,13 @@ MonoBehaviour:
     atime0: 0
     atime1: 50501
     atime2: 65535
-    atime3: 65535
+    atime3: 0
     atime4: 0
     atime5: 0
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_ColorSpace: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 3
   indicator: {fileID: 1263442114909742468}
@@ -4060,43 +3818,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &200493011425129096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4499374111558759666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e61a6c754b32184fa0fac4b86d9ff14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 1160188017717154129}
-  startTeleportAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Start Teleport
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: cfe20ab7-11a4-4c0a-8696-667cd378f035
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 4235571679551039572, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  finishTeleportAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Finish Teleport
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 801a6646-1698-47b1-9fb0-392af4eeaf2a
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 5648450861065685427, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
 --- !u!1 &4536061313517266928
 GameObject:
   m_ObjectHideFlags: 0
@@ -4109,7 +3830,6 @@ GameObject:
   - component: {fileID: 7110822688494232039}
   - component: {fileID: 4413643915802178420}
   - component: {fileID: 4645253471673317194}
-  - component: {fileID: 6669705484681481443}
   m_Layer: 9
   m_Name: Auto Hand Player
   m_TagString: Untagged
@@ -4246,43 +3966,6 @@ MonoBehaviour:
   movementDeadzone: 0.2
   turnDeadzone: 0.4
   turnResetzone: 0.3
---- !u!114 &6669705484681481443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4536061313517266928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c2299af165ef2148b128cb7c00383bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 4645253471673317194}
-  moveAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Move Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a00af04c-edaa-49cc-8cb8-fd4c09ff7083
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 1128031853458752429, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  turnAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Turn Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: b7074693-ecd2-438e-aa57-9617ff9a1884
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 2395977707645527366, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
 --- !u!1 &4536712058664839607
 GameObject:
   m_ObjectHideFlags: 0
@@ -5944,9 +5627,7 @@ Transform:
   m_Children:
   - {fileID: 1307194144639578031}
   - {fileID: 6026413219717307100}
-  - {fileID: 8500868299322829509}
   - {fileID: 554907341348909214}
-  - {fileID: 4729130587412201309}
   m_Father: {fileID: 7651522875064270714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &6873345736397573743
@@ -6218,6 +5899,7 @@ MonoBehaviour:
   left: 1
   reachDistance: 0.2
   enableMovement: 1
+  forwardFollow: 0
   follow: {fileID: 4140792528297365252}
   throwPower: 1.25
   gentleGrabSpeed: 1
@@ -7995,247 +7677,6 @@ CapsuleCollider:
   m_Height: 0.045
   m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &7821287226079960380
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8500868299322829509}
-  - component: {fileID: 391389777609257281}
-  - component: {fileID: 7741381278991267051}
-  - component: {fileID: 238028548504111333}
-  - component: {fileID: 167635938142076807}
-  m_Layer: 8
-  m_Name: Controller Input
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8500868299322829509
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7821287226079960380}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1685754792076128479}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &391389777609257281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7821287226079960380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0a0b8441c4cca543a7a89c0403302ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 2793473560911728821}
-  grabAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Grab Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 64a90f9c-db4a-45d5-9f68-54b747ec38e7
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -8466686988425318635, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  squeezeAxis:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Squeeze Axis
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: bfb42ed0-0ab5-4f58-ab2b-f7e0496aa125
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -3143018204886681854, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  grabAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Grab
-      m_Type: 0
-      m_ExpectedControlType: Button
-      m_Id: c57b07e7-35c8-4b72-b7f1-7d16f4df9dba
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 1890700126832101716, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  releaseAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Release
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 657bee44-9794-4364-b9f0-b847ff55ae52
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -9213787909244412411, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  squeezeAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Squeeze
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 83cc27e4-e25d-4964-ad4b-0e5bdf97e4d6
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 7463617642279240396, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  stopSqueezeAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Stop Squeeze
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 23d26ae9-469d-497e-9ff0-988f3aeac58d
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 3834510128502242619, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  hapticAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Haptic
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: fffd213f-d156-4c5e-90c8-638c207d823c
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: f274f675-e7bf-4313-8728-ff22b63b517d
-        m_Path: <OculusTouchController>{RightHand}/haptic
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Haptic
-        m_Flags: 0
-      - m_Name: 
-        m_Id: c676c4fc-1323-4824-8fe2-c4a36d4e9cd6
-        m_Path: <ViveController>{RightHand}/haptic
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Haptic
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 2510302626005389068, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
---- !u!114 &7741381278991267051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7821287226079960380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 2793473560911728821}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 0c45f5bc-2d01-45e4-ac78-2a4577fa952f
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -3143018204886681854, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 1
-  - 0
-  - 0
-  - 0
-  - 0
---- !u!114 &238028548504111333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7821287226079960380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 2793473560911728821}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9e412e55-4658-4782-9571-0f530803fb45
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -8466686988425318635, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 0
-  - 1
-  - 1
-  - 1
-  - 0
---- !u!114 &167635938142076807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7821287226079960380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae318a94acdfcfc48a42e1a95918afbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 2793473560911728821}
-  bendAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Bend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9e412e55-4658-4782-9571-0f530803fb45
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 4235571679551039572, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
-  bendOffsets:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 1
 --- !u!1 &7980123970049402236
 GameObject:
   m_ObjectHideFlags: 0
@@ -8959,65 +8400,3 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.05
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1001 &6962545753742560027
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1685754792076128479}
-    m_Modifications:
-    - target: {fileID: 827547253428304734, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_Name
-      value: CatchGun
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.0599
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0237
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 90
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
---- !u!4 &4729130587412201309 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2395582192380654662, guid: bbc99dfee57f6794f876b5193ec88652, type: 3}
-  m_PrefabInstance: {fileID: 6962545753742560027}
-  m_PrefabAsset: {fileID: 0}
