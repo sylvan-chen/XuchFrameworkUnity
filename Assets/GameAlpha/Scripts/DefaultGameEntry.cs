@@ -2,6 +2,6 @@ using Xuch.Framework;
 
 public class DefaultGameEntry : GameEntryBase
 {
-    public override void OnLauncherInitialize() { }
-    public override void OnLauncherStartup() { }
+    public override void LaunchGame() { }
+    public override void EnterGame() { }
 }

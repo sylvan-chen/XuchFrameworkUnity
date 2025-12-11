@@ -7,11 +7,11 @@ namespace Xuch.Framework
         /// <summary>
         /// GameLauncher 初始化时
         /// </summary>
-        public abstract void OnLauncherInitialize();
+        public abstract void LaunchGame();
 
         /// <summary>
         /// GameLauncher 启动时
         /// </summary>
-        public abstract void OnLauncherStartup();
+        public abstract void EnterGame();
     }
 }

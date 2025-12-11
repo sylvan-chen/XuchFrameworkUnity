@@ -62,7 +62,7 @@ namespace Xuch.Framework
             await InitializeManagersAsync();
             _singletonState = MonoSingletonState.Initialized;
 
-            _gameEntry.OnLauncherInitialize();
+            _gameEntry.LaunchGame();
         }
 
         private void LoadManagers()
@@ -109,7 +109,7 @@ namespace Xuch.Framework
             await UniTask.WaitUntil(() => IsInitialized);
 
             await StartupManagersAsync();
-            _gameEntry.OnLauncherStartup();
+            _gameEntry.EnterGame();
         }
 
         private async UniTask StartupManagersAsync()
