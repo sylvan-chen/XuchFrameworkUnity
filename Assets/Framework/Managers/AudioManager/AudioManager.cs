@@ -8,7 +8,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Audio Manager")]
+    [AddComponentMenu("Xuch/Audio Manager")]
     public partial class AudioManager : ManagerBase
     {
         // 30 秒自动释放空闲的音频实例

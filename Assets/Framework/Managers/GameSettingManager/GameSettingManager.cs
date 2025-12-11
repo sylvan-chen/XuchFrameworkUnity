@@ -4,7 +4,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Game Setting Manager")]
+    [AddComponentMenu("Xuch/Game Setting Manager")]
     public sealed class GameSettingManager : ManagerBase
     {
         [SerializeField, Tooltip("帧率")]

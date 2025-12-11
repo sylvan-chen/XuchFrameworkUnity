@@ -6,7 +6,7 @@ namespace Xuch.Framework.Utils
 {
     public static class EncryptionHelper
     {
-        private static readonly byte[] _encrptionKey = Encoding.UTF8.GetBytes("DigiEden@202304*QWERTYU-Mnbvcxz#");
+        private static readonly byte[] _encrptionKey = Encoding.UTF8.GetBytes("Xuch@202304*QWERTYU-Mnbvcxz#");
 
         /// <summary>
         /// 加密字符串

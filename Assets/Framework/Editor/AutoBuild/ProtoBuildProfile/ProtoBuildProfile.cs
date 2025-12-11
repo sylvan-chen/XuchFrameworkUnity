@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Xuch.Editor
 {
-    [CreateAssetMenu(fileName = "ProtoBuildProfile", menuName = "DigiEden/Settings/ProtoBuildProfile")]
+    [CreateAssetMenu(fileName = "ProtoBuildProfile", menuName = "Xuch/Settings/ProtoBuildProfile")]
     public sealed class ProtoBuildProfile : ScriptableObject
     {
         [Tooltip("Proto 文件目录")]

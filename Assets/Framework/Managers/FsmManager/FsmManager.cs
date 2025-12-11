@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Fsm Manager")]
+    [AddComponentMenu("Xuch/Fsm Manager")]
     public sealed class FsmManager : ManagerBase
     {
         private readonly Dictionary<int, FsmBase> _fsms = new();

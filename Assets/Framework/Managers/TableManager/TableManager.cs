@@ -9,18 +9,18 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Table Manager")]
+    [AddComponentMenu("Xuch/Table Manager")]
     public class TableManager : ManagerBase
     {
         [Header("预加载设置")]
         [SerializeField]
-        private bool _preloadOnInit = true;
+        private bool _preloadOnInit = false;
 
         [SerializeField]
-        private string _tableAdressLabel = "table";
+        private string _tableAddressLabel = "table";
 
         [SerializeField]
-        private string _tableClassNamespace = "DigiEden.Table";
+        private string _tableClassNamespace = "Xuch.Table";
 
         // 所有配置表缓存: typeof(T) -> (id -> T)
         private readonly Dictionary<Type, Dictionary<int, ITableConfig>> _cachedTables = new();
@@ -47,7 +47,7 @@ namespace Xuch.Framework
         {
             Log.Debug("[TableManager] Start loading tables...");
 
-            var handle = await App.ResourceManager.LoadAssetsAsync<TextAsset>(_tableAdressLabel);
+            var handle = await App.ResourceManager.LoadAssetsAsync<TextAsset>(_tableAddressLabel);
 
             if (!handle.IsValid)
             {
@@ -66,7 +66,7 @@ namespace Xuch.Framework
                     Log.Warning($"[TableManager] Failed to load table: {fileName}. Type not found.");
                     continue;
                 }
-                
+
                 Log.Debug($"[TableManager] Loading table: {fileName}, Type: {typeFullName}...");
                 CacheTableAsync(tableType, jsonContent, isOverride);
             }

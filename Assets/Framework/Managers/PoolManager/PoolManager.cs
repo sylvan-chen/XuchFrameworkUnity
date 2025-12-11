@@ -6,7 +6,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Pool Manager")]
+    [AddComponentMenu("Xuch/Pool Manager")]
     public sealed class PoolManager : ManagerBase
     {
         public const int DEFAULT_CAPACITY = int.MaxValue;

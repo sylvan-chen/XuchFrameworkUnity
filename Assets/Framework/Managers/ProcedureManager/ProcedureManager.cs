@@ -5,7 +5,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Procedure Manager")]
+    [AddComponentMenu("Xuch/Procedure Manager")]
     public sealed class ProcedureManager : ManagerBase
     {
         [SerializeField]

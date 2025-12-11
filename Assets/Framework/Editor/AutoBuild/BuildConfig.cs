@@ -9,7 +9,7 @@ namespace Xuch.Editor
         LZ4HC = 1,
     }
 
-    [CreateAssetMenu(fileName = "BuildConfig", menuName = "DigiEden/Build Config")]
+    [CreateAssetMenu(fileName = "BuildConfig", menuName = "Xuch/Build Config")]
     public class BuildConfig : ScriptableObject
     {
         public BuildTarget BuildTarget;

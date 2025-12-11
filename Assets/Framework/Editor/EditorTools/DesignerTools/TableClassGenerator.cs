@@ -16,7 +16,7 @@ namespace Xuch.Editor
     {
         private const string DEFAULT_JSON_DIR = "DEFAULT:./Res/tables";
         private const string DEFAULT_OUTPUT_DIR = "DEFAULT:./MonkeyLike/TableConfigs";
-        private const string DEFAULT_NAMESPACE = "DigiEden.Table";
+        private const string DEFAULT_NAMESPACE = "Xuch.Table";
 
         private const string JSON_DIR_KEY = "ConfigGenerator_JsonDir";
         private const string OUTPUT_DIR_KEY = "ConfigGenerator_OutputDir";
@@ -337,7 +337,7 @@ namespace Xuch.Editor
             sb.AppendLine("/// </auto-generated>");
             sb.AppendLine("/// ------------------------------------------------------------------------------");
             sb.AppendLine();
-            sb.AppendLine("using DigiEden.Framework;");
+            sb.AppendLine("using Xuch.Framework;");
             sb.AppendLine("using Newtonsoft.Json;");
             // sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine();

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Xuch.Editor
 {
-    [CreateAssetMenu(fileName = "LuaBuildProfile", menuName = "DigiEden/Settings/LuaBuildProfile")]
+    [CreateAssetMenu(fileName = "LuaBuildProfile", menuName = "Xuch/Settings/LuaBuildProfile")]
     public sealed class LuaBuildProfile : ScriptableObject
     {
         [Tooltip("Lua 脚本目录")]

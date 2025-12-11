@@ -6,7 +6,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Event Manager")]
+    [AddComponentMenu("Xuch/Event Manager")]
     public sealed partial class EventManager : ManagerBase
     {
         // 事件字典

@@ -10,7 +10,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/UI Manager")]
+    [AddComponentMenu("Xuch/UI Manager")]
     public sealed class UIManager : ManagerBase
     {
         public enum UICameraType

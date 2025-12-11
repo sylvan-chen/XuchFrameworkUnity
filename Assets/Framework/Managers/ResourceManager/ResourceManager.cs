@@ -12,7 +12,7 @@ using Xuch.Framework.Utils;
 namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("DigiEden/Resource Manager")]
+    [AddComponentMenu("Xuch/Resource Manager")]
     public partial class ResourceManager : ManagerBase
     {
         #region 生命周期
