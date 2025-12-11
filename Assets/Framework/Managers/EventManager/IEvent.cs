@@ -1,6 +1,6 @@
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public interface IEvent
     {

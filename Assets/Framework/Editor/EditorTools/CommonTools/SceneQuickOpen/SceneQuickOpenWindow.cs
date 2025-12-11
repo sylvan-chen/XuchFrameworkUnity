@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     /// <summary>
     /// 场景快速打开窗口：

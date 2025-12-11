@@ -2,7 +2,7 @@
 using Alchemy.Inspector;
 using UnityEngine;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     public class Gorillamotion2 : MonoBehaviour
     {

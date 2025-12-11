@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using DigiEden.Framework;
-using DigiEden.Framework.Utils;
 using UnityEditor;
+using Xuch.Framework;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomEditor(typeof(ProcedureManager))]
     internal sealed class ProcedureManagerInspector : InspectorBase

@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
-using DigiEden.Framework;
-using DigiEden.Framework.Utils;
+using Xuch.Framework;
+using Xuch.Framework.Utils;
 
 public class ProcedureEnterGame : ProcedureBase
 {

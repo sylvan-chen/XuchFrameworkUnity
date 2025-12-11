@@ -1,6 +1,6 @@
 using System;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public readonly struct PoolObjectInfo
     {

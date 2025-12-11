@@ -2,7 +2,7 @@
 using Alchemy.Inspector;
 using UnityEngine;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     [System.Obsolete]
     [DefaultExecutionOrder(4999)]

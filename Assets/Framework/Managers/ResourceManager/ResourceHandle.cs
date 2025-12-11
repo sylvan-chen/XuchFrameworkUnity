@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public interface IResourceHandle
     {

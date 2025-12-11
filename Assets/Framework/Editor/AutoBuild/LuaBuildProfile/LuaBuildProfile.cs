@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CreateAssetMenu(fileName = "LuaBuildProfile", menuName = "DigiEden/Settings/LuaBuildProfile")]
     public sealed class LuaBuildProfile : ScriptableObject

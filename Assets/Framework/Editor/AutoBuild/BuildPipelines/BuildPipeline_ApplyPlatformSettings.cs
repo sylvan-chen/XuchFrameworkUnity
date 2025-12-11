@@ -1,7 +1,7 @@
 ﻿using Unity.Android.Types;
 using UnityEditor;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public static class BuildPipeline_ApplyPlatformSettings
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DigiEden.Extensions
+namespace Xuch.Extensions
 {
     public static class CameraExtensions
     {

@@ -1,9 +1,9 @@
 using System;
 using Cysharp.Threading.Tasks;
-using DigiEden.Framework.Utils;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// 所有管理器的基类

@@ -1,6 +1,6 @@
 using System;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public readonly struct CacheCollectionInfo
     {

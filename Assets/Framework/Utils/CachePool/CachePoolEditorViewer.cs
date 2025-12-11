@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public class CachePoolEditorViewer : MonoBehaviour { }
 }

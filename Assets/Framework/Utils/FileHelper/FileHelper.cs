@@ -5,7 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static class FileHelper
     {

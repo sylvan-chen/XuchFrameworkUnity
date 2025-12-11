@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static class HashHelper
     {

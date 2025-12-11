@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using DigiEden.Framework.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/Table Manager")]

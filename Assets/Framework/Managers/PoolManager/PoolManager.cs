@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DigiEden.Framework.Utils;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/Pool Manager")]

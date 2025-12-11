@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public abstract class FsmBase
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CreateAssetMenu(fileName = "ProtoBuildProfile", menuName = "DigiEden/Settings/ProtoBuildProfile")]
     public sealed class ProtoBuildProfile : ScriptableObject

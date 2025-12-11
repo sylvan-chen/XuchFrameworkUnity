@@ -1,10 +1,10 @@
 using System.IO;
 using System.Linq;
-using DigiEden.Framework.Utils;
 using UnityEditor;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public static class BuildPipeline_BuildProto
     {

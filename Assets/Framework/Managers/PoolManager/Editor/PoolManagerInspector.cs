@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using DigiEden.Framework;
 using UnityEditor;
 using UnityEngine;
+using Xuch.Framework;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomEditor(typeof(PoolManager))]
     internal sealed class PoolManagerInspector : InspectorBase

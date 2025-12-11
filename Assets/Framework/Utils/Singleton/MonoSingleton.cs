@@ -1,7 +1,7 @@
 using Alchemy.Inspector;
 using UnityEngine;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public enum MonoSingletonState
     {

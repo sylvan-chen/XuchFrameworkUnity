@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
-using DigiEden.Extensions;
+using Xuch.Extensions;
 using UnityEngine.Rendering;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/UI Manager")]

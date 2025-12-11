@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// UI 界面基类

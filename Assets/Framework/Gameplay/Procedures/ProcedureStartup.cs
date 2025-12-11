@@ -1,5 +1,5 @@
-using DigiEden.Framework;
-using DigiEden.Framework.Utils;
+using Xuch.Framework;
+using Xuch.Framework.Utils;
 using UnityEngine;
 
 public class ProcedureStartup : ProcedureBase

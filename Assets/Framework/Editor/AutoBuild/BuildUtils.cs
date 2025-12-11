@@ -6,7 +6,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public static class BuildUtils
     {

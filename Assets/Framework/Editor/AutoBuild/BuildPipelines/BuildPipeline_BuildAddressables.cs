@@ -4,7 +4,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Pipeline.Utilities;
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public static class BuildPipeline_BuildAddressables
     {

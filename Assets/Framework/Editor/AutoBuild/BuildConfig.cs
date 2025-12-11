@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public enum PlayerCompressionType
     {

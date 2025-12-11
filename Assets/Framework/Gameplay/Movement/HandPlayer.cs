@@ -1,9 +1,9 @@
 ﻿using Alchemy.Inspector;
 using Autohand;
-using DigiEden.Framework.Utils;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     [RequireComponent(typeof(Rigidbody))]
     [DefaultExecutionOrder(5000)]

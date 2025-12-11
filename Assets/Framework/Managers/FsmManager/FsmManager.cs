@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/Fsm Manager")]

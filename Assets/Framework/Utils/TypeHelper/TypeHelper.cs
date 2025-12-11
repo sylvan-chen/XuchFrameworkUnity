@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static class TypeHelper
     {

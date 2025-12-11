@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static class WebRequestHelper
     {

@@ -1,4 +1,4 @@
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// 管理器的便捷访问入口

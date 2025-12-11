@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public class GameTools
     {

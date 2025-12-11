@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Unity.Jobs;
 
-namespace DigiEden.Extensions
+namespace Xuch.Extensions
 {
     public static class JobExtensions
     {

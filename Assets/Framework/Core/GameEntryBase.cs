@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public abstract class GameEntryBase : MonoBehaviour
     {

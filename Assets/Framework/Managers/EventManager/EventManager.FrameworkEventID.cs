@@ -1,4 +1,4 @@
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// 框架事件 ID

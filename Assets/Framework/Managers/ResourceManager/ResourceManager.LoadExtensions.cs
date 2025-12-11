@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public partial class ResourceManager
     {

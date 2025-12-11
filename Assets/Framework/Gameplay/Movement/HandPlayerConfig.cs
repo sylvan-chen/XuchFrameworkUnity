@@ -2,7 +2,7 @@ using Autohand;
 using RootMotion.FinalIK;
 using UnityEngine;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     public class HandPlayerConfig : MonoBehaviour
     {

@@ -1,9 +1,9 @@
 using System.IO;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomEditor(typeof(ProtoBuildProfile))]
     public class ProtoBuildProfileInspector : InspectorBase

@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using UnityEngine.UIElements;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     /// <summary>
     /// 在菜单栏快速打开场景的编辑器工具
@@ -21,7 +21,7 @@ namespace DigiEden.Editor
         [MenuItem("Scenes/Scene Browser", priority = 0)]
         public static void OpenSceneBrowser()
         {
-            DigiEden.Editor.SceneQuickOpenWindow.ShowWindow();
+            SceneQuickOpenWindow.ShowWindow();
         }
 
         [MenuItem("Scenes/Boot", priority = 50)]

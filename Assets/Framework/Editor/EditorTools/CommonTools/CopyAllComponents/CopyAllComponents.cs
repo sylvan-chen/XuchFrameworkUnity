@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public class CopyAllComponent : EditorWindow
     {

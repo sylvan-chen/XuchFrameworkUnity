@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static class StringHelper
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using DigiEden.Framework.Utils;
 using UnityEditor;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomEditor(typeof(CachePoolEditorViewer))]
     internal class CachePoolInspector : InspectorBase

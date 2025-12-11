@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     /// <summary>
     /// 日志工具类

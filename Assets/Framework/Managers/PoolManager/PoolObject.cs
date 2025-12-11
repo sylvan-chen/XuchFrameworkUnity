@@ -1,7 +1,7 @@
 using System;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// 池对象 - 对象池不直接管理实际对象，而是管理池对象，池对象中再包含实际对象

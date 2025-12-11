@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public static partial class CachePool
     {

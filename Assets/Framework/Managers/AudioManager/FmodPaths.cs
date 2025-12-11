@@ -1,4 +1,4 @@
-﻿namespace DigiEden.Framework
+﻿namespace Xuch.Framework
 {
     public static class FmodPaths
     {

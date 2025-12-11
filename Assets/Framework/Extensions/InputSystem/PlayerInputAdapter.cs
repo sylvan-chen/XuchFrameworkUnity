@@ -1,7 +1,7 @@
-﻿using DigiEden.Framework.Internal;
+﻿using Xuch.Framework.Internal;
 using UnityEngine.InputSystem;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     public class PlayerInputAdapter : GameInputActions.IPlayerActions
     {

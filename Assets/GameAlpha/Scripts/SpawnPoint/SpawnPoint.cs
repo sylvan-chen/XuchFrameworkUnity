@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using DigiEden.Framework;
 using UnityEngine;
+using Xuch.Framework;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     public class SpawnPoint : MonoBehaviour
     {

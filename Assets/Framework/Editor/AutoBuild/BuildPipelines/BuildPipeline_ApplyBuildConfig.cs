@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Build;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public static class BuildPipeline_ApplyBuildConfig
     {

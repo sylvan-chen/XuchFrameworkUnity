@@ -1,9 +1,9 @@
 using System.IO;
-using DigiEden.Framework.Utils;
 using UnityEditor;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     public class ProtoBuildProfileSettingWindow : EditorWindow
     {

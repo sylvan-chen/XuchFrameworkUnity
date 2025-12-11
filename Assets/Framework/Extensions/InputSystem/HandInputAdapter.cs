@@ -1,7 +1,7 @@
 using UnityEngine.InputSystem;
-using DigiEden.Framework.Internal;
+using Xuch.Framework.Internal;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// XR 输入适配器

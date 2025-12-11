@@ -1,7 +1,7 @@
 using System;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     /// <summary>
     /// 状态基类

@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using DigiEden.Extensions;
+using Xuch.Extensions;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomPropertyDrawer(typeof(IntDropdownAttribute))]
     public class IntDropdownAttributeDrawer : PropertyDrawer

@@ -1,7 +1,7 @@
 using UnityEngine;
-using DigiEden.Framework.Utils;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/Game Setting Manager")]

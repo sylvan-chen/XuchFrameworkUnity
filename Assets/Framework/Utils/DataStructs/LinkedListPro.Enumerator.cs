@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public sealed partial class LinkedListPro<T>
     {

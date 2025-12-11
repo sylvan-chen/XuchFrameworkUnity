@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Alchemy.Inspector;
 using Autohand;
 using DG.Tweening;
-using DigiEden.Framework.Utils;
 using RootMotion.FinalIK;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Gorillamotion2))]

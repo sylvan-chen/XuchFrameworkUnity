@@ -1,4 +1,4 @@
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     /// <summary>
     /// 普通C#类的单例基类 (线程安全实现)

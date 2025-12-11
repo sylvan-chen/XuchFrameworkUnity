@@ -1,8 +1,8 @@
 using System;
-using DigiEden.Framework.Utils;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("DigiEden/Procedure Manager")]

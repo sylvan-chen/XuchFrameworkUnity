@@ -1,8 +1,8 @@
-using DigiEden.Framework.Utils;
 using UnityEditor;
 using UnityEngine;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Editor
+namespace Xuch.Editor
 {
     [CustomPropertyDrawer(typeof(AxisMask))]
     public class AxisMaskDrawer : PropertyDrawer

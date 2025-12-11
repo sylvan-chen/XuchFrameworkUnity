@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using DigiEden.Framework.Utils;
 using Alchemy.Inspector;
 using UnityEngine;
 using UnityEngine.UI;
+using Xuch.Framework.Utils;
 
-namespace DigiEden.Framework
+namespace Xuch.Framework
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasRenderer))]

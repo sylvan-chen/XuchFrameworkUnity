@@ -1,4 +1,4 @@
-namespace DigiEden.Framework.Utils
+namespace Xuch.Framework.Utils
 {
     public enum WebRequestStatus
     {

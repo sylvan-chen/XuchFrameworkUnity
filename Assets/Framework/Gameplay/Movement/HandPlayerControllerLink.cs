@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace DigiEden.Gameplay
+namespace Xuch.Gameplay
 {
     public class HandPlayerControllerLink : MonoBehaviour
     {

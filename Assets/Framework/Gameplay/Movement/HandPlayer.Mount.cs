@@ -1,4 +1,4 @@
-﻿namespace DigiEden.Gameplay
+﻿namespace Xuch.Gameplay
 {
     public delegate void MountEvent(HandPlayer player, Mountable mountable);
 
