@@ -15,8 +15,9 @@ namespace DigiEden.Framework
         private const float MAX_IDLE_DURATION = 30f;
 
         [SerializeField]
+        private bool _autoLoadAllBanks = false;
+        [SerializeField]
         private string _bankAddressLabel = "bank";
-
         [SerializeField]
         private string _bankAddressPrefix = "Assets/Res/Banks";
 
@@ -46,7 +47,8 @@ namespace DigiEden.Framework
         protected override async UniTask OnStartupAsync()
         {
             await base.OnStartupAsync();
-            await LoadAllBanksAsync();
+            if (_autoLoadAllBanks)
+                await LoadAllBanksAsync();
         }
 
         protected override void OnDispose()

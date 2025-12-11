@@ -1,16 +1,16 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using DigiEden.Framework.Utils;
-
 namespace DigiEden.Framework
 {
     /// <summary>
-    /// 框架事件 ID 枚举  100~ 65535 以内被协议使用了
-    /// 1~99 给框架自身使用
+    /// 框架事件 ID
     /// </summary>
-    public enum FrameworkEventID
+    /// <remarks>
+    /// 1~99 保留给框架使用,
+    /// 100~65535 保留给协议使用,
+    /// 100000 及以上给游戏使用
+    /// </remarks>
+    public static class FrameworkEventID
     {
-        NetworkConnected = 1, //参数1: channelName,  参数2:ESocketError, 参数3: errmsg
+        /// <summary> (channelName: string, ESocketError: int, errmsg: string) </summary>
+        public const int NetworkConnected = 1;
     }
 }

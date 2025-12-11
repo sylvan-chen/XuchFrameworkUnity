@@ -1,4 +1,5 @@
 using Autohand;
+using RootMotion.FinalIK;
 using UnityEngine;
 
 namespace DigiEden.Gameplay
@@ -12,5 +13,10 @@ namespace DigiEden.Gameplay
         public Camera headCamera;
         public Hand leftHand;
         public Hand rightHand;
+        public Transform followerContainer;
+        public SphereCollider headCollider;
+        public CapsuleCollider bodyCollider;
+        public LimbIK leftArmIK;
+        public LimbIK rightArmIK;
     }
 }

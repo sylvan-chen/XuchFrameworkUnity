@@ -1,8 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DigiEden.Framework;
 using DigiEden.Framework.Utils;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ProcedureEnterGame : ProcedureBase
 {
@@ -10,14 +8,12 @@ public class ProcedureEnterGame : ProcedureBase
     {
         base.OnEnter(fsm);
         Log.Debug("Enter ProcedureEnterGame.");
-        // LoadSceneAsync(fsm).Forget();
+        LoadSceneAsync(fsm).Forget();
     }
 
-    // private async UniTaskVoid LoadSceneAsync(Fsm<ProcedureManager> fsm)
-    // {
-    //     // 加载场景
-    //     await SceneManager.LoadSceneAsync("Res/game/scenes/game001").ToUniTask();
-
-    //     ChangeState<ProcedureMainGame>(fsm);
-    // }
+    private async UniTaskVoid LoadSceneAsync(Fsm<ProcedureManager> fsm)
+    {
+        // 加载场景
+        await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Res/game/scenes/demo002").ToUniTask();
+    }
 }

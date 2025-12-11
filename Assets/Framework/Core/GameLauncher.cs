@@ -11,6 +11,9 @@ namespace DigiEden.Framework
     /// </summary>
     public class GameLauncher : MonoSingletonPersistent<GameLauncher>
     {
+        [Space(5)]
+        [SerializeField]
+        private GameEntryBase _gameEntry;
         [SerializeField]
         private Transform _managerRoot;
 
@@ -46,6 +49,7 @@ namespace DigiEden.Framework
         protected override void Awake()
         {
             base.Awake();
+
             InitializeAsync().Forget();
         }
 
@@ -56,6 +60,9 @@ namespace DigiEden.Framework
 
             LoadManagers();
             await InitializeManagersAsync();
+            _singletonState = MonoSingletonState.Initialized;
+
+            _gameEntry.OnLauncherInitialize();
         }
 
         private void LoadManagers()
@@ -86,25 +93,6 @@ namespace DigiEden.Framework
             }
 
             IsInitialized = true;
-            StartEnterGame();
-            ConnectSvr();
-        }
-
-        private void ConnectSvr()
-        {
-            // GameNetworkMgr.Instance.SetTcpHostPort("127.0.0.1",8901);
-            // GameNetworkMgr.Instance.ConnectTcp();
-        }
-
-        private void StartEnterGame()
-        {
-            // SceneManager sceneManager = App.SceneManager;
-            // if (sceneManager == null)
-            // {
-            //     Log.Error("[GameLauncher] SceneManager is not available.");
-            //     return;
-            // }
-            // sceneManager.JoinOrCreateRoom();
         }
 
         #endregion
@@ -121,6 +109,7 @@ namespace DigiEden.Framework
             await UniTask.WaitUntil(() => IsInitialized);
 
             await StartupManagersAsync();
+            _gameEntry.OnLauncherStartup();
         }
 
         private async UniTask StartupManagersAsync()

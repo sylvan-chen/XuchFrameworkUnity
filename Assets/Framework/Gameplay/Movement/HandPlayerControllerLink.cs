@@ -8,15 +8,15 @@ namespace DigiEden.Gameplay
         public HandPlayer player;
 
         [Header("Input")]
-        // public InputActionProperty moveAxis;
+        public InputActionProperty moveAxis;
         public InputActionProperty turnAxis;
 
         private void OnEnable()
         {
-            // if (moveAxis.action != null)
-            //     moveAxis.action.Enable();
-            // if (moveAxis.action != null)
-            //     moveAxis.action.performed += MoveAction;
+            if (moveAxis.action != null)
+                moveAxis.action.Enable();
+            if (moveAxis.action != null)
+                moveAxis.action.performed += MoveAction;
             if (turnAxis.action != null)
                 turnAxis.action.Enable();
             if (turnAxis.action != null)
@@ -25,8 +25,8 @@ namespace DigiEden.Gameplay
 
         private void OnDisable()
         {
-            // if (moveAxis.action != null)
-            //     moveAxis.action.performed -= MoveAction;
+            if (moveAxis.action != null)
+                moveAxis.action.performed -= MoveAction;
             if (turnAxis.action != null)
                 turnAxis.action.performed -= TurnAction;
         }
@@ -34,13 +34,13 @@ namespace DigiEden.Gameplay
         private void FixedUpdate()
         {
             // player.Move(moveAxis.action.ReadValue<Vector2>());
-            // player.Turn(turnAxis.action.ReadValue<Vector2>().x);
+            player.Turn(turnAxis.action.ReadValue<Vector2>().x);
         }
 
         private void Update()
         {
             // player.Move(moveAxis.action.ReadValue<Vector2>());
-            // player.Turn(turnAxis.action.ReadValue<Vector2>().x);
+            player.Turn(turnAxis.action.ReadValue<Vector2>().x);
         }
 
         private void MoveAction(InputAction.CallbackContext a)
@@ -52,7 +52,7 @@ namespace DigiEden.Gameplay
         private void TurnAction(InputAction.CallbackContext a)
         {
             var axis = a.ReadValue<Vector2>();
-            // player.Turn(axis.x);
+            player.Turn(axis.x);
         }
     }
 }

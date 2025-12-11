@@ -1,105 +1,24 @@
+using Alchemy.Inspector;
 using UnityEngine;
 
 namespace DigiEden.Framework.Utils
 {
-    public interface IInitializable
-    {
-        bool IsInitialized { get; }
-        void Startup();
-    }
-
-    public enum InitState
+    public enum MonoSingletonState
     {
         None,
         Initializing,
-        Inited
+        Initialized
     }
 
     [DisallowMultipleComponent]
-    public abstract class MonoInitSingleton<T> : MonoBehaviour where T : MonoInitSingleton<T>
-    {
-        private static T mInstance = null;
-        [SerializeField]
-        private InitState mInitState = InitState.None;
-
-        public InitState initState
-        {
-            get { return mInitState; }
-            set { mInitState = value; }
-        }
-
-        public static T Instance
-        {
-            get
-            {
-                if (mInstance == null)
-                {
-                    mInstance = GameObject.FindFirstObjectByType(typeof(T)) as T;
-                    if (mInstance == null)
-                    {
-                        GameObject go = new GameObject(typeof(T).Name);
-                        var component = go.AddComponent<T>();
-                        GameObject parent = GameObject.Find("Boot");
-                        if (parent == null)
-                        {
-                            parent = new GameObject("Boot");
-                        }
-                        if (parent != null)
-                        {
-                            go.transform.parent = parent.transform;
-                        }
-                        return component;
-                    }
-                }
-
-                return mInstance;
-            }
-        }
-
-        private void Awake()
-        {
-            if (mInstance == null)
-            {
-                mInstance = this as T;
-            }
-            else if (mInstance != this)
-            {
-                Debug.LogWarning($"Instance of {typeof(T).Name} already exists, destroying duplicate!");
-                Destroy(gameObject);
-                return;
-            }
-
-            // DontDestroyOnLoad(gameObject);
-            Init();
-        }
-
-        protected virtual void Init()
-        {
-            initState = InitState.Initializing;
-        }
-
-        public void DestroySelf()
-        {
-            Dispose();
-            MonoInitSingleton<T>.mInstance = null;
-            UnityEngine.Object.Destroy(gameObject);
-        }
-
-        public virtual void Dispose()
-        {
-            Debug.Log($"{typeof(T).Name} Dispose");
-        }
-
-        private void OnDisable()
-        {
-            Dispose();
-        }
-    }
-
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
-        private static bool _notFound = false;
+        [SerializeField, ReadOnly]
+        protected MonoSingletonState _singletonState;
 
+        public MonoSingletonState SingletonState => _singletonState;
+
+        protected static bool _notFound = false;
         protected static T _instance;
 
         public static bool HasInstance => _instance != null;
@@ -134,12 +53,15 @@ namespace DigiEden.Framework.Utils
             }
 
             _instance = this as T;
+
+            _singletonState = MonoSingletonState.Initializing;
         }
     }
 
     /// <summary>
     /// 持久化单例，在场景切换时，实例不会被销毁
     /// </summary>
+    [DisallowMultipleComponent]
     public class MonoSingletonPersistent<T> : MonoSingleton<T> where T : MonoBehaviour
     {
         protected override void Awake()

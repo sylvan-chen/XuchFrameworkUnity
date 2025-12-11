@@ -24,7 +24,7 @@ namespace DigiEden.Gameplay
 
         [Title("Movement")]
         [SerializeField]
-        private float _gravityStrength = 10f;
+        private float _gravityStength = 10f;
         [SerializeField]
         private bool _limitArmLength = true;
         [SerializeField, Indent, EnableIf(nameof(_limitArmLength)), Tooltip("Left shoulder transform for arm length calculation")]
@@ -144,7 +144,7 @@ namespace DigiEden.Gameplay
             var currentLeftHandPos = GetHandPosition(_leftHand);
             var currentRightHandPos = GetHandPosition(_rightHand);
             // use gravity offset to simulate natural falling when climbing
-            Vector3 gravityOffset = Physics.gravity * (_gravityStrength * Time.deltaTime * Time.deltaTime);
+            Vector3 gravityOffset = Physics.gravity * (_gravityStength * Time.deltaTime * Time.deltaTime);
 
             var traveledVector = currentLeftHandPos - _lastLeftHandPos + gravityOffset;
             if (ApplySphereMovement(_lastLeftHandPos, _handSphereRadius, traveledVector, out var finalPosition, out _, true, false, out _))

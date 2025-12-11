@@ -1,7 +1,6 @@
 ﻿using Alchemy.Inspector;
 using Autohand;
 using DigiEden.Framework.Utils;
-using RootMotion.FinalIK;
 using UnityEngine;
 
 namespace DigiEden.Gameplay
@@ -16,52 +15,27 @@ namespace DigiEden.Gameplay
             Smooth,
         }
 
-        public enum HeightType
-        {
-            Device,
-            Grounded
-        }
-
         [AutoHeader("Hand Player")]
         public bool IgnoreMe;
 
         [Space(5)]
         [BoxGroup("Tracker"), SerializeField]
-        private Transform _trackingOrigin;
-        [BoxGroup("Tracker"), SerializeField]
         private Transform _trackingContainer;
-        [BoxGroup("Tracker"), Tooltip("Hand space center will follow head camera position when mounted")]
-        public Transform HandSpaceCenter;
-
-        [BoxGroup("Player"), SerializeField]
+        [BoxGroup("Tracker"), SerializeField]
         private Camera _headCamera;
-        [Header("Head")]
+
         [BoxGroup("Player"), SerializeField]
         private SphereCollider _headCollider;
         [BoxGroup("Player"), SerializeField]
-        private Transform _headFollower;
-        [BoxGroup("Player"), SerializeField, LabelText("Head Position Offset")]
-        private Vector3 _headFollowerPositionOffset = Vector3.zero;
-        [BoxGroup("Player"), SerializeField, LabelText("Head Rotation Offset")]
-        private Vector3 _headFollowerRotationOffset = Vector3.zero;
-        [Header("Body")]
-        [BoxGroup("Player"), SerializeField]
         private CapsuleCollider _bodyCollider;
-        [BoxGroup("Player"), SerializeField]
-        private Transform _bodyFollower;
-        [BoxGroup("Player"), SerializeField, LabelText("Body Position Offset")]
-        private Vector3 _bodyFollowerPositionOffset = Vector3.zero;
-        [BoxGroup("Player"), SerializeField, LabelText("Body Rotation Offset")]
-        private Vector3 _bodyFollowerRotationOffset = Vector3.zero;
 
         [HorizontalGroup("Arms"), BoxGroup("Arms/LeftHand"), SerializeField]
         private Hand _handLeft;
-        [HorizontalGroup("Arms"), BoxGroup("Arms/LeftHand"), SerializeField]
-        private LimbIK _leftArmIK;
         [HorizontalGroup("Arms"), BoxGroup("Arms/RightHand"), SerializeField]
         private Hand _handRight;
-        [HorizontalGroup("Arms"), BoxGroup("Arms/RightHand"), SerializeField]
-        private LimbIK _rightArmIK;
+
+        [Tooltip("Player model following this")]
+        public Transform PlayerHeadOffset;
 
         [AutoSmallHeader("Movement")]
         public bool IgnoreMe1;
@@ -90,7 +64,9 @@ namespace DigiEden.Gameplay
         [SerializeField, EnableIf(nameof(ShowHeight))]
         private float _heightOffset = 0f;
         [SerializeField, EnableIf(nameof(ShowHeight))]
-        private float _targetHeight = 1.2f;
+        private float _targetHeight = 0.35f;
+        [SerializeField, EnableIf(nameof(ShowHeight))]
+        private float _sneakHeight = 0.15f;
         [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
         private bool _autoAdjustColliderHeight = true;
         [SerializeField, EnableIf(nameof(ShowHeight)),
@@ -110,6 +86,10 @@ namespace DigiEden.Gameplay
         private Vector3 _lastUpdatePos;
         private Vector3 _targetTrackedPos;
         private Vector3 _trackingPosOffset;
+
+        private float _turningAxis;
+        private bool _isTurningAxisReset = true;
+
         private bool _hasInitTracking = false;
 
         public Hand HandLeft
@@ -163,11 +143,6 @@ namespace DigiEden.Gameplay
                 UseGorillamotion = false;
             }
 
-            InitTracking();
-        }
-
-        private void InitTracking()
-        {
             if (_hasInitTracking)
                 return;
             if (_trackingContainer == null || _headCamera == null)
@@ -178,25 +153,13 @@ namespace DigiEden.Gameplay
             _trackingPosOffset = Vector3.zero;
             _hasInitTracking = true;
 
+            // GameLauncher.Instance.SetTempPlayerActivate(false);
+            _singletonState = MonoSingletonState.Initialized;
+
 #if UNITY_EDITOR
             if (EnableDebug)
                 OnEnableDebugChanged(EnableDebug);
 #endif
-        }
-
-        public void InitTrackingConfig(HandPlayerConfig config)
-        {
-            if (config == null)
-                return;
-
-            _trackingContainer = config.trackingContainer;
-            _headCamera = config.headCamera;
-            HandLeft = config.leftHand;
-            HandRight = config.rightHand;
-            _leftArmIK.solver.target = config.leftHand.transform.Find("ik_target");
-            _rightArmIK.solver.target = config.rightHand.transform.Find("ik_target");
-
-            InitTracking();
         }
 
         protected virtual void Start()
@@ -225,7 +188,8 @@ namespace DigiEden.Gameplay
         protected virtual void OnHandGrab(Hand hand, Grabbable grab)
         {
             grab.IgnoreColliders(_bodyCollider);
-            grab.IgnoreColliders(_headCollider);
+            if (_headCollider != null)
+                grab.IgnoreColliders(_headCollider);
         }
 
         protected virtual void OnHandRelease(Hand hand, Grabbable grab)
@@ -233,7 +197,8 @@ namespace DigiEden.Gameplay
             if (grab != null && grab.HeldCount() == 0)
             {
                 grab.IgnoreColliders(_bodyCollider, false);
-                grab.IgnoreColliders(_headCollider, false);
+                if (_headCollider != null)
+                    grab.IgnoreColliders(_headCollider, false);
 
                 if (grab && grab.parentOnGrab && grab.body != null && !grab.body.isKinematic)
                     grab.body.linearVelocity += Body.linearVelocity / 2f;
@@ -264,12 +229,6 @@ namespace DigiEden.Gameplay
                 transform.position = MountingObj.MountPoint.position;
                 Body.position = transform.position;
             }
-        }
-
-        protected virtual void LateUpdate()
-        {
-            if (!_hasInitTracking)
-                return;
 
             UpdateTrackingContainer();
             UpdateTurn();
@@ -277,10 +236,11 @@ namespace DigiEden.Gameplay
 
         private void UpdateTrackingContainer()
         {
-            _heightOffset = _targetHeight - _headCamera.transform.localPosition.y;
-
             _targetTrackedPos += transform.position - _lastUpdatePos;
-            _trackingContainer.position = _targetTrackedPos + Vector3.up * _heightOffset;
+            _trackingContainer.position = _targetTrackedPos;
+
+            _heightOffset = _targetHeight - _headCamera.transform.localPosition.y;
+            _trackingContainer.localPosition += Vector3.up * _heightOffset;
 
             // var targetPos = transform.position - _headCamera.transform.position;
             // targetPos.y = 0;
@@ -310,17 +270,121 @@ namespace DigiEden.Gameplay
 
         private void UpdateTurn()
         {
-            _headCollider.transform.rotation = _headCamera.transform.rotation;
-            _bodyCollider.transform.eulerAngles = new Vector3(0, _headCollider.transform.eulerAngles.y, 0);
+            if (_turningType == TurningType.Snap)
+            {
+                if (Mathf.Abs(_turningAxis) > _turnDeadzone && _isTurningAxisReset)
+                {
+                    var angle = _turningAxis > _turnDeadzone ? _snapTurnAngle : -_snapTurnAngle;
 
-            _bodyFollower.rotation = _bodyCollider.transform.rotation * Quaternion.Euler(_bodyFollowerRotationOffset);
-            _headFollower.rotation = _headCamera.transform.rotation * Quaternion.Euler(_headFollowerRotationOffset);
+                    var targetPos = transform.position - _headCamera.transform.position;
+                    targetPos.y = 0;
+
+                    _trackingContainer.position += targetPos;
+
+                    _lastUpdatePos = new Vector3(transform.position.x, _lastUpdatePos.y, transform.position.z);
+                    var handRightStartPos = _handRight.transform.position;
+                    var handLeftStartPos = _handLeft.transform.position;
+
+                    _trackingContainer.RotateAround(transform.position, Vector3.up, angle);
+                    _trackingPosOffset = Vector3.zero;
+                    _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
+
+                    if (_handRight.holdingObj != null && !_handRight.IsGrabbing())
+                    {
+                        _handRight.body.position = _handRight.handGrabPoint.position;
+                        _handRight.body.rotation = _handRight.handGrabPoint.rotation;
+                    }
+                    else
+                    {
+                        _handRight.body.position = _handRight.transform.position;
+                        _handRight.body.rotation = _handRight.transform.rotation;
+                    }
+
+                    _handRight.handFollow.AverageSetMoveTo();
+                    _handLeft.handFollow.AverageSetMoveTo();
+
+                    PreventHandClipping(_handRight, handRightStartPos);
+                    PreventHandClipping(_handLeft, handLeftStartPos);
+                    Physics.SyncTransforms();
+
+                    // OnSnapTurn?.Invoke(this);
+                    _isTurningAxisReset = false;
+                }
+            }
+            else if (Mathf.Abs(_turningAxis) > _turnDeadzone)
+            {
+                _lastUpdatePos = new Vector3(transform.position.x, _lastUpdatePos.y, transform.position.z);
+                _trackingContainer.RotateAround(
+                    transform.position,
+                    Vector3.up,
+                    _smoothTurnSpeed * (Mathf.MoveTowards(_turningAxis, 0, _turnDeadzone)) * Time.deltaTime);
+
+                _trackingPosOffset = Vector3.zero;
+                _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
+
+                _handRight.handFollow.AverageSetMoveTo();
+                _handLeft.handFollow.AverageSetMoveTo();
+                Physics.SyncTransforms();
+
+                // OnSmoothTurn?.Invoke(this);
+                _isTurningAxisReset = false;
+            }
+
+            if (Mathf.Abs(_turningAxis) < _turnResetzone)
+                _isTurningAxisReset = true;
+
+            void PreventHandClipping(Hand hand, Vector3 startPosition)
+            {
+                var deltaHandPos = hand.transform.position - startPosition;
+                if (deltaHandPos.magnitude < Physics.defaultContactOffset)
+                    return;
+
+                var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center) - deltaHandPos;
+                var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size) / 2f;
+                var hits = Physics.BoxCastAll(
+                    center,
+                    halfExtents,
+                    deltaHandPos,
+                    hand.handEncapsulationBox.transform.rotation,
+                    deltaHandPos.magnitude * 1.5f,
+                    PlayerLayerMask);
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    var hit = hits[i];
+                    if (hit.collider.isTrigger)
+                        continue;
+
+                    if (hand.holdingObj == null
+                        || hit.collider.attachedRigidbody == null
+                        || (hit.collider.attachedRigidbody != hand.holdingObj.body
+                            && !hand.holdingObj.jointedBodies.Contains(hit.collider.attachedRigidbody)))
+                    {
+                        var deltaHitPos = hit.point - hand.transform.position;
+                        hand.transform.position = Vector3.MoveTowards(hand.transform.position, startPosition, deltaHitPos.magnitude);
+
+                        break;
+                    }
+                }
+            }
         }
 
         public void IgnoreCollider(Collider col, bool ignore)
         {
             Physics.IgnoreCollision(_bodyCollider, col, ignore);
-            Physics.IgnoreCollision(_headCollider, col, ignore);
+            if (_headCollider != null)
+                Physics.IgnoreCollision(_headCollider, col, ignore);
+        }
+
+        public void Turn(float turnAxis)
+        {
+            turnAxis = (Mathf.Abs(turnAxis) > _turnDeadzone) ? turnAxis : 0;
+            _turningAxis = turnAxis;
+        }
+
+        public void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+            Body.position = position;
         }
 
         private bool IsSnapTurning => _turningType == TurningType.Snap;

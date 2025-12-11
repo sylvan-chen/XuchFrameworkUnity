@@ -1,5 +1,3 @@
-using UnityEditor.SearchService;
-
 namespace DigiEden.Framework
 {
     /// <summary>
@@ -130,20 +128,6 @@ namespace DigiEden.Framework
                     _procedureManager = GameLauncher.Instance.GetManager<ProcedureManager>();
                 }
                 return _procedureManager;
-            }
-        }
-
-        private static InputManager _inputManager;
-
-        public static InputManager InputManager
-        {
-            get
-            {
-                if (_inputManager == null && GameLauncher.Instance != null)
-                {
-                    _inputManager = GameLauncher.Instance.GetManager<InputManager>();
-                }
-                return _inputManager;
             }
         }
     }

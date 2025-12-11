@@ -303,7 +303,7 @@ namespace Autohand
 
         private BoxCollider _handEncapsulationCollider;
 
-        internal BoxCollider handEncapsulationBox
+        public BoxCollider handEncapsulationBox
         {
             get
             {
