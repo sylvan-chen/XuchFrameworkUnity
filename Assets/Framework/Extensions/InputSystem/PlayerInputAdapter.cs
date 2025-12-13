@@ -1,7 +1,7 @@
-﻿using Xuch.Framework.Internal;
-using UnityEngine.InputSystem;
+﻿using UnityEngine.InputSystem;
+using XuchFramework.Core.Internal;
 
-namespace Xuch.Framework
+namespace XuchFramework.Core
 {
     public class PlayerInputAdapter : GameInputActions.IPlayerActions
     {

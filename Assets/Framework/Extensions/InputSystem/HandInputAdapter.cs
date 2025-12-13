@@ -1,7 +1,7 @@
 using UnityEngine.InputSystem;
-using Xuch.Framework.Internal;
+using XuchFramework.Core.Internal;
 
-namespace Xuch.Framework
+namespace XuchFramework.Core
 {
     /// <summary>
     /// XR 输入适配器
