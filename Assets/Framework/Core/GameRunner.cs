@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ProcedureManager))]
+    [AddComponentMenu("XuchFramework/Game Runner")]
     public sealed class GameRunner : MonoSingletonPersistent<GameRunner>
     {
         private ProcedureManager _procedureManager;

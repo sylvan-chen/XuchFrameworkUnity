@@ -10,7 +10,7 @@ namespace XuchFramework.Core
     /// </remarks>
     public static class FrameworkEventID
     {
-        /// <summary> (channelName: string, ESocketError: int, errmsg: string) </summary>
+        /// <summary> (channelName: string, ESocketError: int, errorMessage: string) </summary>
         public const int NetworkConnected = 1;
     }
 }

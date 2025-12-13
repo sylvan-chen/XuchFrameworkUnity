@@ -35,9 +35,6 @@ namespace XuchFramework.Core.Audio
         public Vector3 Position;
     }
 
-    /// <summary>
-    /// 音频实例
-    /// </summary>
     public class AudioInstance : ICache
     {
         public int HandleId;
