@@ -5,7 +5,7 @@ using UnityEngine;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("XuchFramework/Event Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Event Manager")]
     public sealed class EventManager : ManagerBase
     {
         private interface IEventBinding { }

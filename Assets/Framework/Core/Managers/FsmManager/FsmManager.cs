@@ -4,7 +4,7 @@ using UnityEngine;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("XuchFramework/Fsm Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Fsm Manager")]
     public sealed class FsmManager : ManagerBase
     {
         private readonly Dictionary<string, Fsm> _fsms = new();

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace XuchFramework.Core
@@ -42,9 +42,6 @@ namespace XuchFramework.Core
 
             public int DiscardedCount { get; private set; }
 
-            /// <summary>
-            /// 从池中拿出一个缓存，如果池中没有则创建一个新的缓存
-            /// </summary>
             public ICache Acquire()
             {
                 SpawnedCount++;
@@ -61,10 +58,6 @@ namespace XuchFramework.Core
                 return Activator.CreateInstance(CacheType) as ICache;
             }
 
-            /// <summary>
-            /// 放入一个缓存
-            /// </summary>
-            /// <param name="cache">将要放入的缓存</param>
             public void Release(ICache cache)
             {
                 if (cache == null)
@@ -83,10 +76,6 @@ namespace XuchFramework.Core
                 }
             }
 
-            /// <summary>
-            /// 预先创建一部分缓存
-            /// </summary>
-            /// <param name="count">将要预留的缓存数量</param>
             public void Reserve(int count)
             {
                 lock (_cache)
@@ -106,10 +95,6 @@ namespace XuchFramework.Core
                 }
             }
 
-            /// <summary>
-            /// 丢弃一部分缓存
-            /// </summary>
-            /// <param name="count">将要丢弃的缓存数量</param>
             public void Discard(int count)
             {
                 lock (_cache)
@@ -127,9 +112,6 @@ namespace XuchFramework.Core
                 }
             }
 
-            /// <summary>
-            /// 丢弃所有缓存
-            /// </summary>
             public void DiscardAll()
             {
                 lock (_cache)

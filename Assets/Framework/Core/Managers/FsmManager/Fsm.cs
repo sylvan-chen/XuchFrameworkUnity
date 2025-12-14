@@ -221,7 +221,7 @@ namespace XuchFramework.Core
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (type == null)
             {
-                Log.Error($"[FSM ({Name})] Check type compliance of FSM {Name} failed, state type cannot be null");
+                Log.Error($"[FSM ({Name})] Check type compliance failed for FSM {Name}, state type cannot be null");
                 return false;
             }
 

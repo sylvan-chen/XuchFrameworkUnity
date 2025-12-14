@@ -9,7 +9,7 @@ using XuchFramework.Core.Audio;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("XuchFramework/Audio Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Audio Manager")]
     public class AudioManager : ManagerBase
     {
         [SerializeField]

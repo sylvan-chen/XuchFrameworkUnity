@@ -5,7 +5,7 @@ using XuchFramework.Core.Utils;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Game Procedure")]
+    [AddComponentMenu("XuchFramework/Game Procedure")]
     public sealed class GameProcedure : MonoSingletonPersistent<GameProcedure>
     {
         private const string PROCEDURE_FSM_NAME = "GameProcedure";
