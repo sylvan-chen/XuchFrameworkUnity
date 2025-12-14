@@ -10,7 +10,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Audio Manager")]
-    public partial class AudioManager : ManagerBase
+    public class AudioManager : ManagerBase
     {
         [SerializeField]
         private float _idleInstanceLivingDuration = 30f;

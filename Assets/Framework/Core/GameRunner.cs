@@ -6,18 +6,11 @@ using Cysharp.Threading.Tasks;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(ProcedureManager))]
+    [RequireComponent(typeof(GameProcedure))]
     [AddComponentMenu("XuchFramework/Game Runner")]
     public sealed class GameRunner : MonoSingletonPersistent<GameRunner>
     {
-        private ProcedureManager _procedureManager;
         private readonly List<ManagerBase> _cachedManagers = new();
-
-        protected override void Awake()
-        {
-            base.Awake();
-            _procedureManager = GetComponent<ProcedureManager>();
-        }
 
         private void Start()
         {
@@ -51,11 +44,8 @@ namespace XuchFramework.Core
 
             // 2. Start procedure
 
-            RegisterManager(_procedureManager);
-            await _procedureManager.Initialize();
-            await _procedureManager.PostInitialize();
-
-            _procedureManager.Startup();
+            GameProcedure.Instance.Initialize();
+            GameProcedure.Instance.Startup();
         }
 
         private void Update()

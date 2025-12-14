@@ -1,16 +1,15 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Fsm Manager")]
+    [AddComponentMenu("XuchFramework/Fsm Manager")]
     public sealed class FsmManager : ManagerBase
     {
-        private readonly Dictionary<int, FsmBase> _fsms = new();
+        private readonly Dictionary<string, Fsm> _fsms = new();
 
-        private const string DEFAULT_FSM_NAME = "default";
+        private const string DEFAULT_FSM_NAME = "Default";
 
         protected override void OnDispose()
         {
@@ -30,94 +29,66 @@ namespace XuchFramework.Core
             }
         }
 
-        public Fsm<T> CreateFsm<T>(T owner, List<StateBase<T>> states) where T : class
+        public Fsm CreateFsm(List<StateBase> states)
         {
-            return CreateFsm(DEFAULT_FSM_NAME, owner, states.ToArray());
+            return CreateFsm(DEFAULT_FSM_NAME, new Blackboard(), states.ToArray());
         }
 
-        public Fsm<T> CreateFsm<T>(T owner, params StateBase<T>[] states) where T : class
+        public Fsm CreateFsm(params StateBase[] states)
         {
-            return CreateFsm(DEFAULT_FSM_NAME, owner, states);
+            return CreateFsm(DEFAULT_FSM_NAME, new Blackboard(), states);
         }
 
-        public Fsm<T> CreateFsm<T>(string fsmName, T owner, List<StateBase<T>> states) where T : class
+        public Fsm CreateFsm(Blackboard blackboard, List<StateBase> states)
         {
-            return CreateFsm(fsmName, owner, states.ToArray());
+            return CreateFsm(DEFAULT_FSM_NAME, blackboard, states.ToArray());
         }
 
-        public Fsm<T> CreateFsm<T>(string fsmName, T owner, params StateBase<T>[] states) where T : class
+        public Fsm CreateFsm(Blackboard blackboard, params StateBase[] states)
         {
-            if (fsmName == null)
-            {
-                throw new ArgumentNullException(nameof(fsmName), "Create StateMachine failed. Name cannot be null.");
-            }
-
-            if (owner == null)
-            {
-                throw new ArgumentNullException(nameof(owner), "Create StateMachine failed. Owner cannot be null.");
-            }
-
-            if (states == null || states.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(states), "Create StateMachine failed. Initial states cannot be null or empty.");
-            }
-
-            int id = GetID(typeof(T), fsmName);
-            if (_fsms.ContainsKey(id))
-            {
-                throw new InvalidOperationException(
-                    $"Create StateMachine failed. StateMachine with the same name ({fsmName}) and same owner type ({typeof(T).Name}) already exists.");
-            }
-
-            var stateMachine = Fsm<T>.Create(fsmName, owner, states);
-            _fsms.Add(id, stateMachine);
-            return stateMachine;
+            return CreateFsm(DEFAULT_FSM_NAME, blackboard, states);
         }
 
-        public Fsm<T> GetFsm<T>() where T : class
+        public Fsm CreateFsm(string fsmName, List<StateBase> states)
         {
-            return GetFsm<T>(DEFAULT_FSM_NAME);
+            return CreateFsm(fsmName, new Blackboard(), states.ToArray());
         }
 
-        public Fsm<T> GetFsm<T>(string fsmName) where T : class
+        public Fsm CreateFsm(string fsmName, params StateBase[] states)
         {
-            if (fsmName == null)
-            {
-                throw new ArgumentNullException(nameof(fsmName), "Get StateMachine failed. Name cannot be null.");
-            }
-
-            int id = GetID(typeof(T), fsmName);
-            if (_fsms.TryGetValue(id, out var stateMachine))
-            {
-                return stateMachine as Fsm<T>;
-            }
-
-            return null;
+            return CreateFsm(fsmName, new Blackboard(), states);
         }
 
-        public void ShutdownFsm<T>() where T : class
+        public Fsm CreateFsm(string fsmName, Blackboard blackboard, List<StateBase> states)
         {
-            ShutdownFsm<T>(DEFAULT_FSM_NAME);
+            return CreateFsm(fsmName, blackboard, states.ToArray());
         }
 
-        public void ShutdownFsm<T>(string fsmName) where T : class
+        public Fsm CreateFsm(string fsmName, Blackboard blackboard, params StateBase[] states)
         {
-            if (fsmName == null)
+            if (_fsms.ContainsKey(fsmName))
             {
-                throw new ArgumentNullException(nameof(fsmName), "Destroy StateMachine failed. Name cannot be null.");
+                Log.Error($"[FsmManager] Create FSM failed. FSM '{fsmName}' already exists");
+                return null;
             }
 
-            int id = GetID(typeof(T), fsmName);
-            if (_fsms.TryGetValue(id, out var stateMachine))
-            {
-                stateMachine.Shutdown();
-                _fsms.Remove(id);
-            }
+            var fsm = new Fsm(fsmName, blackboard, states);
+            _fsms.Add(fsmName, fsm);
+            return fsm;
         }
 
-        private int GetID(Type type, string fsmName)
+        public Fsm GetFsm(string fsmName = DEFAULT_FSM_NAME)
         {
-            return (type.Name + fsmName).GetHashCode();
+            return _fsms.GetValueOrDefault(fsmName);
+        }
+
+        public void ShutdownFsm(string fsmName = DEFAULT_FSM_NAME)
+        {
+            if (_fsms.TryGetValue(fsmName, out var fsm))
+            {
+                fsm.Shutdown();
+                _fsms.Remove(fsmName);
+            }
         }
     }
 }

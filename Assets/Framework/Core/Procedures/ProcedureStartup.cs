@@ -5,9 +5,8 @@ namespace XuchFramework.Core.Procedures
 {
     public class ProcedureStartup : ProcedureBase
     {
-        public override void OnProcedureEnter()
+        protected override void OnProcedureEnter()
         {
-            base.OnProcedureEnter();
             StartGame().Forget();
         }
 
@@ -21,7 +20,7 @@ namespace XuchFramework.Core.Procedures
             }
 
             var gameManagers = gameManagerRoot.GetComponentsInChildren<ManagerBase>();
-            Log.Debug($"[ProcedureStartup] Found {gameManagers.Length} game managers.");
+            Log.Debug($"[ProcedureStartup] Found {gameManagers.Length} game managers");
 
             foreach (var manager in gameManagers)
             {
@@ -34,7 +33,7 @@ namespace XuchFramework.Core.Procedures
                 await manager.PostInitialize();
             }
 
-            GameModule<ProcedureManager>.Instance.ChangeProcedure<ProcedureEnterGame>();
+            GameProcedure.Instance.ChangeProcedure<ProcedureEnterGame>();
         }
     }
 }

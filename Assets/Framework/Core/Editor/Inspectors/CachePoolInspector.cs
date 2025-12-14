@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core.Utils;
+using XuchFramework.Core;
 
 namespace XuchFramework.Editor
 {
@@ -19,7 +19,7 @@ namespace XuchFramework.Editor
 
             if (!EditorApplication.isPlaying)
             {
-                EditorGUILayout.HelpBox("Available in play mode only.", MessageType.Info);
+                EditorGUILayout.HelpBox("Available in play mode only", MessageType.Info);
                 return;
             }
 
@@ -44,7 +44,7 @@ namespace XuchFramework.Editor
             {
                 string assemblyName = assemblyNameAndCacheCollectionInfosPair.Key;
                 List<CacheCollectionInfo> cacheCollectionInfos = assemblyNameAndCacheCollectionInfosPair.Value;
-                // 每一个程序集对应一个折叠框
+                // Each foldout represents an assembly
                 bool isExpanded = _expandedFoldout.Contains(assemblyName);
                 bool isExpandedByUser = EditorGUILayout.Foldout(isExpanded, assemblyName);
                 if (isExpandedByUser != isExpanded)
@@ -61,10 +61,8 @@ namespace XuchFramework.Editor
 
                 if (isExpanded)
                 {
-                    // 垂直盒子中显示具体的缓存池信息
                     using (new EditorGUILayout.VerticalScope("box"))
                     {
-                        // 居中样式
                         GUIStyle centeredStyle = new(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
                         using (new EditorGUILayout.HorizontalScope())
                         {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace XuchFramework.Core.Utils
+namespace XuchFramework.Core
 {
     public static partial class CachePool
     {
@@ -38,7 +38,7 @@ namespace XuchFramework.Core.Utils
         /// <returns>得到的缓存</returns>
         public static ICache Spawn(Type type)
         {
-            CheckTypeCompilance(type);
+            CheckTypeCompliance(type);
             return GetCacheableCollection(type).Acquire();
         }
 
@@ -47,7 +47,7 @@ namespace XuchFramework.Core.Utils
         /// </summary>
         /// <typeparam name="T">要获取的缓存类型</typeparam>
         /// <returns>得到的缓存</returns>
-        public static T Spawn<T>() where T : class, ICache, new()
+        public static T Spawn<T>() where T : class, ICache
         {
             return GetCacheableCollection(typeof(T)).Acquire() as T;
         }
@@ -65,7 +65,7 @@ namespace XuchFramework.Core.Utils
             }
 
             Type cacheableType = cache.GetType();
-            CheckTypeCompilance(cacheableType);
+            CheckTypeCompliance(cacheableType);
 
             GetCacheableCollection(cacheableType).Release(cache);
         }
@@ -77,7 +77,7 @@ namespace XuchFramework.Core.Utils
         /// <param name="count">要预留的数量</param>
         public static void Reserve(Type type, int count)
         {
-            CheckTypeCompilance(type);
+            CheckTypeCompliance(type);
             GetCacheableCollection(type).Reserve(count);
         }
 
@@ -86,7 +86,7 @@ namespace XuchFramework.Core.Utils
         /// </summary>
         /// <typeparam name="T">要预留的缓存类型</typeparam>
         /// <param name="count">要预留的数量</param>
-        public static void Reserve<T>(int count) where T : class, ICache, new()
+        public static void Reserve<T>(int count) where T : class, ICache
         {
             GetCacheableCollection(typeof(T)).Reserve(count);
         }
@@ -98,7 +98,7 @@ namespace XuchFramework.Core.Utils
         /// <param name="count">要丢弃的数量</param>
         public static void Discard(Type type, int count)
         {
-            CheckTypeCompilance(type);
+            CheckTypeCompliance(type);
             GetCacheableCollection(type).Discard(count);
         }
 
@@ -107,7 +107,7 @@ namespace XuchFramework.Core.Utils
         /// </summary>
         /// <typeparam name="T">要丢弃的缓存类型</typeparam>
         /// <param name="count">要丢弃的数量</param>
-        public static void Discard<T>(int count) where T : class, ICache, new()
+        public static void Discard<T>(int count) where T : class, ICache
         {
             GetCacheableCollection(typeof(T)).Discard(count);
         }
@@ -118,16 +118,16 @@ namespace XuchFramework.Core.Utils
         /// <param name="type">要丢弃的缓存类型</param>
         public static void DiscardAll(Type type)
         {
-            CheckTypeCompilance(type);
+            CheckTypeCompliance(type);
             GetCacheableCollection(type).DiscardAll();
         }
 
-        public static void DiscardAll<T>() where T : class, ICache, new()
+        public static void DiscardAll<T>() where T : class, ICache
         {
             GetCacheableCollection(typeof(T)).DiscardAll();
         }
 
-        private static void CheckTypeCompilance(Type type)
+        private static void CheckTypeCompliance(Type type)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (type == null)

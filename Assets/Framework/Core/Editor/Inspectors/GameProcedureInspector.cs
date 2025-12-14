@@ -7,15 +7,15 @@ using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
 {
-    [CustomEditor(typeof(ProcedureManager))]
-    internal sealed class ProcedureManagerInspector : InspectorBase
+    [CustomEditor(typeof(GameProcedure))]
+    internal sealed class GameProcedureInspector : InspectorBase
     {
         private SerializedProperty _availableProcedureTypeNames;
         private SerializedProperty _startupProcedureTypeName;
 
-        private string[] _allProcedureTypeNames;                          // 当前项目中存在的所有 Procedure 类型名称
-        private List<string> _currentAvailableProcedureTypeNames = new(); // 当前可用的 Procedure 列表，发生变化时写入到序列化属性中
-        private int _currentStartupProcedureTypeNameIndex = -1;           // 当前 Startup Procedure 的索引，发生变化时写入到序列化属性中
+        private string[] _allProcedureTypeNames;
+        private List<string> _currentAvailableProcedureTypeNames = new();
+        private int _currentStartupProcedureTypeNameIndex = -1;
 
         private void OnEnable()
         {
@@ -38,15 +38,14 @@ namespace XuchFramework.Editor
 
             serializedObject.Update();
 
-            var targetComponent = target as ProcedureManager;
+            var targetComponent = target as GameProcedure;
 
-            // 游戏运行时，显示当前 Procedure
             if (EditorApplication.isPlaying)
             {
                 EditorGUILayout.LabelField(
                     "Current Procedure",
                     targetComponent?.CurrentProcedure == null ? "None" : targetComponent.CurrentProcedure.GetType().Name);
-                EditorGUILayout.LabelField("Current Procedure Time", targetComponent?.CurrentProcedureTime.ToString("N2"));
+                EditorGUILayout.LabelField("Current Procedure Time", FormatProcedureTime(targetComponent?.CurrentProcedureSeconds ?? 0));
                 EditorGUILayout.Separator();
             }
             else if (string.IsNullOrEmpty(_startupProcedureTypeName.stringValue))
@@ -60,15 +59,14 @@ namespace XuchFramework.Editor
                 EditorGUILayout.LabelField("Available Procedures", EditorStyles.boldLabel);
                 if (_allProcedureTypeNames.Length > 0)
                 {
-                    // 显示可选的 Procedure 列表
+                    // Display checkboxes for all available procedure types
                     using (new EditorGUILayout.VerticalScope("box"))
                     {
-                        // 所有 Procedure 都会被展示，但只有被选择的 Procedure 真正写入到序列化属性中
                         foreach (string typeName in _allProcedureTypeNames)
                         {
                             bool selectStatus = _currentAvailableProcedureTypeNames.Contains(typeName);
                             bool isSelectedByUser = EditorGUILayout.ToggleLeft(SimplifyTypeName(typeName), selectStatus);
-                            // 如果选择状态发生变化，则更新 _currentAvailableProcedureTypeNames 列表
+
                             if (isSelectedByUser != selectStatus)
                             {
                                 if (isSelectedByUser)
@@ -76,7 +74,7 @@ namespace XuchFramework.Editor
                                     _currentAvailableProcedureTypeNames.Add(typeName);
                                     WritePropertyAvailableProcedureTypeNames();
                                 }
-                                else if (typeName != _startupProcedureTypeName.stringValue) // 不能删除 Startup Procedure
+                                else if (typeName != _startupProcedureTypeName.stringValue)
                                 {
                                     _currentAvailableProcedureTypeNames.Remove(typeName);
                                     WritePropertyAvailableProcedureTypeNames();
@@ -90,7 +88,6 @@ namespace XuchFramework.Editor
                     EditorGUILayout.HelpBox("No available procedures.", MessageType.Warning);
                 }
 
-                // 显示 Startup Procedure 选择框
                 if (_currentAvailableProcedureTypeNames.Count > 0)
                 {
                     EditorGUILayout.Separator();
@@ -99,10 +96,13 @@ namespace XuchFramework.Editor
                         EditorGUILayout.HelpBox("Select a startup procedure.", MessageType.Warning);
                     }
 
-                    int selectedIndexByUser = EditorGUILayout.Popup(
-                        "Startup Procedure",
-                        _currentStartupProcedureTypeNameIndex,
-                        _currentAvailableProcedureTypeNames.ToArray());
+                    var popupNames = new string[_currentAvailableProcedureTypeNames.Count];
+                    for (int i = 0; i < _currentAvailableProcedureTypeNames.Count; i++)
+                    {
+                        popupNames[i] = SimplifyTypeName(_currentAvailableProcedureTypeNames[i]);
+                    }
+
+                    int selectedIndexByUser = EditorGUILayout.Popup("Startup Procedure", _currentStartupProcedureTypeNameIndex, popupNames.ToArray());
                     if (selectedIndexByUser != _currentStartupProcedureTypeNameIndex)
                     {
                         _currentStartupProcedureTypeNameIndex = selectedIndexByUser;
@@ -116,12 +116,12 @@ namespace XuchFramework.Editor
         }
 
         /// <summary>
-        /// 更新所有 Procedure 类型名称，并根据是否变动写入序列化属性
+        /// Update all subtype names of procedures, and update available procedure type names property
         /// </summary>
         private void UpdateSubtypeNames()
         {
             _allProcedureTypeNames = TypeHelper.GetDerivedTypeNames(typeof(ProcedureBase));
-            // 读取原来属性中的可用列表，用于跟新的 _allProcedureTypeNames 进行比较
+            // Read the old _availableProcedureTypeNames, for comparing with new _allProcedureTypeNames
             _currentAvailableProcedureTypeNames.Clear();
             for (int i = 0; i < _availableProcedureTypeNames.arraySize; i++)
             {
@@ -129,16 +129,13 @@ namespace XuchFramework.Editor
             }
 
             int countBeforeFilter = _currentAvailableProcedureTypeNames.Count;
-            // 过滤掉已经不存在的类型名称，获得新的可用列表
             _currentAvailableProcedureTypeNames = _currentAvailableProcedureTypeNames.Where(x => _allProcedureTypeNames.Contains(x)).ToList();
-            // 如果过滤前后长度发生变化，则需要写入新的属性
             if (countBeforeFilter != _currentAvailableProcedureTypeNames.Count)
             {
                 WritePropertyAvailableProcedureTypeNames();
             }
             else if (!string.IsNullOrEmpty(_startupProcedureTypeName.stringValue))
             {
-                // 如果 Startup Procedure 名称已经不在当前可选列表中，则清空 Startup Procedure 名称
                 _currentStartupProcedureTypeNameIndex = _currentAvailableProcedureTypeNames.IndexOf(_startupProcedureTypeName.stringValue);
                 if (_currentStartupProcedureTypeNameIndex < 0)
                 {
@@ -149,9 +146,6 @@ namespace XuchFramework.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        /// <summary>
-        /// 写入 AvailableProcedureTypeNames 属性
-        /// </summary>
         private void WritePropertyAvailableProcedureTypeNames()
         {
             _availableProcedureTypeNames.ClearArray();
@@ -167,7 +161,6 @@ namespace XuchFramework.Editor
                 _availableProcedureTypeNames.GetArrayElementAtIndex(i).stringValue = _currentAvailableProcedureTypeNames[i];
             }
 
-            // 如果 Startup Procedure 已经不在可选列表中，则清空 Startup Procedure 名称
             if (!string.IsNullOrEmpty(_startupProcedureTypeName.stringValue))
             {
                 _currentStartupProcedureTypeNameIndex = _currentAvailableProcedureTypeNames.IndexOf(_startupProcedureTypeName.stringValue);
@@ -178,9 +171,6 @@ namespace XuchFramework.Editor
             }
         }
 
-        /// <summary>
-        /// 写入 StartupProcedure 属性
-        /// </summary>
         private void WritePropertyStartupProcedure(string typeName)
         {
             _startupProcedureTypeName.stringValue = typeName;
@@ -190,6 +180,30 @@ namespace XuchFramework.Editor
         {
             var splited = typeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
             return splited[splited.Length - 1];
+        }
+
+        private string FormatProcedureTime(float totalSeconds)
+        {
+            int hours = (int)(totalSeconds / 3600);
+            int minutes = (int)((totalSeconds % 3600) / 60);
+            int seconds = (int)(totalSeconds % 60);
+
+            if (hours > 24)
+            {
+                return "> 24h";
+            }
+
+            if (hours >= 1)
+            {
+                return $"{hours:00}h{minutes:00}m{seconds:00}s";
+            }
+
+            if (minutes >= 1)
+            {
+                return $"{minutes:00}m{seconds:00}s";
+            }
+
+            return $"{seconds:00}s";
         }
     }
 }

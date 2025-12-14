@@ -4,9 +4,8 @@ namespace XuchFramework.Core.Procedures
 {
     public class ProcedureEnterGame : ProcedureBase
     {
-        public override void OnProcedureEnter()
+        protected override void OnProcedureEnter()
         {
-            base.OnProcedureEnter();
             // LoadSceneAsync().Forget();
         }
 

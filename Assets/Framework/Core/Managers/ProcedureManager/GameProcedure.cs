@@ -1,30 +1,32 @@
 using System;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Procedure Manager")]
-    public sealed class ProcedureManager : ManagerBase
+    [AddComponentMenu("Xuch/Game Procedure")]
+    public sealed class GameProcedure : MonoSingletonPersistent<GameProcedure>
     {
+        private const string PROCEDURE_FSM_NAME = "GameProcedure";
+
         [SerializeField]
         private string _startupProcedureTypeName;
 
         [SerializeField]
         private string[] _availableProcedureTypeNames;
 
-        private Fsm<ProcedureManager> _procedureFsm;
+        private Fsm _procedureFsm;
         private ProcedureBase _startupProcedure;
 
+        public Blackboard Blackboard { get; private set; }
         public ProcedureBase CurrentProcedure => _procedureFsm?.CurrentState as ProcedureBase;
-        public float CurrentProcedureTime => _procedureFsm?.CurrentStateTime ?? 0;
+        public float CurrentProcedureSeconds => _procedureFsm?.CurrentStateSeconds ?? 0;
 
-        protected override UniTask OnPostInitialize()
+        public void Initialize()
         {
             var procedures = new ProcedureBase[_availableProcedureTypeNames.Length];
-            // 注册所有流程为状态
+            // Register all available procedures
             for (int i = 0; i < _availableProcedureTypeNames.Length; i++)
             {
                 string typeName = _availableProcedureTypeNames[i];
@@ -37,21 +39,22 @@ namespace XuchFramework.Core
 
             if (_startupProcedure == null)
             {
-                Log.Error(
-                    $"[ProcedureManager] Initialize failed. Startup procedure '{_startupProcedureTypeName}' not found or failed to initialize.");
-                return UniTask.CompletedTask;
+                Log.Error($"[GameProcedure] Initialize failed. Startup procedure '{_startupProcedureTypeName}' not found or failed to initialize");
+                return;
             }
 
-            _procedureFsm = GameModule<FsmManager>.Instance.CreateFsm(this, procedures);
-
-            return UniTask.CompletedTask;
+            Blackboard = new Blackboard();
+            _procedureFsm = GameModule<FsmManager>.Instance.CreateFsm(PROCEDURE_FSM_NAME, Blackboard, procedures);
         }
 
-        protected override void OnDispose()
+        private void OnDestroy()
         {
-            GameModule<FsmManager>.Instance.ShutdownFsm<ProcedureManager>();
+            GameModule<FsmManager>.Instance.ShutdownFsm(PROCEDURE_FSM_NAME);
+            Blackboard.Clear();
+
             _procedureFsm = null;
             _startupProcedure = null;
+            Blackboard = null;
         }
 
         public void Startup()

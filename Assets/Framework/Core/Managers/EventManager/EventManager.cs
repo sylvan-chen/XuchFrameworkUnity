@@ -6,116 +6,52 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Event Manager")]
-    public sealed partial class EventManager : ManagerBase
+    public sealed class EventManager : ManagerBase
     {
-        private readonly Dictionary<int, EventListenerChain> _listenerChainMap = new();
-        private readonly Dictionary<int, (int eventId, Action<IEvent> listener)> _cachedListeners = new();
+        private interface IEventBinding { }
 
-        private readonly Queue<int> _listenerIdPool = new();
-
-        private int _currentListenerId = -1;
-
-        public int EventCount => _listenerChainMap.Count;
-
-        protected override void OnDispose()
+        private sealed class EventBinding<T> : IEventBinding
         {
-            foreach (var listenerChain in _listenerChainMap.Values)
-            {
-                listenerChain.Destroy();
-            }
-
-            _listenerChainMap.Clear();
-            _cachedListeners.Clear();
-            _listenerIdPool.Clear();
-            _currentListenerId = -1;
+            public Action<T> OnDispatch = delegate { };
         }
 
-        public int AddListener(int eventId, Action<IEvent> listener)
+        private readonly Dictionary<Type, IEventBinding> _eventBindings = new();
+
+        protected override void OnDispose() { }
+
+        public void AddListener<TEvent>(Action<TEvent> listener) where TEvent : struct
         {
-            if (listener == null)
+            var type = typeof(TEvent);
+            if (!_eventBindings.TryGetValue(type, out var binding))
             {
-                Log.Error("[EventManager] AddListener failed, listener cannot be null.");
-                return -1;
+                binding = new EventBinding<TEvent>();
+                _eventBindings.Add(type, binding);
             }
-
-            if (!_listenerChainMap.ContainsKey(eventId))
-            {
-                _listenerChainMap[eventId] = EventListenerChain.Create();
-            }
-
-            int nextListenerId = GetNextListenerId();
-            if (nextListenerId < 0)
-            {
-                Log.Error($"[EventManager] AddListener failed, no listener id available.");
-                return -1;
-            }
-
-            _listenerChainMap[eventId].AddListener(listener, nextListenerId);
-            _cachedListeners[nextListenerId] = (eventId, listener);
-            return nextListenerId;
+            // '+=' operator will create a new delegate instance, so there is a bit of GC here. But it's acceptable for initialization
+            ((EventBinding<TEvent>)binding).OnDispatch += listener;
         }
 
-        private int GetNextListenerId()
+        public void RemoveListener<TEvent>(Action<TEvent> listener) where TEvent : struct
         {
-            if (_listenerIdPool.Count > 0)
-                return _listenerIdPool.Dequeue();
-
-            if (_currentListenerId != int.MinValue)
-                return ++_currentListenerId;
-
-            Log.Error("[EventManager] GetNextListenerId failed, listenerId overflow and no recyclable ids available.");
-            return -1;
-        }
-
-        public void RemoveListener(int eventId, Action<IEvent> listener)
-        {
-            if (!_listenerChainMap.TryGetValue(eventId, out var listenerChain))
-                return;
-
-            int removeListenerId = listenerChain.RemoveListener(listener);
-            if (removeListenerId >= 0)
+            var type = typeof(TEvent);
+            if (_eventBindings.TryGetValue(type, out var binding))
             {
-                _cachedListeners.Remove(removeListenerId);
-                _listenerIdPool.Enqueue(removeListenerId);
-            }
-
-            if (listenerChain.Count == 0)
-            {
-                listenerChain.Destroy();
-                _listenerChainMap.Remove(eventId);
+                ((EventBinding<TEvent>)binding).OnDispatch -= listener;
             }
         }
 
-        public void RemoveListener(int listenerId)
+        public void Dispatch<TEvent>(TEvent evt) where TEvent : struct
         {
-            if (_cachedListeners.TryGetValue(listenerId, out var listenerInfo))
+            var type = typeof(TEvent);
+            if (_eventBindings.TryGetValue(type, out var binding))
             {
-                RemoveListener(listenerInfo.eventId, listenerInfo.listener);
-                listenerInfo.listener = null;
+                ((EventBinding<TEvent>)binding).OnDispatch?.Invoke(evt);
             }
         }
 
-        public void Dispatch(int eventId, params object[] args)
+        public void Clear()
         {
-            var gameEvent = GameEvent.Create(args);
-
-            if (_listenerChainMap.TryGetValue(eventId, out var listenerChain))
-            {
-                listenerChain.Invoke(gameEvent);
-            }
-        }
-
-        public void ClearAllListeners()
-        {
-            foreach (var handlerChain in _listenerChainMap.Values)
-            {
-                handlerChain.Destroy();
-            }
-
-            _listenerChainMap.Clear();
-            _cachedListeners.Clear();
-            _listenerIdPool.Clear();
-            _currentListenerId = -1;
+            _eventBindings.Clear();
         }
     }
 }

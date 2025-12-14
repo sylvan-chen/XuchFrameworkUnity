@@ -1,41 +1,35 @@
-using XuchFramework.Core.Utils;
-
 namespace XuchFramework.Core
 {
-    public abstract class ProcedureBase : StateBase<ProcedureManager>
+    public abstract class ProcedureBase : StateBase
     {
-        public sealed override void OnInit(Fsm<ProcedureManager> fsm)
+        protected sealed override void OnInit(Fsm fsm)
         {
-            base.OnInit(fsm);
             OnProcedureInit();
         }
 
-        public sealed override void OnEnter(Fsm<ProcedureManager> fsm)
+        protected sealed override void OnEnter(Fsm fsm)
         {
-            base.OnEnter(fsm);
-            Log.Debug($"[Procedure] Enter {GetType().Name}...");
+            Log.Debug($"[GameProcedure] Enter {GetType().Name}...");
             OnProcedureEnter();
         }
 
-        public sealed override void OnExit(Fsm<ProcedureManager> fsm)
+        protected sealed override void OnExit(Fsm fsm)
         {
-            base.OnExit(fsm);
-            Log.Debug($"[Procedure] Exit {GetType().Name}...");
+            Log.Debug($"[GameProcedure] Exit {GetType().Name}...");
             OnProcedureExit();
         }
 
-        public sealed override void OnUpdate(Fsm<ProcedureManager> fsm, float deltaTime, float unscaledDeltaTime)
+        protected sealed override void OnUpdate(Fsm fsm, float deltaTime, float unscaledDeltaTime)
         {
-            base.OnUpdate(fsm, deltaTime, unscaledDeltaTime);
             OnProcedureUpdate(deltaTime, unscaledDeltaTime);
         }
 
-        public virtual void OnProcedureInit() { }
+        protected virtual void OnProcedureInit() { }
 
-        public virtual void OnProcedureEnter() { }
+        protected virtual void OnProcedureEnter() { }
 
-        public virtual void OnProcedureExit() { }
+        protected virtual void OnProcedureExit() { }
 
-        public virtual void OnProcedureUpdate(float deltaTime, float unscaledDeltaTime) { }
+        protected virtual void OnProcedureUpdate(float deltaTime, float unscaledDeltaTime) { }
     }
 }

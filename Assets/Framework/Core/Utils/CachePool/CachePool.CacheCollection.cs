@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace XuchFramework.Core.Utils
+namespace XuchFramework.Core
 {
     public static partial class CachePool
     {

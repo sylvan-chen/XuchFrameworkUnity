@@ -1,6 +1,6 @@
 using System;
 
-namespace XuchFramework.Core.Utils
+namespace XuchFramework.Core
 {
     public readonly struct CacheCollectionInfo
     {

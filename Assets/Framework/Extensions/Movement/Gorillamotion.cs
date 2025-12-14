@@ -56,15 +56,15 @@ namespace XuchFramework.Gameplay
 
         [Title("Haptics")]
         [SerializeField]
-        private bool _allowTouchingHaptics = true;
-        [SerializeField, Indent, EnableIf(nameof(_allowTouchingHaptics))]
+        public bool AllowTouchingHaptics = true;
+        [SerializeField, Indent, EnableIf(nameof(AllowTouchingHaptics))]
         private float _touchingHapticsCoolDown = 0.15f;
-        [SerializeField, Indent, EnableIf(nameof(_allowTouchingHaptics))]
+        [SerializeField, Indent, EnableIf(nameof(AllowTouchingHaptics))]
         private float _touchingHapticDuration = 0.05f;
-        [SerializeField, Indent, EnableIf(nameof(_allowTouchingHaptics))]
+        [SerializeField, Indent, EnableIf(nameof(AllowTouchingHaptics))]
         private float _touchingHapticAmplitude = 0.5f;
-        [SerializeField, Indent, EnableIf(nameof(_allowTouchingHaptics))]
-        private float _slidingHapticAmplitude = 0.5f;
+        // [SerializeField, Indent, EnableIf(nameof(AllowTouchingHaptics))]
+        // private float _slidingHapticAmplitude = 0.5f;
 
         private Vector3 _lastHeadPos;
         private Vector3 _lastBodyPos;

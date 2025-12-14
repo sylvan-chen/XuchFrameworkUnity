@@ -54,8 +54,8 @@ namespace XuchFramework.Gameplay
         private Transform _mountableHead;
         [SerializeField, EnableIf(nameof(AllowTurning))]
         private Vector3 _headRotationOffset;
-        [SerializeField, EnableIf(nameof(AllowTurning))]
-        private float _turningSpeed = 2f;
+        // [SerializeField, EnableIf(nameof(AllowTurning))]
+        // private float _turningSpeed = 2f;
 
         [AutoSmallHeader("Space Mapping")]
         public bool UseMapping = true;
@@ -338,8 +338,8 @@ namespace XuchFramework.Gameplay
 
         // Debug: 一键快速上下马
         [SerializeField, EnableIf(nameof(EnableDebug))]
-        private bool _quickMount = true;
-        [SerializeField, EnableIf(nameof(EnableDebug), nameof(_quickMount))]
+        public bool QuickMount = true;
+        [SerializeField, EnableIf(nameof(EnableDebug), nameof(QuickMount))]
         private InputActionProperty _quickMountAction;
 
         private void OnEnable()
