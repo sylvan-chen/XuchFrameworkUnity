@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Pool Manager")]
+    [AddComponentMenu("XuchFramework/Pool Manager")]
     public sealed class PoolManager : ManagerBase
     {
         public const int DEFAULT_CAPACITY = int.MaxValue;
@@ -184,17 +183,20 @@ namespace XuchFramework.Core
         {
             if (objectType == null)
             {
-                throw new ArgumentNullException(nameof(objectType), "CreatePool failed. Type cannot be null.");
+                Log.Error("[PoolManager] Create object pool failed, object type cannot be null.");
+                return null;
             }
 
             if (!objectType.IsClass || objectType.IsAbstract)
             {
-                throw new ArgumentException($"CreatePool failed. Type {objectType.Name} is not a valid class type.");
+                Log.Error($"[PoolManager] Create object pool failed, type '{objectType.Name}' not valid.");
+                return null;
             }
 
             if (_poolDict.ContainsKey(objectType))
             {
-                throw new InvalidOperationException($"CreatePool failed. Pool of type {objectType.Name} already exists.");
+                Log.Error($"[PoolManager] Create object pool failed, pool of type '{objectType.Name}' already exists.");
+                return null;
             }
 
             var poolType = typeof(Pool<>).MakeGenericType(objectType);
@@ -208,10 +210,10 @@ namespace XuchFramework.Core
         {
             if (_poolDict.ContainsKey(typeof(T)))
             {
-                throw new InvalidOperationException($"Create pool failed, pool of type {typeof(T)} already exists.");
+                throw new InvalidOperationException($"Create pool failed, pool of type '{typeof(T)}' already exists.");
             }
 
-            Pool<T> pool = new(allowMultiReference, capacity, objectExpiredTime, autoClearInterval);
+            var pool = new Pool<T>(allowMultiReference, capacity, objectExpiredTime, autoClearInterval);
             _poolDict.Add(typeof(T), pool);
             return pool;
         }

@@ -1,62 +1,46 @@
+using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Game Setting Manager")]
+    [AddComponentMenu("XuchFramework/Game Setting Manager")]
     public sealed class GameSettingManager : ManagerBase
     {
-        [SerializeField, Tooltip("帧率")]
+        [SerializeField, Tooltip("Frame rate, -1 presents to use the platform's default frame rate")]
         private int _frameRate = -1;
-
-        [SerializeField, Tooltip("游戏速度")]
+        [SerializeField]
         private float _gameSpeed = 1f;
-
-        [SerializeField, Tooltip("允许后台运行")]
+        [SerializeField]
         private bool _allowRunInBackground = true;
-
-        [SerializeField, Tooltip("保持屏幕常亮")]
+        [SerializeField]
         private bool _neverSleep = false;
 
         private float _gameSpeedBeforePause = 1f;
 
-        /// <summary>
-        /// 帧率
-        /// </summary>
+        private Action OnLowMemory;
+
         public int FrameRate
         {
             get => _frameRate;
             set => Application.targetFrameRate = _frameRate = value;
         }
 
-        /// <summary>
-        /// 游戏速度
-        /// </summary>
         public float GameSpeed
         {
             get => _gameSpeed;
             private set => Time.timeScale = _gameSpeed = value >= 0f ? value : 0f;
         }
 
-        /// <summary>
-        /// 游戏是否暂停
-        /// </summary>
         public bool IsGamePaused => Time.timeScale == 0f;
 
-        /// <summary>
-        /// 允许后台运行
-        /// </summary>
         public bool AllowRunInBackground
         {
             get => _allowRunInBackground;
             set => Application.runInBackground = _allowRunInBackground = value;
         }
 
-        /// <summary>
-        /// 保持屏幕常亮
-        /// </summary>
         public bool NeverSleep
         {
             get => _neverSleep;
@@ -78,23 +62,23 @@ namespace XuchFramework.Core
             Log.Fatal("Framework just support Unity 5.3 or later");
             Application.Quit();
 #endif
-#if UNITY_5_6_OR_NEWER
-            Application.lowMemory += OnLowMemory;
-#endif
-
             return UniTask.CompletedTask;
         }
 
-        protected override void OnDispose()
+        private void OnEnable()
         {
 #if UNITY_5_6_OR_NEWER
-            Application.lowMemory -= OnLowMemory;
+            Application.lowMemory += HandleLowMemory;
 #endif
         }
 
-        /// <summary>
-        /// 暂停游戏
-        /// </summary>
+        private void OnDisable()
+        {
+#if UNITY_5_6_OR_NEWER
+            Application.lowMemory -= HandleLowMemory;
+#endif
+        }
+
         public void PauseGame()
         {
             if (IsGamePaused)
@@ -106,9 +90,6 @@ namespace XuchFramework.Core
             GameSpeed = 0f;
         }
 
-        /// <summary>
-        /// 恢复游戏
-        /// </summary>
         public void ResumeGame()
         {
             if (!IsGamePaused)
@@ -119,21 +100,15 @@ namespace XuchFramework.Core
             GameSpeed = _gameSpeedBeforePause;
         }
 
-        /// <summary>
-        /// 重置游戏速度
-        /// </summary>
         public void ResetGameSpeed()
         {
             GameSpeed = 1f;
         }
 
-        /// <summary>
-        /// 处理内存不足的情况
-        /// </summary>
-        private void OnLowMemory()
+        private void HandleLowMemory()
         {
             Log.Warning("[XFramework] [GameSetting] Low memory reported...");
-            // TODO: 处理内存不足的情况
+            OnLowMemory?.Invoke();
         }
     }
 }

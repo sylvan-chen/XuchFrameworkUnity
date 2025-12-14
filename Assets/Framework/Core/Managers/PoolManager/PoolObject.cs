@@ -46,7 +46,7 @@ namespace XuchFramework.Core
         internal static PoolObject Create(object target, bool locked = false)
         {
             PoolObject poolObject = CachePool.Spawn<PoolObject>();
-            poolObject.Target = target ?? throw new ArgumentNullException(nameof(target), "Target can not be null.");
+            poolObject.Target = target;
             poolObject.Locked = locked;
             poolObject.LastUseUtcTime = DateTime.UtcNow;
             poolObject.ReferenceCount = 0;

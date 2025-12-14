@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
@@ -25,12 +24,12 @@ namespace XuchFramework.Core
 
     public sealed class Pool<T> : PoolBase where T : class
     {
-        private readonly bool _allowMultiReference; // 是否允许多重引用
-        private int _capacity;                      // 容量
-        private float _objectExpiredTime;           // 对象过期时间
-        private float _autoClearInterval;           // 自动清理间隔
+        private readonly bool _allowMultiReference;
+        private int _capacity;
+        private float _objectExpiredTime;
+        private float _autoClearInterval;
         private float _autoClearTimer = 0f;
-        private readonly Dictionary<T, PoolObject> _poolObjectDict = new();
+        private readonly Dictionary<T, PoolObject> _typeToPoolObjectMap = new();
         private readonly List<PoolObject> _cachedDiscardablePoolObjects = new();
 
         public Pool(bool allowMultiReference, int capacity, float objectExpiredTime, float autoClearInterval)
@@ -52,9 +51,8 @@ namespace XuchFramework.Core
             {
                 if (value < 0f)
                 {
-                    throw new ArgumentException(
-                        "Set AutoSqueezeInterval failed. AutoSqueezeInterval must be greater than or equal to 0.",
-                        nameof(value));
+                    Log.Error($"[Pool<{typeof(T)}>] AutoClearInterval must be greater than or equal to 0.");
+                    value = 0f;
                 }
 
                 _autoClearInterval = value;
@@ -70,9 +68,8 @@ namespace XuchFramework.Core
             {
                 if (value < 0f)
                 {
-                    throw new ArgumentException(
-                        "Set PoolObjectSurvivalTime failed. PoolObjectSurvivalTime must be greater than or equal to 0.",
-                        nameof(value));
+                    Log.Error($"[Pool<{typeof(T)}>] ObjectExpiredTime must be greater than or equal to 0.");
+                    value = 0f;
                 }
 
                 _objectExpiredTime = value;
@@ -86,7 +83,8 @@ namespace XuchFramework.Core
             {
                 if (value < 0)
                 {
-                    throw new ArgumentException("Set Capacity failed. Capacity must be greater than or equal to 0.", nameof(value));
+                    Log.Error($"[Pool<{typeof(T)}>] Capacity must be greater than or equal to 0.");
+                    value = 0;
                 }
 
                 _capacity = value;
@@ -94,7 +92,7 @@ namespace XuchFramework.Core
             }
         }
 
-        public override int Count => _poolObjectDict.Count;
+        public override int Count => _typeToPoolObjectMap.Count;
 
         internal override void Update(float deltaTime, float unscaledDeltaTime)
         {
@@ -108,20 +106,18 @@ namespace XuchFramework.Core
 
         internal override void Destroy()
         {
-            foreach (PoolObject poolObject in _poolObjectDict.Values)
+            foreach (PoolObject poolObject in _typeToPoolObjectMap.Values)
             {
                 poolObject.Destroy();
             }
         }
 
-        /// <summary>
-        /// 注册一个对象到池中
-        /// </summary>
         public void Register(T target, Action<T> onSpawn = null, Action<T> onUnspawn = null, Action<T> onDiscard = null)
         {
             if (target == null)
             {
-                throw new ArgumentNullException(nameof(target), "TargetObject cannot be null.");
+                Log.Error($"[Pool<{typeof(T)}>] Register target failed, target cannot be null.");
+                return;
             }
 
             var poolObject = PoolObject.Create(target);
@@ -129,14 +125,14 @@ namespace XuchFramework.Core
             poolObject.OnUnspawn = onUnspawn == null ? null : () => onUnspawn.Invoke(target);
             poolObject.OnDiscard = onDiscard == null ? null : () => onDiscard.Invoke(target);
             poolObject.ReferenceCount = 1;
-            _poolObjectDict.Add(target, poolObject);
+            _typeToPoolObjectMap.Add(target, poolObject);
         }
 
         public override PoolObjectInfo[] GetAllPoolObjectInfos()
         {
-            PoolObjectInfo[] poolObjectInfos = new PoolObjectInfo[_poolObjectDict.Count];
+            PoolObjectInfo[] poolObjectInfos = new PoolObjectInfo[_typeToPoolObjectMap.Count];
             int index = 0;
-            foreach (PoolObject poolObject in _poolObjectDict.Values)
+            foreach (PoolObject poolObject in _typeToPoolObjectMap.Values)
             {
                 poolObjectInfos[index++] = new PoolObjectInfo(
                     poolObject.Locked,
@@ -150,7 +146,7 @@ namespace XuchFramework.Core
 
         public T Spawn()
         {
-            foreach (PoolObject poolObject in _poolObjectDict.Values)
+            foreach (PoolObject poolObject in _typeToPoolObjectMap.Values)
             {
                 if (_allowMultiReference || !poolObject.IsInUse)
                 {
@@ -168,7 +164,7 @@ namespace XuchFramework.Core
                 throw new ArgumentNullException(nameof(target), "Target cannot be null.");
             }
 
-            if (_poolObjectDict.TryGetValue(target, out var poolObject))
+            if (_typeToPoolObjectMap.TryGetValue(target, out var poolObject))
             {
                 poolObject.Unspawn();
                 if (Count > Capacity && poolObject.ReferenceCount <= 0)
@@ -189,7 +185,7 @@ namespace XuchFramework.Core
                 throw new ArgumentNullException(nameof(target), "Target cannot be null.");
             }
 
-            if (_poolObjectDict.TryGetValue(target, out var poolObject))
+            if (_typeToPoolObjectMap.TryGetValue(target, out var poolObject))
             {
                 poolObject.Locked = true;
             }
@@ -206,7 +202,7 @@ namespace XuchFramework.Core
                 throw new ArgumentNullException(nameof(target), "Target cannot be null.");
             }
 
-            if (_poolObjectDict.TryGetValue(target, out PoolObject poolObject))
+            if (_typeToPoolObjectMap.TryGetValue(target, out PoolObject poolObject))
             {
                 poolObject.Locked = false;
             }
@@ -223,8 +219,7 @@ namespace XuchFramework.Core
                 throw new ArgumentNullException(nameof(target), "Target cannot be null.");
             }
 
-            // 通过 target 反向获取对应的池对象
-            if (_poolObjectDict.TryGetValue(target, out PoolObject poolObject))
+            if (_typeToPoolObjectMap.TryGetValue(target, out PoolObject poolObject))
             {
                 return Discard(poolObject);
             }
@@ -245,7 +240,7 @@ namespace XuchFramework.Core
             }
 
             if (poolObject.Target is T target)
-                _poolObjectDict.Remove(target);
+                _typeToPoolObjectMap.Remove(target);
             poolObject.Destroy();
             return true;
         }
@@ -306,7 +301,7 @@ namespace XuchFramework.Core
         private void UpdateDiscardablePoolObjects()
         {
             _cachedDiscardablePoolObjects.Clear();
-            foreach (var poolObject in _poolObjectDict.Values)
+            foreach (var poolObject in _typeToPoolObjectMap.Values)
             {
                 if (poolObject.IsInUse || poolObject.Locked)
                     continue;
@@ -330,7 +325,7 @@ namespace XuchFramework.Core
         private void UpdateDiscardablePoolObjectsWithoutExpiredCheck()
         {
             _cachedDiscardablePoolObjects.Clear();
-            foreach (var poolObject in _poolObjectDict.Values)
+            foreach (var poolObject in _typeToPoolObjectMap.Values)
             {
                 if (poolObject.IsInUse || poolObject.Locked)
                     continue;
