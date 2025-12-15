@@ -107,7 +107,7 @@ namespace XuchFramework.Core
 
         private void HandleLowMemory()
         {
-            Log.Warning("[XFramework] [GameSetting] Low memory reported...");
+            Log.Warning("[GameSetting] Low memory reported...");
             OnLowMemory?.Invoke();
         }
     }

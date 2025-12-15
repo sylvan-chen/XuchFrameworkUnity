@@ -66,13 +66,13 @@ namespace XuchFramework.Gameplay
         private float _heightOffset = 0f;
         [SerializeField, EnableIf(nameof(ShowHeight))]
         private float _targetHeight = 0.35f;
-        [SerializeField, EnableIf(nameof(ShowHeight))]
-        private float _sneakHeight = 0.15f;
-        [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
-        private bool _autoAdjustColliderHeight = true;
-        [SerializeField, EnableIf(nameof(ShowHeight)),
-         Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
-        private Vector2 _minMaxHeight = new Vector2(0.5f, 2.5f);
+        // [SerializeField, EnableIf(nameof(ShowHeight))]
+        // private float _sneakHeight = 0.15f;
+        // [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
+        // private bool _autoAdjustColliderHeight = true;
+        // [SerializeField, EnableIf(nameof(ShowHeight)),
+        //  Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
+        // private Vector2 _minMaxHeight = new Vector2(0.5f, 2.5f);
 
 #if UNITY_EDITOR
         [AutoToggleHeader("Debug"), OnValueChanged(nameof(OnEnableDebugChanged))]

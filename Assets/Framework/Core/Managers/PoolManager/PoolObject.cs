@@ -45,7 +45,7 @@ namespace XuchFramework.Core
 
         internal static PoolObject Create(object target, bool locked = false)
         {
-            PoolObject poolObject = CachePool.Spawn<PoolObject>();
+            PoolObject poolObject = CachePool.Acquire<PoolObject>();
             poolObject.Target = target;
             poolObject.Locked = locked;
             poolObject.LastUseUtcTime = DateTime.UtcNow;
@@ -85,7 +85,7 @@ namespace XuchFramework.Core
                 UnityEngine.Object.Destroy(destroyable);
             OnDiscard?.Invoke();
             Clear();
-            CachePool.Unspawn(this);
+            CachePool.Release(this);
         }
 
         private void Clear()

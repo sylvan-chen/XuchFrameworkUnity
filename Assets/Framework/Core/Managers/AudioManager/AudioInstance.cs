@@ -54,23 +54,6 @@ namespace XuchFramework.Core.Audio
 
         public bool IsWaitingLoop;
 
-        public static AudioInstance Create(
-            int handleId, AudioPlayMode playMode, string eventName, FMOD.Studio.EventInstance eventInstance, AudioSourceType sourceType,
-            AudioSourceInfo sourceInfo, int loopTimes = 0)
-        {
-            var inst = CachePool.Spawn<AudioInstance>();
-            inst.HandleId = handleId;
-            inst.PlayMode = playMode;
-            inst.EventName = eventName;
-            inst.EventInstance = eventInstance;
-            inst.SourceType = sourceType;
-            inst.SourceInfo = sourceInfo;
-            inst.LoopTimes = loopTimes;
-            inst.IdleDuration = 0f;
-            inst.IsWaitingLoop = false;
-            return inst;
-        }
-
         public bool IsPlaying
         {
             get
@@ -100,6 +83,23 @@ namespace XuchFramework.Core.Audio
 
         public bool Is3D => SourceType != AudioSourceType.Flattened;
 
+        public static AudioInstance Create(
+            int handleId, AudioPlayMode playMode, string eventName, FMOD.Studio.EventInstance eventInstance, AudioSourceType sourceType,
+            AudioSourceInfo sourceInfo, int loopTimes = 0)
+        {
+            var inst = CachePool.Acquire<AudioInstance>();
+            inst.HandleId = handleId;
+            inst.PlayMode = playMode;
+            inst.EventName = eventName;
+            inst.EventInstance = eventInstance;
+            inst.SourceType = sourceType;
+            inst.SourceInfo = sourceInfo;
+            inst.LoopTimes = loopTimes;
+            inst.IdleDuration = 0f;
+            inst.IsWaitingLoop = false;
+            return inst;
+        }
+
         internal void UpdatePosition()
         {
             switch (SourceType)
@@ -128,7 +128,7 @@ namespace XuchFramework.Core.Audio
         {
             Clear();
             EventInstance.release();
-            CachePool.Unspawn(this);
+            CachePool.Release(this);
         }
 
         public void Clear()
