@@ -19,12 +19,19 @@ namespace XuchFramework.Core
         private Fsm _procedureFsm;
         private ProcedureBase _startupProcedure;
 
+        public bool IsStarted { get; private set; } = false;
         public Blackboard Blackboard { get; private set; }
         public ProcedureBase CurrentProcedure => _procedureFsm?.CurrentState as ProcedureBase;
         public float CurrentProcedureSeconds => _procedureFsm?.CurrentStateSeconds ?? 0;
 
-        public void Initialize()
+        public void Startup()
         {
+            if (IsStarted)
+            {
+                Log.Error("[GameProcedure] Startup failed. GameProcedure has already started");
+                return;
+            }
+
             var procedures = new ProcedureBase[_availableProcedureTypeNames.Length];
             // Register all available procedures
             for (int i = 0; i < _availableProcedureTypeNames.Length; i++)
@@ -45,21 +52,20 @@ namespace XuchFramework.Core
 
             Blackboard = new Blackboard();
             _procedureFsm = GameModule<FsmManager>.Instance.CreateFsm(PROCEDURE_FSM_NAME, Blackboard, procedures);
+
+            _procedureFsm.Startup(_startupProcedure.GetType());
+            IsStarted = true;
         }
 
-        private void OnDestroy()
+        protected override void OnDispose()
         {
             GameModule<FsmManager>.Instance.ShutdownFsm(PROCEDURE_FSM_NAME);
             Blackboard.Clear();
 
+            IsStarted = false;
             _procedureFsm = null;
             _startupProcedure = null;
             Blackboard = null;
-        }
-
-        public void Startup()
-        {
-            _procedureFsm.Startup(_startupProcedure.GetType());
         }
 
         public void ChangeProcedure<T>() where T : ProcedureBase

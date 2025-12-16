@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 
@@ -14,38 +15,66 @@ namespace XuchFramework.Core
 
         private void Start()
         {
-            LaunchGame().Forget();
+            EnterGame().Forget();
         }
 
-        private async UniTaskVoid LaunchGame()
+        private async UniTaskVoid EnterGame()
         {
             // 1. Initialize core managers
+            await LaunchManagers("[core_managers]");
+            // 2. Start procedure
+            GameProcedure.Instance.Startup();
+        }
 
-            var coreManagerRoot = transform.Find("[core_managers]");
-            if (coreManagerRoot == null)
+        /// <summary>
+        /// Launch managers under the specified root
+        /// </summary>
+        public async UniTask LaunchManagers(string rootName)
+        {
+            var managerRoot = transform.Find(rootName);
+            if (managerRoot == null)
             {
-                Log.Error("[GameRunner] Launch game failed. Can't find root for core managers (Expected root name: '[core_managers]')");
+                Log.Error($"[GameRunner] Launch managers failed. Can not find root for managers (Expected root name: '{rootName}')");
                 return;
             }
 
-            var coreManagers = coreManagerRoot.GetComponentsInChildren<ManagerBase>();
-            Log.Debug($"[GameRunner] Found {coreManagers.Length} core managers");
+            var managers = managerRoot.GetComponentsInChildren<ManagerBase>();
+            Log.Debug($"[GameRunner] Found {managers.Length} managers under '{rootName}'");
 
-            foreach (var manager in coreManagers)
+            foreach (var manager in managers)
             {
                 RegisterManager(manager);
                 await manager.Initialize();
             }
 
-            foreach (var manager in coreManagers)
+            foreach (var manager in managers)
             {
                 await manager.PostInitialize();
             }
+        }
 
-            // 2. Start procedure
+        /// <summary>
+        /// Register manager as GameModule instance, and cache it for update loop and dispose
+        /// </summary>
+        internal void RegisterManager(ManagerBase manager)
+        {
+            if (_cachedManagers.Any(x => x == manager))
+            {
+                Log.Warning($"[GameRunner] Duplicate manager register. Manager '{manager.GetType().FullName}' has already been registered");
+                return;
+            }
 
-            GameProcedure.Instance.Initialize();
-            GameProcedure.Instance.Startup();
+            var type = manager.GetType();
+            var genericType = typeof(GameModule<>).MakeGenericType(type);
+            var method = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
+            if (method == null)
+            {
+                Log.Error($"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
+                return;
+            }
+            method.Invoke(null, new object[] { manager });
+
+            _cachedManagers.Add(manager);
         }
 
         private void Update()
@@ -94,24 +123,6 @@ namespace XuchFramework.Core
                     manager.Dispose();
                 }
             }
-        }
-
-        /// <summary>
-        /// Register manager as GameModule instance, and cache it for update loop and dispose.
-        /// </summary>
-        internal void RegisterManager(ManagerBase mgr)
-        {
-            var type = mgr.GetType();
-            var genericType = typeof(GameModule<>).MakeGenericType(type);
-            var method = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
-            if (method == null)
-            {
-                Log.Error($"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
-                return;
-            }
-            method.Invoke(null, new object[] { mgr });
-
-            _cachedManagers.Add(mgr);
         }
     }
 }

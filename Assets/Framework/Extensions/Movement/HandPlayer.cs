@@ -1,5 +1,6 @@
 ﻿using Alchemy.Inspector;
 using Autohand;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using XuchFramework.Core;
 using XuchFramework.Core.Utils;
@@ -91,8 +92,6 @@ namespace XuchFramework.Gameplay
         private float _turningAxis;
         private bool _isTurningAxisReset = true;
 
-        private bool _hasInitTracking = false;
-
         public Hand HandLeft
         {
             get => _handLeft;
@@ -127,10 +126,8 @@ namespace XuchFramework.Gameplay
         public LayerMask PlayerLayerMask { get; private set; }
         public Camera HeadCamera => _headCamera;
 
-        protected override void Awake()
+        protected override UniTask OnInitialize()
         {
-            base.Awake();
-
             Body = GetComponent<Rigidbody>();
             Body.freezeRotation = true;
             Body.interpolation = RigidbodyInterpolation.None;
@@ -144,23 +141,18 @@ namespace XuchFramework.Gameplay
                 UseGorillamotion = false;
             }
 
-            if (_hasInitTracking)
-                return;
             if (_trackingContainer == null || _headCamera == null)
-                return;
+                return UniTask.CompletedTask;
 
             _lastUpdatePos = transform.position;
             _targetTrackedPos = _trackingContainer.position;
             _trackingPosOffset = Vector3.zero;
-            _hasInitTracking = true;
-
-            // GameLauncher.Instance.SetTempPlayerActivate(false);
-            _singletonState = MonoSingletonState.Initialized;
 
 #if UNITY_EDITOR
             if (EnableDebug)
                 OnEnableDebugChanged(EnableDebug);
 #endif
+            return UniTask.CompletedTask;
         }
 
         protected virtual void Start()
@@ -208,9 +200,6 @@ namespace XuchFramework.Gameplay
 
         protected void FixedUpdate()
         {
-            if (!_hasInitTracking)
-                return;
-
             if (UseGorillamotion)
                 _gorilla.Jump();
 
@@ -219,9 +208,6 @@ namespace XuchFramework.Gameplay
 
         protected virtual void Update()
         {
-            if (!_hasInitTracking)
-                return;
-
             if (UseGorillamotion)
                 _gorilla.ApplyGorillamotion();
 

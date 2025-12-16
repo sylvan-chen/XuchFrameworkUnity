@@ -25,7 +25,7 @@ namespace XuchFramework.Editor
 
             _showFullTypeName = EditorGUILayout.Toggle("Show Full Type Name", _showFullTypeName);
 
-            // 获取缓存池信息
+            // Get cache pool info
             _cacheCollectionInfosDict.Clear();
             CacheCollectionInfo[] cacheCollectionInfoArray = CachePool.GetAllCacheCollectionInfos();
             foreach (CacheCollectionInfo cacheCollectionInfo in cacheCollectionInfoArray)

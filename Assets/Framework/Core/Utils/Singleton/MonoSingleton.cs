@@ -1,4 +1,5 @@
 using Alchemy.Inspector;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace XuchFramework.Core
@@ -18,7 +19,6 @@ namespace XuchFramework.Core
 
         public MonoSingletonState SingletonState => _singletonState;
 
-        protected static bool _notFound = false;
         protected static T _instance;
 
         public static bool HasInstance => _instance != null;
@@ -27,7 +27,7 @@ namespace XuchFramework.Core
         {
             get
             {
-                if (_instance == null && !_notFound)
+                if (_instance == null)
                 {
 #if UNITY_6000_0_OR_NEWER
                     _instance = FindFirstObjectByType<T>();
@@ -36,16 +36,35 @@ namespace XuchFramework.Core
 #endif
                 }
 
-                if (_instance == null)
-                    _notFound = true;
-
                 return _instance;
             }
         }
 
         protected virtual void Awake()
         {
-            // 确保实例唯一
+            InitializeAsync().Forget();
+            
+            async UniTaskVoid InitializeAsync()
+            {
+                MakeSingleton();
+                _singletonState = MonoSingletonState.Initializing;
+                await OnInitialize();
+                _singletonState = MonoSingletonState.Initialized;
+            }
+        }
+        
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+            OnDispose();
+        }
+
+        protected void MakeSingleton()
+        {
+            // Make sure the instance is unique
             if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
@@ -53,23 +72,36 @@ namespace XuchFramework.Core
             }
 
             _instance = this as T;
-
-            _singletonState = MonoSingletonState.Initializing;
         }
+
+        protected virtual UniTask OnInitialize()
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual void OnDispose() { }
     }
 
     /// <summary>
-    /// 持久化单例，在场景切换时，实例不会被销毁
+    /// Persistent singleton, will not be destroyed on scene load
     /// </summary>
     [DisallowMultipleComponent]
     public class MonoSingletonPersistent<T> : MonoSingleton<T> where T : MonoBehaviour
     {
         protected override void Awake()
         {
-            base.Awake();
-            if (gameObject != null && transform.parent == null)
+            InitializeAsync().Forget();
+            
+            async UniTaskVoid InitializeAsync()
             {
-                DontDestroyOnLoad(gameObject);
+                MakeSingleton();
+                if (gameObject != null && transform.parent == null)
+                {
+                    DontDestroyOnLoad(gameObject);
+                }
+                _singletonState = MonoSingletonState.Initializing;
+                await OnInitialize();
+                _singletonState = MonoSingletonState.Initialized;
             }
         }
     }
