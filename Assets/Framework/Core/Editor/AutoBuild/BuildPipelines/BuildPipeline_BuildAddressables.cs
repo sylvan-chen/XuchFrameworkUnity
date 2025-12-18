@@ -16,6 +16,8 @@ namespace XuchFramework.Editor
                 return;
             }
 
+            BuildUtils.ShowProcessBar("Build Addressable", "Get settings...", 0f);
+
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings == null)
             {
@@ -23,9 +25,10 @@ namespace XuchFramework.Editor
                 return;
             }
 
-            // 设置 Addressables Active Profile
             if (!string.IsNullOrEmpty(buildConfig.AddressablesActiveProfile))
             {
+                BuildUtils.ShowProcessBar("Build Addressable", "Set active profile...", 20f);
+
                 var profileId = settings.profileSettings.GetProfileId(buildConfig.AddressablesActiveProfile);
                 if (!string.IsNullOrEmpty(profileId))
                 {
@@ -41,16 +44,21 @@ namespace XuchFramework.Editor
 
             if (buildConfig.AddressablesCleanBuild)
             {
+                BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 30f);
+
                 AddressableAssetSettings.CleanPlayerContent();
                 BuildCache.PurgeCache(false);
             }
 
             AssetDatabase.SaveAssets();
 
+            BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 50f);
             AddressableAssetSettings.BuildPlayerContent();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            BuildUtils.ShowProcessBar("Build Addressable", "Done!", 100f);
         }
     }
 }
