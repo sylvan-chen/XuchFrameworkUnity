@@ -1,5 +1,4 @@
 using System.IO;
-using XuchFramework.Core.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +16,7 @@ namespace XuchFramework.Editor
         private void OnEnable()
         {
             _luaScriptsDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.LuaScriptsDirectory));
-            _encryptedLuaScriptsOutputDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.EncryptedLuaSciptsOutputDirectory));
+            _encryptedLuaScriptsOutputDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.EncryptedLuaScriptsOutputDirectory));
             _ignoredDirectoryNames = serializedObject.FindProperty(nameof(LuaBuildProfile.IgnoredDirectoryNames));
             _addressableGroupNames = serializedObject.FindProperty(nameof(LuaBuildProfile.AddressableGroupName));
             _addressableLabels = serializedObject.FindProperty(nameof(LuaBuildProfile.AddressableLabel));

@@ -127,22 +127,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1275800169281455356, guid: d4f93402a807b87459dae96c08dfbbef, type: 3}
-      propertyPath: _startupProcedureTypeName
-      value: XuchFramework.Core.Procedures.ProcedureStartup
-      objectReference: {fileID: 0}
-    - target: {fileID: 1275800169281455356, guid: d4f93402a807b87459dae96c08dfbbef, type: 3}
-      propertyPath: _availableProcedureTypeNames.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1275800169281455356, guid: d4f93402a807b87459dae96c08dfbbef, type: 3}
-      propertyPath: '_availableProcedureTypeNames.Array.data[0]'
-      value: XuchFramework.Core.Procedures.ProcedureEnterGame
-      objectReference: {fileID: 0}
-    - target: {fileID: 1275800169281455356, guid: d4f93402a807b87459dae96c08dfbbef, type: 3}
-      propertyPath: '_availableProcedureTypeNames.Array.data[1]'
-      value: XuchFramework.Core.Procedures.ProcedureStartup
-      objectReference: {fileID: 0}
     - target: {fileID: 5620120453119883301, guid: d4f93402a807b87459dae96c08dfbbef, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

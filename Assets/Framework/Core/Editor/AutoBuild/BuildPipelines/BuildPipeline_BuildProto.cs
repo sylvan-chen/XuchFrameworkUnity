@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using XuchFramework.Core;
 using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
@@ -10,62 +12,75 @@ namespace XuchFramework.Editor
     {
         public static void Run(BuildConfig buildConfig)
         {
-            if (!buildConfig.BuildProto)
-                return;
-
-            BuildUtils.ShowProcessBar("构建 Proto", "加载配置...", 0f);
-
-            var profile = Resources.Load<ProtoBuildProfile>("ProtoBuildProfile") ?? throw new FileNotFoundException("ProtoBuildProfile not found");
-
-            var protosDirectory = profile.ProtosDirectory;
-            var encryptedProtoOutputDirectory = profile.EncryptedProtoOutputDirectory;
-            var ignoredDirectories = profile.IgnoredDirectoryNames;
-
-            BuildUtils.ShowProcessBar("构建 Proto", "清理旧输出目录...", 0.1f);
-            if (Directory.Exists(encryptedProtoOutputDirectory))
+            if (buildConfig.BuildProto)
             {
-                Directory.Delete(encryptedProtoOutputDirectory, true);
+                BuildProtoFiles();
             }
-            Directory.CreateDirectory(encryptedProtoOutputDirectory);
+        }
 
-            AssetDatabase.Refresh();
-
-            BuildUtils.ShowProcessBar("构建 Proto", "扫描所有 Proto 文件...", 0.2f);
-            var protoFilePaths = Directory.GetFiles(protosDirectory, "*.proto", SearchOption.AllDirectories);
-
-            var processedCount = 0;
-            var totalCount = protoFilePaths.Length;
-
-            foreach (var protoPath in protoFilePaths)
+        public static void BuildProtoFiles()
+        {
+            try
             {
-                processedCount++;
-                var progress = 0.2f + (processedCount / (float)totalCount) * 0.5f;
-                var fileName = Path.GetFileName(protoPath);
-                BuildUtils.ShowProcessBar("构建 Proto", $"加密 Proto 文件 ({processedCount}/{totalCount}): {fileName}", progress);
+                BuildUtils.ShowProcessBar("Build proto files", "Loading proto build profile...", 0f);
 
-                if (ignoredDirectories.Any(ignoredPath => protoPath.Contains(ignoredPath)))
+                var profile = Resources.Load<ProtoBuildProfile>("ProtoBuildProfile")
+                              ?? throw new FileNotFoundException("ProtoBuildProfile not found");
+
+                var protosDirectory = profile.ProtosDirectory;
+                var encryptedProtoOutputDirectory = profile.EncryptedProtoOutputDirectory;
+                var ignoredDirectories = profile.IgnoredDirectoryNames;
+
+                BuildUtils.ShowProcessBar("Build proto files", "Clean the old output directory...", 0.1f);
+                if (Directory.Exists(encryptedProtoOutputDirectory))
                 {
-                    continue;
+                    Directory.Delete(encryptedProtoOutputDirectory, true);
+                }
+                Directory.CreateDirectory(encryptedProtoOutputDirectory);
+
+                AssetDatabase.Refresh();
+
+                BuildUtils.ShowProcessBar("Build proto files", "Scanning Lua scripts...", 0.2f);
+                var protoFilePaths = Directory.GetFiles(protosDirectory, "*.proto", SearchOption.AllDirectories);
+
+                var processedCount = 0;
+                var totalCount = protoFilePaths.Length;
+
+                foreach (var protoPath in protoFilePaths)
+                {
+                    processedCount++;
+                    var progress = 0.2f + (processedCount / (float)totalCount) * 0.5f;
+                    var fileName = Path.GetFileName(protoPath);
+                    BuildUtils.ShowProcessBar("Build proto files", $"Encrypting proto files ({processedCount}/{totalCount}): {fileName}", progress);
+
+                    if (ignoredDirectories.Any(ignoredPath => protoPath.Contains(ignoredPath)))
+                    {
+                        continue;
+                    }
+
+                    var protoCode = FileHelper.ReadAllTextSafe(protoPath);
+                    var encryptedProtoCode = EncryptionHelper.Encrypt(protoCode);
+                    var saveFileName = Path.GetFileNameWithoutExtension(protoPath) + ".bytes";
+                    var encryptedFilePath = Path.Combine(encryptedProtoOutputDirectory, saveFileName);
+                    FileHelper.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
                 }
 
-                var protoCode = FileHelper.ReadAllTextSafe(protoPath);
-                var encryptedProtoCode = EncryptionHelper.Encrypt(protoCode);
-                var saveFileName = Path.GetFileNameWithoutExtension(protoPath) + ".bytes";
-                var encryptedFilePath = Path.Combine(encryptedProtoOutputDirectory, saveFileName);
-                FileHelper.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
+                AssetDatabase.Refresh();
+
+                BuildUtils.ShowProcessBar("Build proto files", "Add to Addressable group...", 0.85f);
+                var projectRoot = Path.GetDirectoryName(Application.dataPath);
+                var assetDirectory = Path.GetRelativePath(projectRoot, encryptedProtoOutputDirectory);
+                BuildUtils.AddToAddressableGroup(assetDirectory, profile.AddressableGroupName, profile.AddressableLabel);
+
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+
+                BuildUtils.ShowProcessBar("Build proto files", "Done!", 1f);
             }
-
-            AssetDatabase.Refresh();
-
-            BuildUtils.ShowProcessBar("构建 Proto", "添加到 Addressable 组...", 0.85f);
-            var projectRoot = Path.GetDirectoryName(Application.dataPath);
-            var assetDirectory = Path.GetRelativePath(projectRoot, encryptedProtoOutputDirectory);
-            BuildUtils.AddToAddressableGroup(assetDirectory, profile.AddressableGroupName, profile.AddressableLabel);
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            BuildUtils.ShowProcessBar("构建 Proto", "完成！", 1f);
+            catch (Exception e)
+            {
+                Log.Error($"[BuildProtoFiles] Failed to build proto files: {e.Message}\n{e.StackTrace}");
+            }
         }
     }
 }

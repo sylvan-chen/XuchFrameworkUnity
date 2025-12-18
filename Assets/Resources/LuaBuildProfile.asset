@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LuaBuildProfile
   m_EditorClassIdentifier: 
   LuaScriptsDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Lua
-  EncryptedLuaSciptsOutputDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Assets/BuildGenerated/EncryptedLuaScripts
+  EncryptedLuaScriptsOutputDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Assets/BuildGenerated/EncryptedLuaScripts
   IgnoredDirectoryNames:
   - type_hints
   AddressableGroupName: luascripts

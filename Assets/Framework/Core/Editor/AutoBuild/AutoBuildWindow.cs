@@ -30,7 +30,7 @@ namespace XuchFramework.Editor
             {
                 _wordWrapStyle ??= new GUIStyle(EditorStyles.textArea)
                 {
-                    // 启用自动换行
+                    // Auto size height
                     wordWrap = true
                 };
                 return _wordWrapStyle;
@@ -96,19 +96,19 @@ namespace XuchFramework.Editor
         {
             EditorGUILayout.Space(10);
 
-            // 标题
+            // Title
             GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
             {
                 fontSize = 16,
                 alignment = TextAnchor.MiddleCenter
             };
-            EditorGUILayout.LabelField("自动构建工具", titleStyle);
+            EditorGUILayout.LabelField("Auto Builder", titleStyle);
 
             EditorGUILayout.Space(10);
             DrawHorizontalLine();
             EditorGUILayout.Space(10);
 
-            // 工具栏：配置选择和操作按钮
+            // Toolbar
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField("Config:", GUILayout.Width(50));
@@ -130,7 +130,7 @@ namespace XuchFramework.Editor
                     EditorGUILayout.LabelField("No config available", EditorStyles.helpBox);
                 }
 
-                // 创建按钮
+                // Create button
                 GUI.backgroundColor = new Color(0.3f, 0.7f, 1f);
                 if (GUILayout.Button("Create", GUILayout.Width(60)))
                 {
@@ -140,7 +140,7 @@ namespace XuchFramework.Editor
 
                 using (new EditorGUI.DisabledGroupScope(_buildConfigs.Count == 0))
                 {
-                    // 删除按钮
+                    // Delete button
                     GUI.backgroundColor = new Color(1f, 0.4f, 0.4f);
                     if (GUILayout.Button("Delete", GUILayout.Width(60)))
                     {
@@ -148,7 +148,7 @@ namespace XuchFramework.Editor
                     }
                     GUI.backgroundColor = Color.white;
 
-                    // 刷新按钮
+                    // Refresh button
                     if (GUILayout.Button("Refresh", GUILayout.Width(60)))
                     {
                         SaveCurrentConfig();
@@ -167,7 +167,7 @@ namespace XuchFramework.Editor
                 return;
             }
 
-            // 显示配置详情
+            // Draw the main area
             using (var scroll = new EditorGUILayout.ScrollViewScope(_scrollPosition))
             {
                 _scrollPosition = scroll.scrollPosition;
@@ -182,7 +182,7 @@ namespace XuchFramework.Editor
             DrawHorizontalLine();
             EditorGUILayout.Space(10);
 
-            // 构建按钮
+            // Build button
             using (new EditorGUI.DisabledGroupScope(_currentConfig == null))
             {
                 GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
@@ -209,7 +209,7 @@ namespace XuchFramework.Editor
             Event e = Event.current;
             if (e.type == EventType.MouseDown && e.button == 0)
             {
-                // 如果没有控件被激活(hotControl == 0),说明点击了空白区域
+                // hotControl == 0 means clicked on empty space
                 if (GUIUtility.hotControl == 0)
                 {
                     GUI.FocusControl(null);
@@ -224,7 +224,7 @@ namespace XuchFramework.Editor
             string configName = "BuildConfig_New";
             int counter = 1;
 
-            // 确保 Resources 文件夹存在
+            // Make sure 'Resources' folder exists
             string resourcesPath = "Assets/Resources";
             if (!AssetDatabase.IsValidFolder(resourcesPath))
             {
@@ -232,7 +232,7 @@ namespace XuchFramework.Editor
                 AssetDatabase.CreateFolder(parentFolder, "Resources");
             }
 
-            // 生成唯一名称
+            // Unique name check
             string assetPath = $"{resourcesPath}/{configName}.asset";
             while (File.Exists(assetPath))
             {
@@ -241,7 +241,6 @@ namespace XuchFramework.Editor
                 counter++;
             }
 
-            // 创建新配置
             BuildConfig newConfig = CreateInstance<BuildConfig>();
             newConfig.BuildTarget = EditorUserBuildSettings.activeBuildTarget;
             var projRoot = Path.GetDirectoryName(Application.dataPath) ?? "Assets/..";
@@ -262,7 +261,7 @@ namespace XuchFramework.Editor
 
             LoadBuildConfigs();
 
-            // 选择新创建的配置
+            // Select the newly created config
             _selectedConfigIndex = _buildConfigs.IndexOf(newConfig);
             if (_selectedConfigIndex >= 0)
             {
@@ -307,7 +306,6 @@ namespace XuchFramework.Editor
         {
             _serializedConfig.Update();
 
-            // 基本信息
             DrawSection(
                 "Basic Information",
                 () =>
@@ -339,7 +337,6 @@ namespace XuchFramework.Editor
                     EditorGUILayout.PropertyField(_serializedConfig.FindProperty(nameof(BuildConfig.BuildName)));
                 });
 
-            // 应用信息
             DrawSection(
                 "Application Information",
                 () =>
@@ -361,7 +358,6 @@ namespace XuchFramework.Editor
                     }
                 });
 
-            // 资源构建选项
             DrawSection(
                 "Resource Options",
                 () =>
@@ -412,7 +408,6 @@ namespace XuchFramework.Editor
                     }
                 });
 
-            // 宏定义
             DrawSection(
                 "Define Symbols",
                 () =>
@@ -438,7 +433,6 @@ namespace XuchFramework.Editor
                     GUILayout.FlexibleSpace();
                 });
 
-            // 调试选项
             DrawSection(
                 "Debug Options",
                 () =>
@@ -454,7 +448,6 @@ namespace XuchFramework.Editor
                     }
                 });
 
-            // 压缩选项
             DrawSection(
                 "Compression Options",
                 () =>
@@ -464,7 +457,6 @@ namespace XuchFramework.Editor
                         new GUIContent("Compression Method"));
                 });
 
-            // Android 特定设置
             if (_currentConfig.BuildTarget == BuildTarget.Android)
             {
                 DrawSection(

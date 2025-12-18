@@ -128,7 +128,7 @@ namespace XuchFramework.Core.Utils
         {
             try
             {
-                CreateDirectoryForFileIfNotExist(path);
+                CreateFileIfNotExist(path);
                 File.WriteAllText(path, content, encoding);
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ namespace XuchFramework.Core.Utils
         {
             try
             {
-                CreateDirectoryForFileIfNotExist(path);
+                CreateFileIfNotExist(path);
                 byte[] bytes = encoding.GetBytes(content);
                 await File.WriteAllBytesAsync(path, bytes).AsUniTask();
             }
@@ -160,7 +160,7 @@ namespace XuchFramework.Core.Utils
         {
             try
             {
-                CreateDirectoryForFileIfNotExist(path);
+                CreateFileIfNotExist(path);
                 File.WriteAllBytes(path, bytes);
             }
             catch (Exception ex)
@@ -173,7 +173,7 @@ namespace XuchFramework.Core.Utils
         {
             try
             {
-                CreateDirectoryForFileIfNotExist(path);
+                CreateFileIfNotExist(path);
                 await File.WriteAllBytesAsync(path, bytes).AsUniTask();
             }
             catch (Exception ex)
@@ -182,11 +182,7 @@ namespace XuchFramework.Core.Utils
             }
         }
 
-        /// <summary>
-        /// 如果文件所在的目录不存在，则创建目录
-        /// </summary>
-        /// <param name="path">文件路径</param>
-        public static void CreateDirectoryForFileIfNotExist(string path)
+        public static void CreateFileIfNotExist(string path)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path), "[FileHelper] File path cannot be null or empty.");
@@ -195,10 +191,6 @@ namespace XuchFramework.Core.Utils
             CreateDirectoryIfNotExist(directory);
         }
 
-        /// <summary>
-        /// 如果目录不存在，则创建目录
-        /// </summary>
-        /// <param name="directory">目录路径</param>
         public static void CreateDirectoryIfNotExist(string directory)
         {
             if (string.IsNullOrEmpty(directory))

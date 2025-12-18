@@ -15,18 +15,18 @@ MonoBehaviour:
   BuildTarget: 19
   OutputDirectory: D:\Workspace\UnityProjects\XuchFrameworkUnity\BuildTargets\StandaloneWindows64
   BuildName: GameAlpha
-  AppIdentifier: com.Unity-Technologies.com.unity.template.urp-blank
+  AppIdentifier: com.gamealpha.xuch
   AppVersion: 0.1.0
   BundleVersionCode: 0
   BundleNumber: 
   CompanyName: DefaultCompany
   ProductName: My project
-  BuildLua: 1
+  BuildLua: 0
   BuildAddressables: 1
   AddressablesCleanBuild: 1
   AddressablesActiveProfile: Default
-  BuildProto: 1
-  MacroDefinitions: DOTWEEN
+  BuildProto: 0
+  MacroDefinitions: ENABLE_LOG;ENABLE_LOG_DEBUG;DOTWEEN
   DevelopmentBuild: 0
   AutoconnectProfiler: 0
   DeepProfilingSurpport: 0

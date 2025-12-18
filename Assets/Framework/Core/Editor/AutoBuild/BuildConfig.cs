@@ -41,7 +41,7 @@ namespace XuchFramework.Editor
 
         public PlayerCompressionType PlayerCompression;
 
-        // For Andoird
+        // For Android
         public int DebugSymbols;
         public bool UseCustomKeystore = false;
         public string KeystoreName;

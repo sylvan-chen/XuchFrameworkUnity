@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c8e518154734cb7a86864a710bada01, type: 3}
   m_Name: ProtoBuildProfile
   m_EditorClassIdentifier: 
-  ProtosDirectory: ../Lua/csproto
-  EncryptedProtoOutputDirectory: ./BuildGenerated/EncryptedProtos
+  ProtosDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Lua/csproto
+  EncryptedProtoOutputDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Assets/BuildGenerated/EncryptedProtos
   IgnoredDirectoryNames: []
   AddressableGroupName: protos
-  AddressableLabel: luaproto
+  AddressableLabel: proto

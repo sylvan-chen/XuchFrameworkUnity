@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEngine;
 using XuchFramework.Core;
 
 namespace XuchFramework.Editor
@@ -13,15 +13,16 @@ namespace XuchFramework.Editor
         {
             var scenes = EditorBuildSettings.scenes.Where((scene) => scene.enabled).Select(scene => scene.path).ToArray();
 
-            if (Directory.Exists(buildConfig.OutputDirectory))
-            {
-                Directory.Delete(buildConfig.OutputDirectory, true);
-            }
-            Directory.CreateDirectory(buildConfig.OutputDirectory);
+            var outputDir = GetBuildOutputDirectory(buildConfig);
 
-            var outputPath = GetBuildOutputPath(buildConfig);
+            if (Directory.Exists(outputDir))
+            {
+                Directory.Delete(outputDir, true);
+            }
+            Directory.CreateDirectory(outputDir);
 
             var buildOptions = GetBuildOptions(buildConfig);
+            var outputPath = GetBuildOutputPath(buildConfig);
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
@@ -35,18 +36,28 @@ namespace XuchFramework.Editor
 
             if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Log.Info($"[AutoBuilder] BuildPlayer - 构建成功！输出路径: {outputPath}");
-                Log.Info($"[AutoBuilder] 构建大小: {report.summary.totalSize / (1024f * 1024f):F2} MB");
+                Log.Debug($"[AutoBuilder] BuildPlayer - Build Succeed! Output path: {outputPath}");
+                Log.Debug($"[AutoBuilder] Build size: {report.summary.totalSize / (1024f * 1024f):F2} MB");
             }
             else
             {
-                throw new Exception($"[AutoBuilder] BuildPlayer - 构建失败: {report.summary.result}");
+                throw new Exception($"[AutoBuilder] BuildPlayer - Build Failed ({report.summary.totalErrors} Errors): {report.SummarizeErrors()}");
             }
+        }
+
+        private static string GetBuildOutputDirectory(BuildConfig buildConfig)
+        {
+            var outputDir = Path.Combine(
+                buildConfig.OutputDirectory,
+                buildConfig.AppVersion,
+                $"{DateTime.Now.Year}_{DateTime.Now.Month:D2}_{DateTime.Now.Day:D2}_{DateTime.Now.Hour:D2}_{DateTime.Now.Minute:D2}_{DateTime.Now.Second:D2}");
+
+            return outputDir;
         }
 
         private static string GetBuildOutputPath(BuildConfig buildConfig)
         {
-            var outputPath = Path.Combine(buildConfig.OutputDirectory, buildConfig.BuildName);
+            var outputPath = Path.Combine(GetBuildOutputDirectory(buildConfig), buildConfig.BuildName);
 
             switch (buildConfig.BuildTarget)
             {
@@ -69,11 +80,10 @@ namespace XuchFramework.Editor
                         outputPath += ".app";
                     }
                     break;
-                case BuildTarget.iOS:
-                    // iOS 构建输出文件夹
-                    break;
-                case BuildTarget.StandaloneLinux64:
-                    // Linux 不需要扩展名
+                case BuildTarget.iOS:               // iOS Output is a directory, no extension needed
+                case BuildTarget.StandaloneLinux64: // Linux executable, no extension needed
+                default:
+                    // No special handling needed
                     break;
             }
 
@@ -84,7 +94,6 @@ namespace XuchFramework.Editor
         {
             var buildOptions = BuildOptions.None;
 
-            // 开发构建
             if (buildConfig.DevelopmentBuild)
             {
                 buildOptions |= BuildOptions.Development;
@@ -103,7 +112,6 @@ namespace XuchFramework.Editor
                 }
             }
 
-            // 压缩选项
             switch (buildConfig.PlayerCompression)
             {
                 case PlayerCompressionType.LZ4:
@@ -113,7 +121,7 @@ namespace XuchFramework.Editor
                     buildOptions |= BuildOptions.CompressWithLz4HC;
                     break;
                 default:
-                    Debug.LogError($"[BuildPipeline_BuildPlayer] 未知的 PlayerCompressionType: {buildConfig.PlayerCompression}");
+                    Log.Error($"[BuildPipeline_BuildPlayer] Unknow PlayerCompression Type: {buildConfig.PlayerCompression}");
                     break;
             }
 

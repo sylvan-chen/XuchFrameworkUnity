@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using UnityEngine;
+using XuchFramework.Core;
 
 namespace XuchFramework.Editor
 {
@@ -15,7 +15,7 @@ namespace XuchFramework.Editor
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar(title, info, progress);
 #endif
-            Debug.Log($"{title}: {info} ({progress * 100f}%)");
+            Log.Debug($"{title}: {info} ({progress * 100f}%)");
         }
 
         public static void AddToAddressableGroup(string directory, string groupName, string label)

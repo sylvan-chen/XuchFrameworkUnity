@@ -7,15 +7,15 @@ namespace XuchFramework.Editor
     {
         public static void Run(BuildConfig buildConfig)
         {
-            BuildUtils.ShowProcessBar("应用平台设置", "正在应用平台特定设置...", 0.2f);
+            BuildUtils.ShowProcessBar("Apply platform settings", "Applying...", 0.2f);
 
             if (buildConfig.BuildTarget == BuildTarget.Android)
             {
-                // 设置 Android Debug Symbols
+                // Set Android Debug Symbols
                 int symbols = 1 << buildConfig.DebugSymbols;
                 UnityEditor.Android.UserBuildSettings.DebugSymbols.level = (DebugSymbolLevel)symbols;
 
-                // 设置 Keystore 信息
+                // Set Keystore
                 PlayerSettings.Android.useCustomKeystore = buildConfig.UseCustomKeystore;
                 if (buildConfig.UseCustomKeystore)
                 {
@@ -25,22 +25,22 @@ namespace XuchFramework.Editor
                     PlayerSettings.Android.keyaliasPass = buildConfig.KeyaliasPass;
                 }
 
-                // 混淆设置
+                // Set minify options
                 PlayerSettings.Android.minifyRelease = buildConfig.MinifyRelease;
                 PlayerSettings.Android.minifyDebug = buildConfig.MinifyDebug;
 
-                // 是否分包
+                // Should split APK
                 PlayerSettings.Android.splitApplicationBinary = buildConfig.SplitApplicationBinary;
 
-                // 构建格式：AAB 或 APK
+                // Should build app bundle
                 EditorUserBuildSettings.buildAppBundle = buildConfig.BuildAppBundle;
             }
 
-            BuildUtils.ShowProcessBar("应用平台设置", "写入资源脏数据...", 0.5f);
+            BuildUtils.ShowProcessBar("Apply platform settings", "Save assets...", 0.5f);
 
             AssetDatabase.SaveAssets();
 
-            BuildUtils.ShowProcessBar("应用平台设置", "完成！", 1f);
+            BuildUtils.ShowProcessBar("Apply platform settings", "Done!", 1f);
         }
     }
 }

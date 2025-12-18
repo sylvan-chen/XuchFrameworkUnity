@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Alchemy.Inspector;
@@ -139,5 +141,12 @@ namespace XuchFramework.Core
         }
 
         private bool IsCustomEntry => _entryType == GameEntryType.CustomEntry;
+
+        [Button]
+        public void LogTime()
+        {
+            var now = DateTime.Now;
+            Log.Debug($"{now.Year}_{now.Month:D2}_{now.Day:D2}_{now.Hour:D2}_{now.Minute:D2}_{now.Second:D2}");
+        }
     }
 }

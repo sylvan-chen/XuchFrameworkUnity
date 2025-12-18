@@ -3,6 +3,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Pipeline.Utilities;
 using UnityEngine;
+using XuchFramework.Core;
 
 namespace XuchFramework.Editor
 {
@@ -18,7 +19,7 @@ namespace XuchFramework.Editor
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings == null)
             {
-                Debug.LogError("[BuildPipline_BuildAddressables] Addressable Asset Settings 未找到，跳过 Addressables 构建");
+                Log.Error("[BuildPipeline_BuildAddressables] AddressableAssetSettings not found, skip Addressables process");
                 return;
             }
 
@@ -33,12 +34,11 @@ namespace XuchFramework.Editor
                 }
                 else
                 {
-                    Debug.LogWarning(
-                        $"[BuildPipline_BuildAddressables] 未找到 Addressables Profile: {buildConfig.AddressablesActiveProfile}，使用当前 Profile: {settings.profileSettings.GetProfileName(settings.activeProfileId)}");
+                    Log.Warning(
+                        $"[BuildPipeline_BuildAddressables] No active Addressables profile: {buildConfig.AddressablesActiveProfile}, use current profile: {settings.profileSettings.GetProfileName(settings.activeProfileId)}");
                 }
             }
 
-            // Clean Build
             if (buildConfig.AddressablesCleanBuild)
             {
                 AddressableAssetSettings.CleanPlayerContent();

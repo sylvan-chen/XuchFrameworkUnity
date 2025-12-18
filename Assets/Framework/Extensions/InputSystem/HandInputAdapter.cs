@@ -1,11 +1,8 @@
 using UnityEngine.InputSystem;
-using XuchFramework.Core.Internal;
+using XuchFramework.Internal;
 
 namespace XuchFramework.Core
 {
-    /// <summary>
-    /// XR 输入适配器
-    /// </summary>
     public class HandInputAdapter : GameInputActions.IHandActions
     {
         private readonly GameInputActions _gameInput;

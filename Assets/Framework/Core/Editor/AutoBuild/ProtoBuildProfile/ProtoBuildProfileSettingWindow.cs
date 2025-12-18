@@ -36,18 +36,18 @@ namespace XuchFramework.Editor
                 _ignoredDirectoriesStr = StringHelper.ConvertArrayToStr(_protoBuildProfile.IgnoredDirectoryNames);
         }
 
-        [MenuItem("Build/Proto 构建配置", priority = 51)]
+        [MenuItem("Build/Proto Build Profile", priority = 51)]
         public static void ShowWindow()
         {
-            GetWindow<ProtoBuildProfileSettingWindow>("Proto 构建配置");
+            GetWindow<ProtoBuildProfileSettingWindow>("Proto Build Profile");
         }
 
         private void OnGUI()
         {
             EditorGUILayout.Space(20);
 
-            EditorGUILayout.LabelField("Proto 文件目录", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("- Proto 文件存放的根目录");
+            EditorGUILayout.LabelField("Source Proto Directory", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("- Root directory where proto files are stored");
             using (new EditorGUILayout.HorizontalScope())
             {
                 _protoBuildProfile.ProtosDirectory = GetFullRegularPath(_protoBuildProfile.ProtosDirectory);
@@ -61,7 +61,7 @@ namespace XuchFramework.Editor
                     var currentDir = Directory.GetCurrentDirectory();
                     try
                     {
-                        var selectedPath = EditorUtility.OpenFolderPanel("选择 proto 文件目录", Path.GetDirectoryName(Application.dataPath), "");
+                        var selectedPath = EditorUtility.OpenFolderPanel("Choos Proto Directory", Path.GetDirectoryName(Application.dataPath), "");
                         if (!string.IsNullOrEmpty(selectedPath))
                         {
                             _protoBuildProfile.ProtosDirectory = GetFullRegularPath(selectedPath);
@@ -76,9 +76,9 @@ namespace XuchFramework.Editor
 
             EditorGUILayout.Space(10);
 
-            EditorGUILayout.LabelField("加密 proto 文件输出目录", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("- 资源构建时会自动加密 proto 文件并存放到该目录中");
-            EditorGUILayout.LabelField("- 必须在 Assets/ 之内，以便加入 Addressable group");
+            EditorGUILayout.LabelField("Output Directory", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("- Proto files will be encrypted and output to this directory during build process");
+            EditorGUILayout.LabelField("- Must be inside the 'Assets/' folder to be included in Addressable group");
             using (new EditorGUILayout.HorizontalScope())
             {
                 _protoBuildProfile.EncryptedProtoOutputDirectory = GetFullRegularPath(_protoBuildProfile.EncryptedProtoOutputDirectory);
@@ -92,7 +92,7 @@ namespace XuchFramework.Editor
                     var currentDir = Directory.GetCurrentDirectory();
                     try
                     {
-                        var selectedPath = EditorUtility.OpenFolderPanel("选择加密 proto 文件输出目录", Application.dataPath, "");
+                        var selectedPath = EditorUtility.OpenFolderPanel("Choose Output Directory", Application.dataPath, "");
                         if (!string.IsNullOrEmpty(selectedPath))
                         {
                             _protoBuildProfile.EncryptedProtoOutputDirectory = GetFullRegularPath(selectedPath);
@@ -107,30 +107,30 @@ namespace XuchFramework.Editor
 
             EditorGUILayout.Space(10);
 
-            EditorGUILayout.LabelField("构建时要忽略的 proto 文件目录名", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("- 多个目录名用空格分隔");
-            EditorGUILayout.LabelField("- 例如: test temp");
+            EditorGUILayout.LabelField("Ignore Directory Names", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("- Split directory names with space");
+            EditorGUILayout.LabelField("- eg. test temp");
             _ignoredDirectoriesStr = EditorGUILayout.TextField(_ignoredDirectoriesStr, GUILayout.MinWidth(200));
             _protoBuildProfile.IgnoredDirectoryNames = StringHelper.ConvertStrToArray(_ignoredDirectoriesStr);
 
             EditorGUILayout.Space(10);
 
-            EditorGUILayout.LabelField("构建时要加入的 Addressable group 名字", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Addressable Group", EditorStyles.boldLabel);
             _protoBuildProfile.AddressableGroupName = EditorGUILayout.TextField(_protoBuildProfile.AddressableGroupName);
 
             EditorGUILayout.Space(10);
 
-            EditorGUILayout.LabelField("构建时要添加的 Addressable label", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Addressable Label", EditorStyles.boldLabel);
             _protoBuildProfile.AddressableLabel = EditorGUILayout.TextField(_protoBuildProfile.AddressableLabel);
 
             EditorGUILayout.Space(20);
 
-            if (GUILayout.Button("保存设置", GUILayout.Height(40)))
+            if (GUILayout.Button("Save", GUILayout.Height(40)))
             {
                 SaveCurrentProfile();
             }
 
-            if (GUILayout.Button("恢复默认设置", GUILayout.Height(30)))
+            if (GUILayout.Button("Reset", GUILayout.Height(30)))
             {
                 _protoBuildProfile.ProtosDirectory = DEFAULT_PROTOS_DIRECTORY;
                 _protoBuildProfile.EncryptedProtoOutputDirectory = DEFAULT_ENCRYPTED_PROTO_OUTPUT_DIRECTORY;
@@ -142,6 +142,18 @@ namespace XuchFramework.Editor
                 _protoBuildProfile.AddressableLabel = DEFAULT_ADDRESSABLE_LABEL;
 
                 SaveCurrentProfile();
+            }
+
+            Event e = Event.current;
+            if (e.type == EventType.MouseDown && e.button == 0)
+            {
+                // hotControl == 0 means clicked on empty space
+                if (GUIUtility.hotControl == 0)
+                {
+                    GUI.FocusControl(null);
+                    SaveCurrentProfile();
+                    Repaint();
+                }
             }
         }
 

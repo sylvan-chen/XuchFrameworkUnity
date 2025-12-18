@@ -1,6 +1,6 @@
 using System;
 using UnityEditor;
-using UnityEngine;
+using XuchFramework.Core;
 
 namespace XuchFramework.Editor
 {
@@ -8,9 +8,6 @@ namespace XuchFramework.Editor
     {
         private static BuildConfig _currentConfig;
 
-        /// <summary>
-        /// 开始构建
-        /// </summary>
         public static void StartBuild(BuildConfig buildConfig)
         {
             try
@@ -18,7 +15,7 @@ namespace XuchFramework.Editor
                 _currentConfig = buildConfig;
                 if (_currentConfig == null)
                 {
-                    throw new ArgumentNullException(nameof(buildConfig), "[AutoBuilder] 构建配置不能为空");
+                    throw new ArgumentNullException(nameof(buildConfig), "[AutoBuilder] BuildConfig cannot be null");
                 }
 
                 BuildPipeline_ApplyBuildConfig.Run(_currentConfig);
@@ -30,7 +27,7 @@ namespace XuchFramework.Editor
             }
             catch (Exception e)
             {
-                Debug.LogError($"[AutoBuilder] 构建失败: {e.Message}\n{e.StackTrace}");
+                Log.Error($"[AutoBuilder] Build Failed: {e.Message}\n{e.StackTrace}");
                 throw;
             }
             finally
