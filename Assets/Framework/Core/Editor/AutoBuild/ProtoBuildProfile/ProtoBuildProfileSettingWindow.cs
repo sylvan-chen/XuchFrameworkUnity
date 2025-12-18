@@ -11,8 +11,8 @@ namespace XuchFramework.Editor
         private const string DEFAULT_PROTOS_DIRECTORY = "../Lua/csproto";
         private const string DEFAULT_ENCRYPTED_PROTO_OUTPUT_DIRECTORY = "./BuildGenerated/EncryptedProtos";
         private readonly string[] DEFAULT_IGNORED_DIRECTORIES = { };
-        private const string DEFAULT_ADDRESSABLE_GROUP_NAME = "Protos";
-        private const string DEFAULT_ADDRESSABLE_LABEL = "luaproto";
+        private const string DEFAULT_ADDRESSABLE_GROUP_NAME = "protos";
+        private const string DEFAULT_ADDRESSABLE_LABEL = "proto";
 
         private ProtoBuildProfile _protoBuildProfile;
         private string _ignoredDirectoriesStr = string.Empty;

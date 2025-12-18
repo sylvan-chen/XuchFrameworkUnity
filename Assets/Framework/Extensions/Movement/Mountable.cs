@@ -33,7 +33,7 @@ namespace XuchFramework.Gameplay
         [Serializable]
         public class UnityMountEvent : UnityEvent<HandPlayer, Mountable> { }
 
-        [AutoHeader("Mountable", "mountable_logo")]
+        [AutoHeader("Mountable", "mountable_header_icon")]
         public bool IgnoreMe;
 
         [Space(5)]

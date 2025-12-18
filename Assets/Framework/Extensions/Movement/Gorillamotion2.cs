@@ -8,7 +8,7 @@ namespace XuchFramework.Gameplay
     {
         public const float GORILLA_TOUCHING_PRECISION = 0.995f;
 
-        [AutoHeader("Gorillamotion", "gorilla_logo")]
+        [AutoHeader("Gorillamotion", "gorilla_header_icon")]
         public bool IgnoreMe;
 
         [Space(5)]

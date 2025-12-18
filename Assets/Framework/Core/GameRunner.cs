@@ -2,28 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(GameProcedure))]
     [AddComponentMenu("XuchFramework/Game Runner")]
     public sealed class GameRunner : MonoSingletonPersistent<GameRunner>
     {
-        private readonly List<ManagerBase> _cachedManagers = new();
-
-        private void Start()
+        public enum GameEntryType
         {
-            EnterGame().Forget();
+            CustomEntry,
+            Procedure
         }
 
-        private async UniTaskVoid EnterGame()
+        [Space(5)]
+        [SerializeField]
+        private GameEntryType _entryType = GameEntryType.CustomEntry;
+        [SerializeField, ShowIf(nameof(IsCustomEntry))]
+        private GameEntryBase _gameEntry;
+
+        private readonly List<ManagerBase> _cachedManagers = new();
+
+        protected override async UniTask OnInitialize()
         {
             // 1. Initialize core managers
             await LaunchManagers("[core_managers]");
-            // 2. Start procedure
-            GameProcedure.Instance.Startup();
+
+            // 2. Enter game
+            if (_entryType == GameEntryType.CustomEntry)
+                _gameEntry.EnterGame().Forget();
+            else
+                GameProcedure.Instance.Startup();
         }
 
         /// <summary>
@@ -41,16 +52,18 @@ namespace XuchFramework.Core
             var managers = managerRoot.GetComponentsInChildren<ManagerBase>();
             Log.Debug($"[GameRunner] Found {managers.Length} managers under '{rootName}'");
 
-            foreach (var manager in managers)
-            {
-                RegisterManager(manager);
-                await manager.Initialize();
-            }
+            var initializeTasks = new List<UniTask>();
+            var postInitializeTasks = new List<UniTask>();
 
             foreach (var manager in managers)
             {
-                await manager.PostInitialize();
+                RegisterManager(manager);
+                initializeTasks.Add(manager.Initialize());
+                postInitializeTasks.Add(manager.PostInitialize());
             }
+
+            await UniTask.WhenAll(initializeTasks);
+            await UniTask.WhenAll(postInitializeTasks);
         }
 
         /// <summary>
@@ -124,5 +137,7 @@ namespace XuchFramework.Core
                 }
             }
         }
+
+        private bool IsCustomEntry => _entryType == GameEntryType.CustomEntry;
     }
 }

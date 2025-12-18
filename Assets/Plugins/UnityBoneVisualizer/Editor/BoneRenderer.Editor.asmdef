@@ -1,11 +1,8 @@
 {
-    "name": "XuchFramework.Editor",
+    "name": "BoneRenderer.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:51a1f028edbfd104e85450f0308eac1c",
-        "GUID:69448af7b92c7f342b298e06a37122aa",
-        "GUID:c5ecc461727906345a35491a0440694f",
-        "GUID:88be65f96b86746888c927a5c8ff3534"
+        "GUID:73b2785bb16270b4abdb3ab39f47288a"
     ],
     "includePlatforms": [
         "Editor"

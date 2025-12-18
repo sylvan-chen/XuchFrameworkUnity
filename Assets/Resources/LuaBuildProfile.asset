@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbd8c5e9d4b549d294cf555402918d89, type: 3}
   m_Name: LuaBuildProfile
   m_EditorClassIdentifier: 
-  LuaScriptsDirectory: ../Lua
-  EncryptedLuaSciptsOutputDirectory: ./BuildGenerated/EncryptedLuaScripts
+  LuaScriptsDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Lua
+  EncryptedLuaSciptsOutputDirectory: D:/Workspace/UnityProjects/XuchFrameworkUnity/Assets/BuildGenerated/EncryptedLuaScripts
   IgnoredDirectoryNames:
   - type_hints
   AddressableGroupName: luascripts

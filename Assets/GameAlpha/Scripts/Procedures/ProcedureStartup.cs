@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
-using UnityEngine;
+using XuchFramework.Core;
 
-namespace XuchFramework.Core.Procedures
+namespace Gameplay.Procedures
 {
     public class ProcedureStartup : ProcedureBase
     {

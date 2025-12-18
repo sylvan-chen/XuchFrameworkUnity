@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
+using XuchFramework.Core;
 
-namespace XuchFramework.Core.Procedures
+namespace Gameplay.Procedures
 {
     public class ProcedureEnterGame : ProcedureBase
     {

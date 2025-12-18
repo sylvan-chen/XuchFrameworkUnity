@@ -9,7 +9,7 @@ namespace XuchFramework.Editor
     public class LuaBuildProfileInspector : InspectorBase
     {
         private SerializedProperty _luaScriptsDirectory;
-        private SerializedProperty _encryptedLuaSciptsOutputDirectory;
+        private SerializedProperty _encryptedLuaScriptsOutputDirectory;
         private SerializedProperty _ignoredDirectoryNames;
         private SerializedProperty _addressableGroupNames;
         private SerializedProperty _addressableLabels;
@@ -17,7 +17,7 @@ namespace XuchFramework.Editor
         private void OnEnable()
         {
             _luaScriptsDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.LuaScriptsDirectory));
-            _encryptedLuaSciptsOutputDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.EncryptedLuaSciptsOutputDirectory));
+            _encryptedLuaScriptsOutputDirectory = serializedObject.FindProperty(nameof(LuaBuildProfile.EncryptedLuaSciptsOutputDirectory));
             _ignoredDirectoryNames = serializedObject.FindProperty(nameof(LuaBuildProfile.IgnoredDirectoryNames));
             _addressableGroupNames = serializedObject.FindProperty(nameof(LuaBuildProfile.AddressableGroupName));
             _addressableLabels = serializedObject.FindProperty(nameof(LuaBuildProfile.AddressableLabel));
@@ -33,7 +33,7 @@ namespace XuchFramework.Editor
             UpdatePathProperties();
 
             EditorGUILayout.PropertyField(_luaScriptsDirectory);
-            EditorGUILayout.PropertyField(_encryptedLuaSciptsOutputDirectory);
+            EditorGUILayout.PropertyField(_encryptedLuaScriptsOutputDirectory);
             EditorGUILayout.PropertyField(_ignoredDirectoryNames);
             EditorGUILayout.PropertyField(_addressableGroupNames);
             EditorGUILayout.PropertyField(_addressableLabels);
@@ -46,10 +46,10 @@ namespace XuchFramework.Editor
         private void UpdatePathProperties()
         {
             _luaScriptsDirectory.stringValue = Path.GetFullPath(_luaScriptsDirectory.stringValue, Application.dataPath);
-            _encryptedLuaSciptsOutputDirectory.stringValue = Path.GetFullPath(_encryptedLuaSciptsOutputDirectory.stringValue, Application.dataPath);
+            _encryptedLuaScriptsOutputDirectory.stringValue = Path.GetFullPath(_encryptedLuaScriptsOutputDirectory.stringValue, Application.dataPath);
 
             _luaScriptsDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_luaScriptsDirectory.stringValue);
-            _encryptedLuaSciptsOutputDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_encryptedLuaSciptsOutputDirectory.stringValue);
+            _encryptedLuaScriptsOutputDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_encryptedLuaScriptsOutputDirectory.stringValue);
         }
     }
 }

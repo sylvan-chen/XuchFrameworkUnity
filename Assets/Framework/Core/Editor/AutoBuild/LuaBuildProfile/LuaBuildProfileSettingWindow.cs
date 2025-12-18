@@ -11,7 +11,7 @@ namespace XuchFramework.Editor
         private const string DEFAULT_LUA_SCRIPTS_DIRECTORY = "../Lua";
         private const string DEFAULT_ENCRYPTED_LUA_SCRIPTS_OUTPUT_DIRECTORY = "./BuildGenerated/EncryptedLuaScripts";
         private readonly string[] DEFAULT_IGNORED_DIRECTORIES = { "type_hints" };
-        private const string DEFAULT_ADDRESSABLE_GROUP_NAME = "LuaScripts";
+        private const string DEFAULT_ADDRESSABLE_GROUP_NAME = "luascripts";
         private const string DEFAULT_ADDRESSABLE_LABEL = "luascript";
 
         private LuaBuildProfile _luaBuildProfile;

@@ -321,9 +321,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94b9ab2b1749483e97b05a49217b0b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _autoLoadAllBanks: 0
-  _bankAddressLabel: bank
-  _bankAddressPrefix: Assets/Res/Banks
+  _idleInstanceLivingDuration: 30
+  _preloadBanks: 0
+  _preloadBankNames: []
 --- !u!1 &1666202497862056965
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,10 +1112,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e8eb92e29c3054abf45d282ae4db85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startupProcedureTypeName: Xuch.Framework.Procedures.ProcedureStartup
-  _availableProcedureTypeNames:
-  - Xuch.Framework.Procedures.ProcedureEnterGame
-  - Xuch.Framework.Procedures.ProcedureStartup
+  _singletonState: 0
+  _startupProcedureTypeName: 
+  _availableProcedureTypeNames: []
 --- !u!114 &4918976352339118380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1129,6 +1128,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _singletonState: 0
+  _entryType: 0
+  _gameEntry: {fileID: 0}
 --- !u!1 &5945820264901679600
 GameObject:
   m_ObjectHideFlags: 0
