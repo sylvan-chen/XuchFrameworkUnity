@@ -8,18 +8,12 @@ using UnityEngine;
 namespace XuchFramework.Editor
 {
     /// <summary>
-    /// 顶点拆分工具
+    /// This is a tool to split skinned mesh vertices so that each vertex is only used by one sub-mesh.
+    /// This can help to apply vertex color or other per-vertex attributes without issues
     /// </summary>
-    public class VertexSpliter : EditorWindow
+    public class VertexSplitter : EditorWindow
     {
-        private List<string> _prefabDirs = new()
-        {
-            "Assets/Res/prefabs/avatar/top",
-            "Assets/Res/prefabs/avatar/bottom",
-            "Assets/Res/prefabs/avatar/suit",
-            "Assets/Res/prefabs/avatar/shoesl",
-            "Assets/Res/prefabs/avatar/shoesr",
-        };
+        private List<string> _prefabDirs = new() { "Assets/Res/prefabs" };
 
         private string _savePath = "Assets/Res/splited_meshes/";
 
@@ -39,7 +33,7 @@ namespace XuchFramework.Editor
         [MenuItem("Tools/美术工具/顶点拆分工具")]
         public static void ShowWindow()
         {
-            var window = GetWindow<VertexSpliter>("顶点拆分工具");
+            var window = GetWindow<VertexSplitter>("顶点拆分工具");
             window.minSize = new Vector2(600, 800);
             // window.CollectPrefabs();
         }

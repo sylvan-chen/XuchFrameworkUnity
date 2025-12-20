@@ -5,7 +5,7 @@ using UnityEngine;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("XuchFramework/Game Setting Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Game Setting Manager")]
     public sealed class GameSettingManager : ManagerBase
     {
         [SerializeField, Tooltip("Frame rate, -1 presents to use the platform's default frame rate")]
