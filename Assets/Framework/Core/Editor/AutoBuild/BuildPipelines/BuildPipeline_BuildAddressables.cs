@@ -27,7 +27,7 @@ namespace XuchFramework.Editor
 
             if (!string.IsNullOrEmpty(buildConfig.AddressablesActiveProfile))
             {
-                BuildUtils.ShowProcessBar("Build Addressable", "Set active profile...", 20f);
+                BuildUtils.ShowProcessBar("Build Addressable", "Set active profile...", 0.2f);
 
                 var profileId = settings.profileSettings.GetProfileId(buildConfig.AddressablesActiveProfile);
                 if (!string.IsNullOrEmpty(profileId))
@@ -44,7 +44,7 @@ namespace XuchFramework.Editor
 
             if (buildConfig.AddressablesCleanBuild)
             {
-                BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 30f);
+                BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 0.3f);
 
                 AddressableAssetSettings.CleanPlayerContent();
                 BuildCache.PurgeCache(false);
@@ -52,13 +52,13 @@ namespace XuchFramework.Editor
 
             AssetDatabase.SaveAssets();
 
-            BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 50f);
+            BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 0.5f);
             AddressableAssetSettings.BuildPlayerContent();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            BuildUtils.ShowProcessBar("Build Addressable", "Done!", 100f);
+            BuildUtils.ShowProcessBar("Build Addressable", "Done!", 1f);
         }
     }
 }

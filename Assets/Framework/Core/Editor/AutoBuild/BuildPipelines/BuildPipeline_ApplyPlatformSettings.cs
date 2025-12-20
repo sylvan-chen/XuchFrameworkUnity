@@ -1,4 +1,6 @@
-﻿using Unity.Android.Types;
+﻿#if UNITY_ANDROID
+using Unity.Android.Types;
+#endif
 using UnityEditor;
 
 namespace XuchFramework.Editor
@@ -7,6 +9,7 @@ namespace XuchFramework.Editor
     {
         public static void Run(BuildConfig buildConfig)
         {
+#if UNITY_ANDROID
             BuildUtils.ShowProcessBar("Apply platform settings", "Applying...", 0.2f);
 
             if (buildConfig.BuildTarget == BuildTarget.Android)
@@ -41,6 +44,7 @@ namespace XuchFramework.Editor
             AssetDatabase.SaveAssets();
 
             BuildUtils.ShowProcessBar("Apply platform settings", "Done!", 1f);
+#endif
         }
     }
 }
