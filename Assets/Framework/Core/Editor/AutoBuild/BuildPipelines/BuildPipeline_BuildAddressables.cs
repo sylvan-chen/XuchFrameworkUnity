@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Pipeline.Utilities;
@@ -52,13 +53,21 @@ namespace XuchFramework.Editor
 
             AssetDatabase.SaveAssets();
 
-            BuildUtils.ShowProcessBar("Build Addressable", "Clean old content...", 0.5f);
-            AddressableAssetSettings.BuildPlayerContent();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            BuildUtils.ShowProcessBar("Build Addressable", "Done!", 1f);
+            BuildUtils.ShowProcessBar("Build Addressable", "Build player content...", 0.5f);
+            try
+            {
+                AddressableAssetSettings.BuildPlayerContent();
+                BuildUtils.ShowProcessBar("Build Addressable", "Done!", 1f);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[BuildPipeline_BuildAddressables] Build Addressables failed: {e.Message}\n{e.StackTrace}");
+            }
+            finally
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
         }
     }
 }
