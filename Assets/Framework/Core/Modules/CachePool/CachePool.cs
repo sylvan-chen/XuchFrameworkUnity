@@ -6,6 +6,8 @@ namespace XuchFramework.Core
 {
     public interface ICache { }
 
+    [DisallowMultipleComponent]
+    [AddComponentMenu("XuchFramework/Modules/Cache Pool")]
     public class CachePool : ModuleBase
     {
         [SerializeField]
