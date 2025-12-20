@@ -253,7 +253,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9049402589163894786}
   m_Layer: 0
-  m_Name: '[game_managers]'
+  m_Name: '[game_modules]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -518,7 +518,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2874674597736644665}
+  m_Father: {fileID: 95789817124172041}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6174533079202487817
 MonoBehaviour:
@@ -532,7 +532,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb038b391de21104ab5e8ff5e4db6fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _singletonState: 0
   _cacheExpireTime: 60
 --- !u!1 &3754499831547693776
 GameObject:
@@ -1061,7 +1060,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2400592491719478056}
-  - {fileID: 4150209611708574508}
   m_Father: {fileID: 5620120453119883301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5896633994254437669
@@ -1144,7 +1142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 95789817124172041}
   m_Layer: 0
-  m_Name: '[core_managers]'
+  m_Name: '[core_modules]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1163,6 +1161,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4150209611708574508}
   - {fileID: 1430368041168204452}
   - {fileID: 4655485010850241760}
   - {fileID: 6184065012422467117}

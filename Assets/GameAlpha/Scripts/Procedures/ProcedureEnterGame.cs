@@ -14,11 +14,11 @@ namespace Gameplay.Procedures
         {
             // await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Res/game/scenes/demo002").ToUniTask();
 
-            var caches = CachePool.Instance.Acquire<TestCache>(10);
+            var caches = GameModule<CachePool>.Instance.Acquire<TestCache>(10);
 
             await UniTask.Delay(10000);
 
-            CachePool.Instance.Release(caches.GetRange(0, 5));
+            GameModule<CachePool>.Instance.Release(caches.GetRange(0, 5));
         }
 
         public class TestCache : ICache

@@ -6,7 +6,7 @@ namespace XuchFramework.Core
 {
     public interface ICache { }
 
-    public class CachePool : MonoSingleton<CachePool>
+    public class CachePool : ModuleBase
     {
         [SerializeField]
         private float _cacheExpireTime = 60f;
@@ -35,7 +35,7 @@ namespace XuchFramework.Core
             return infos;
         }
 
-        private void Update()
+        protected override void OnUpdate(float deltaTime, float unscaledDeltaTime)
         {
             foreach (var collection in _cacheCollections.Values)
             {

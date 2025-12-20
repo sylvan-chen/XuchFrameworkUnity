@@ -87,7 +87,7 @@ namespace XuchFramework.Core.Audio
             int handleId, AudioPlayMode playMode, string eventName, FMOD.Studio.EventInstance eventInstance, AudioSourceType sourceType,
             AudioSourceInfo sourceInfo, int loopTimes = 0)
         {
-            var inst = CachePool.Instance.Acquire<AudioInstance>();
+            var inst = GameModule<CachePool>.Instance.Acquire<AudioInstance>();
             inst.HandleId = handleId;
             inst.PlayMode = playMode;
             inst.EventName = eventName;
@@ -128,7 +128,7 @@ namespace XuchFramework.Core.Audio
         {
             Clear();
             EventInstance.release();
-            CachePool.Instance.Release(this);
+            GameModule<CachePool>.Instance.Release(this);
         }
 
         public void Clear()
