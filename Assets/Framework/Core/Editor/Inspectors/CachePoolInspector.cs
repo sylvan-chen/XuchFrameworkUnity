@@ -3,47 +3,58 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using XuchFramework.Core;
+using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
 {
-    [CustomEditor(typeof(CachePoolEditorViewer))]
+    [CustomEditor(typeof(CachePool))]
     internal class CachePoolInspector : InspectorBase
     {
         private readonly Dictionary<string, List<CacheCollectionInfo>> _cacheCollectionInfosDict = new();
         private readonly HashSet<string> _expandedFoldout = new();
         private bool _showFullTypeName = false;
 
+        private SerializedProperty _cacheExpireTimeProperty;
+
+        public void OnEnable()
+        {
+            _cacheExpireTimeProperty = serializedObject.FindProperty("_cacheExpireTime");
+        }
+
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(_cacheExpireTimeProperty);
+            serializedObject.ApplyModifiedProperties();
 
             if (!EditorApplication.isPlaying)
             {
-                EditorGUILayout.HelpBox("Available in play mode only", MessageType.Info);
+                EditorGUILayout.HelpBox("Statics info is available in play mode only", MessageType.Info);
                 return;
             }
+
+            var cachePool = target as CachePool;
+            if (cachePool == null)
+                return;
 
             _showFullTypeName = EditorGUILayout.Toggle("Show Full Type Name", _showFullTypeName);
 
             // Get cache pool info
             _cacheCollectionInfosDict.Clear();
-            CacheCollectionInfo[] cacheCollectionInfoArray = CachePool.GetAllCacheCollectionInfos();
-            foreach (CacheCollectionInfo cacheCollectionInfo in cacheCollectionInfoArray)
+            CacheCollectionInfo[] cacheCollectionInfoArray = cachePool.GetAllCacheCollectionInfos();
+            foreach (var cacheCollectionInfo in cacheCollectionInfoArray)
             {
                 string assemblyName = cacheCollectionInfo.CacheType.Assembly.GetName().Name;
-                if (!_cacheCollectionInfosDict.TryGetValue(assemblyName, out List<CacheCollectionInfo> cacheCollectionInfos))
+                if (!_cacheCollectionInfosDict.TryGetValue(assemblyName, out var cacheCollectionInfos))
                 {
                     cacheCollectionInfos = new List<CacheCollectionInfo>();
                     _cacheCollectionInfosDict.Add(assemblyName, cacheCollectionInfos);
                 }
-
                 cacheCollectionInfos.Add(cacheCollectionInfo);
             }
 
-            foreach (KeyValuePair<string, List<CacheCollectionInfo>> assemblyNameAndCacheCollectionInfosPair in _cacheCollectionInfosDict)
+            foreach (var (assemblyName, cacheCollectionInfos) in _cacheCollectionInfosDict)
             {
-                string assemblyName = assemblyNameAndCacheCollectionInfosPair.Key;
-                List<CacheCollectionInfo> cacheCollectionInfos = assemblyNameAndCacheCollectionInfosPair.Value;
                 // Each foldout represents an assembly
                 bool isExpanded = _expandedFoldout.Contains(assemblyName);
                 bool isExpandedByUser = EditorGUILayout.Foldout(isExpanded, assemblyName);
@@ -66,13 +77,17 @@ namespace XuchFramework.Editor
                         GUIStyle centeredStyle = new(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
                         using (new EditorGUILayout.HorizontalScope())
                         {
-                            GUILayout.Label(_showFullTypeName ? "Full Type Name" : "Type Name", EditorStyles.wordWrappedLabel, GUILayout.Width(200));
+                            GUILayout.Label(
+                                _showFullTypeName ? "Full Type Name" : "Type Name",
+                                EditorStyles.wordWrappedLabel,
+                                _showFullTypeName ? GUILayout.Width(200) : GUILayout.Width(80));
                             EditorGUILayout.LabelField("Unused", centeredStyle, GUILayout.Width(80));
                             EditorGUILayout.LabelField("Using", centeredStyle, GUILayout.Width(80));
-                            EditorGUILayout.LabelField("Spawned", centeredStyle, GUILayout.Width(80));
-                            EditorGUILayout.LabelField("Unspawned", centeredStyle, GUILayout.Width(80));
+                            EditorGUILayout.LabelField("Acquired", centeredStyle, GUILayout.Width(80));
+                            EditorGUILayout.LabelField("Released", centeredStyle, GUILayout.Width(80));
                             EditorGUILayout.LabelField("Created", centeredStyle, GUILayout.Width(80));
                             EditorGUILayout.LabelField("Discarded", centeredStyle, GUILayout.Width(80));
+                            EditorGUILayout.LabelField("Idle", centeredStyle, GUILayout.Width(80));
                         }
 
                         cacheCollectionInfos.Sort(CompareCacheCollectionInfo);
@@ -83,13 +98,17 @@ namespace XuchFramework.Editor
                                 GUILayout.Label(
                                     _showFullTypeName ? cacheCollectionInfo.CacheType.FullName : cacheCollectionInfo.CacheType.Name,
                                     EditorStyles.wordWrappedLabel,
-                                    GUILayout.Width(200));
+                                    _showFullTypeName ? GUILayout.Width(200) : GUILayout.Width(80));
                                 EditorGUILayout.LabelField(cacheCollectionInfo.UnusedCount.ToString(), centeredStyle, GUILayout.Width(80));
                                 EditorGUILayout.LabelField(cacheCollectionInfo.UsingCount.ToString(), centeredStyle, GUILayout.Width(80));
-                                EditorGUILayout.LabelField(cacheCollectionInfo.SpawnedCount.ToString(), centeredStyle, GUILayout.Width(80));
-                                EditorGUILayout.LabelField(cacheCollectionInfo.UnspawnedCount.ToString(), centeredStyle, GUILayout.Width(80));
+                                EditorGUILayout.LabelField(cacheCollectionInfo.AcquiredCount.ToString(), centeredStyle, GUILayout.Width(80));
+                                EditorGUILayout.LabelField(cacheCollectionInfo.ReleasedCount.ToString(), centeredStyle, GUILayout.Width(80));
                                 EditorGUILayout.LabelField(cacheCollectionInfo.CreatedCount.ToString(), centeredStyle, GUILayout.Width(80));
                                 EditorGUILayout.LabelField(cacheCollectionInfo.DiscardedCount.ToString(), centeredStyle, GUILayout.Width(80));
+                                EditorGUILayout.LabelField(
+                                    StringHelper.SecondsToTimeStr_hms(cacheCollectionInfo.IdleTime),
+                                    centeredStyle,
+                                    GUILayout.Width(80));
                             }
                         }
                     }

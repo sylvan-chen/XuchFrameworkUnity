@@ -23,14 +23,8 @@ namespace XuchFramework.Editor
             }
         }
 
-        /// <summary>
-        /// 编译开始事件
-        /// </summary>
         protected virtual void OnCompileStart() { }
 
-        /// <summary>
-        /// 编译结束事件
-        /// </summary>
         protected virtual void OnCompileFinish() { }
 
         private static void DrawScriptField(Object target)
@@ -42,7 +36,7 @@ namespace XuchFramework.Editor
             {
                 MonoBehaviour mono => MonoScript.FromMonoBehaviour(mono),
                 ScriptableObject so => MonoScript.FromScriptableObject(so),
-                // 其他类型（EditorWindow、自定义对象等）尝试通过类型名查找
+                // Try to find by type name for other types (EditorWindow, custom objects, etc.) 
                 _ => FindScriptFromType(target.GetType())
             };
 

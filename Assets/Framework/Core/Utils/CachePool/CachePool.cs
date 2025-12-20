@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace XuchFramework.Core
 {
     public interface ICache { }
 
-    public static class CachePool
+    public class CachePool : MonoSingleton<CachePool>
     {
-        private static readonly Dictionary<Type, ICacheCollection> _cacheCollections = new();
+        [SerializeField]
+        private float _cacheExpireTime = 60f;
 
-        public static int CacheCollectionCount => _cacheCollections.Count;
+        private readonly Dictionary<Type, ICacheCollection> _cacheCollections = new();
 
-        public static CacheCollectionInfo[] GetAllCacheCollectionInfos()
+        public int CacheCollectionCount => _cacheCollections.Count;
+
+        public CacheCollectionInfo[] GetAllCacheCollectionInfos()
         {
             CacheCollectionInfo[] infos = new CacheCollectionInfo[_cacheCollections.Count];
             int index = 0;
@@ -21,46 +25,69 @@ namespace XuchFramework.Core
                     cacheCollection.CacheType,
                     cacheCollection.UnusedCount,
                     cacheCollection.UsingCount,
-                    cacheCollection.SpawnedCount,
-                    cacheCollection.UnspawnedCount,
+                    cacheCollection.AcquiredCount,
+                    cacheCollection.ReleasedCount,
                     cacheCollection.CreatedCount,
-                    cacheCollection.DiscardedCount);
+                    cacheCollection.DiscardedCount,
+                    cacheCollection.IdleTime);
             }
 
             return infos;
         }
 
-        public static T Acquire<T>() where T : class, ICache, new()
+        private void Update()
+        {
+            foreach (var collection in _cacheCollections.Values)
+            {
+                collection.IdleTime += Time.deltaTime;
+                if (collection.IdleTime >= _cacheExpireTime)
+                {
+                    collection.DiscardAll();
+                }
+            }
+        }
+
+        public T Acquire<T>() where T : class, ICache, new()
         {
             return GetCacheableCollection<T>().Acquire();
         }
 
-        public static void Release<T>(T cache) where T : class, ICache, new()
+        public List<T> Acquire<T>(int count) where T : class, ICache, new()
+        {
+            return GetCacheableCollection<T>().Acquire(count);
+        }
+
+        public void Release<T>(T cache) where T : class, ICache, new()
         {
             GetCacheableCollection<T>().Release(cache);
         }
 
-        public static void Reserve<T>(int count) where T : class, ICache, new()
+        public void Release<T>(IEnumerable<T> caches) where T : class, ICache, new()
+        {
+            GetCacheableCollection<T>().Release(caches);
+        }
+
+        public void Reserve<T>(int count) where T : class, ICache, new()
         {
             GetCacheableCollection<T>().Reserve(count);
         }
 
-        public static void Discard<T>(int count) where T : class, ICache, new()
-        {
-            GetCacheableCollection<T>().Discard(count);
-        }
-
-        public static void DiscardAll<T>() where T : class, ICache, new()
-        {
-            GetCacheableCollection<T>().DiscardAll();
-        }
-
-        public static void Squeeze<T>(int reserveCount = 0) where T : class, ICache, new()
+        public void Squeeze<T>(int reserveCount = 0) where T : class, ICache, new()
         {
             GetCacheableCollection<T>().Squeeze(reserveCount);
         }
 
-        private static CacheCollection<T> GetCacheableCollection<T>() where T : class, ICache, new()
+        public void Discard<T>(int count) where T : class, ICache, new()
+        {
+            GetCacheableCollection<T>().Discard(count);
+        }
+
+        public void DiscardAll<T>() where T : class, ICache, new()
+        {
+            GetCacheableCollection<T>().DiscardAll();
+        }
+
+        private CacheCollection<T> GetCacheableCollection<T>() where T : class, ICache, new()
         {
             if (!_cacheCollections.TryGetValue(typeof(T), out ICacheCollection collection))
             {
@@ -70,123 +97,162 @@ namespace XuchFramework.Core
 
             return collection as CacheCollection<T>;
         }
+    }
 
-        private interface ICacheCollection
+    public interface ICacheCollection
+    {
+        public Type CacheType { get; }
+        public int UnusedCount { get; }
+        public int UsingCount { get; }
+        public int AcquiredCount { get; }
+        public int ReleasedCount { get; }
+        public int CreatedCount { get; }
+        public int DiscardedCount { get; }
+
+        public float IdleTime { get; set; }
+
+        public void Squeeze(int reserve);
+
+        public void Discard(int count);
+
+        public void DiscardAll();
+    }
+
+    public class CacheCollection<T> : ICacheCollection where T : class, ICache, new()
+    {
+        private readonly Queue<T> _caches = new();
+
+        public Type CacheType { get; private set; } = typeof(T);
+        public int UsingCount { get; private set; } = 0;
+        public int AcquiredCount { get; private set; } = 0;
+        public int ReleasedCount { get; private set; } = 0;
+        public int CreatedCount { get; private set; } = 0;
+        public int DiscardedCount { get; private set; } = 0;
+
+        public float IdleTime { get; set; } = 0f;
+
+        public int UnusedCount => _caches.Count;
+
+        public T Acquire()
         {
-            public Type CacheType { get; }
+            IdleTime = 0;
+            AcquiredCount++;
+            UsingCount++;
+            if (_caches.Count > 0)
+            {
+                return _caches.Dequeue();
+            }
 
-            public int UnusedCount { get; }
-
-            public int UsingCount { get; }
-
-            public int SpawnedCount { get; }
-
-            public int UnspawnedCount { get; }
-
-            public int CreatedCount { get; }
-
-            public int DiscardedCount { get; }
+            CreatedCount++;
+            return new T();
         }
 
-        private class CacheCollection<T> : ICacheCollection where T : class, ICache, new()
+        public List<T> Acquire(int count)
         {
-            private readonly Queue<T> _caches = new();
+            var result = new List<T>();
 
-            public Type CacheType { get; private set; } = typeof(T);
-            public int UsingCount { get; private set; } = 0;
-            public int SpawnedCount { get; private set; } = 0;
-            public int UnspawnedCount { get; private set; } = 0;
-            public int CreatedCount { get; private set; } = 0;
-            public int DiscardedCount { get; private set; } = 0;
+            if (count <= 0)
+                return result;
 
-            public int UnusedCount
+            for (int i = 0; i < count; i++)
             {
-                get
-                {
-                    lock (_caches)
-                    {
-                        return _caches.Count;
-                    }
-                }
+                result.Add(Acquire());
             }
 
-            public T Acquire()
-            {
-                lock (_caches)
-                {
-                    SpawnedCount++;
-                    UsingCount++;
-                    if (_caches.Count > 0)
-                    {
-                        return _caches.Dequeue();
-                    }
-                }
+            return result;
+        }
 
+        public void Release(T cache)
+        {
+            if (cache == null)
+                return;
+
+            IdleTime = 0;
+            _caches.Enqueue(cache);
+            ReleasedCount++;
+            UsingCount--;
+        }
+
+        public void Release(IEnumerable<T> caches)
+        {
+            if (caches == null)
+                return;
+
+            foreach (var cache in caches)
+            {
+                Release(cache);
+            }
+        }
+
+        public void Reserve(int count)
+        {
+            IdleTime = 0;
+            for (int i = 0; i < count; i++)
+            {
+                _caches.Enqueue(new T());
                 CreatedCount++;
-                return new T();
             }
+        }
 
-            public void Release(T cache)
+        public void Squeeze(int reserve = 0)
+        {
+            IdleTime = 0;
+            var discardCount = _caches.Count - reserve;
+            Discard(discardCount);
+        }
+
+        public void Discard(int count)
+        {
+            IdleTime = 0;
+
+            if (count > _caches.Count)
+                count = _caches.Count;
+
+            for (int i = 0; i < count; i++)
             {
-                if (cache == null)
-                {
-                    return;
-                }
-
-                lock (_caches)
-                {
-                    _caches.Enqueue(cache);
-                    UnspawnedCount++;
-                    UsingCount--;
-                }
+                _caches.Dequeue();
+                DiscardedCount++;
             }
+        }
 
-            public void Reserve(int count)
-            {
-                lock (_caches)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        _caches.Enqueue(new T());
-                        CreatedCount++;
-                    }
-                }
-            }
+        public void DiscardAll()
+        {
+            IdleTime = 0;
+            DiscardedCount += _caches.Count;
+            _caches.Clear();
+        }
+    }
 
-            public void Discard(int count)
-            {
-                lock (_caches)
-                {
-                    if (count > _caches.Count)
-                    {
-                        count = _caches.Count;
-                    }
+    public readonly struct CacheCollectionInfo
+    {
+        public readonly Type CacheType;
 
-                    for (int i = 0; i < count; i++)
-                    {
-                        _caches.Dequeue();
-                        DiscardedCount++;
-                    }
-                }
-            }
+        public readonly int UnusedCount;
 
-            public void DiscardAll()
-            {
-                lock (_caches)
-                {
-                    DiscardedCount += _caches.Count;
-                    _caches.Clear();
-                }
-            }
+        public readonly int UsingCount;
 
-            public void Squeeze(int reserveCount = 0)
-            {
-                lock (_caches)
-                {
-                    var discardCount = _caches.Count - reserveCount;
-                    Discard(discardCount);
-                }
-            }
+        public readonly int AcquiredCount;
+
+        public readonly int ReleasedCount;
+
+        public readonly int CreatedCount;
+
+        public readonly int DiscardedCount;
+
+        public readonly float IdleTime;
+
+        public CacheCollectionInfo(
+            Type cacheType, int unusedCount, int usingCount, int acquiredCount, int releasedCount, int createdCount, int discardedCount,
+            float idleTime)
+        {
+            CacheType = cacheType;
+            UnusedCount = unusedCount;
+            UsingCount = usingCount;
+            AcquiredCount = acquiredCount;
+            ReleasedCount = releasedCount;
+            CreatedCount = createdCount;
+            DiscardedCount = discardedCount;
+            IdleTime = idleTime;
         }
     }
 }
