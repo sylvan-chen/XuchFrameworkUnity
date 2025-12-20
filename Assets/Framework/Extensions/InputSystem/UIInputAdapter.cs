@@ -1,5 +1,5 @@
 ﻿using UnityEngine.InputSystem;
-using XuchFramework.Internal;
+using XuchFramework.Extensions.InputSystem;
 
 namespace XuchFramework.Core
 {
