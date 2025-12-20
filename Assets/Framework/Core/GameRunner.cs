@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Alchemy.Inspector;
@@ -25,12 +24,12 @@ namespace XuchFramework.Core
         [SerializeField, ShowIf(nameof(IsCustomEntry))]
         private GameEntryBase _gameEntry;
 
-        private readonly List<ManagerBase> _cachedManagers = new();
+        private readonly List<ModuleBase> _cachedModules = new();
 
         protected override async UniTask OnInitialize()
         {
-            // 1. Initialize core managers
-            await LaunchManagers("[core_managers]");
+            // 1. Initialize core modules
+            await LaunchModules("[core_modules]");
 
             // 2. Enter game
             if (_entryType == GameEntryType.CustomEntry)
@@ -40,28 +39,28 @@ namespace XuchFramework.Core
         }
 
         /// <summary>
-        /// Launch managers under the specified root
+        /// Launch modules under the specified root
         /// </summary>
-        public async UniTask LaunchManagers(string rootName)
+        public async UniTask LaunchModules(string rootName)
         {
-            var managerRoot = transform.Find(rootName);
-            if (managerRoot == null)
+            var moduleRoot = transform.Find(rootName);
+            if (moduleRoot == null)
             {
-                Log.Error($"[GameRunner] Launch managers failed. Can not find root for managers (Expected root name: '{rootName}')");
+                Log.Error($"[GameRunner] Launch modules failed. Can not find root for modules (Expected root name: '{rootName}')");
                 return;
             }
 
-            var managers = managerRoot.GetComponentsInChildren<ManagerBase>();
-            Log.Debug($"[GameRunner] Found {managers.Length} managers under '{rootName}'");
+            var modules = moduleRoot.GetComponentsInChildren<ModuleBase>();
+            Log.Debug($"[GameRunner] Found {modules.Length} modules under '{rootName}'");
 
             var initializeTasks = new List<UniTask>();
             var postInitializeTasks = new List<UniTask>();
 
-            foreach (var manager in managers)
+            foreach (var module in modules)
             {
-                RegisterManager(manager);
-                initializeTasks.Add(manager.Initialize());
-                postInitializeTasks.Add(manager.PostInitialize());
+                RegisterModule(module);
+                initializeTasks.Add(module.Initialize());
+                postInitializeTasks.Add(module.PostInitialize());
             }
 
             await UniTask.WhenAll(initializeTasks);
@@ -69,17 +68,17 @@ namespace XuchFramework.Core
         }
 
         /// <summary>
-        /// Register manager as GameModule instance, and cache it for update loop and dispose
+        /// Register module as GameModule instance, and cache it for update loop and dispose
         /// </summary>
-        internal void RegisterManager(ManagerBase manager)
+        internal void RegisterModule(ModuleBase module)
         {
-            if (_cachedManagers.Any(x => x == manager))
+            if (_cachedModules.Any(x => x == module))
             {
-                Log.Warning($"[GameRunner] Duplicate manager register. Manager '{manager.GetType().FullName}' has already been registered");
+                Log.Warning($"[GameRunner] Duplicate module register. Module '{module.GetType().FullName}' has already been registered");
                 return;
             }
 
-            var type = manager.GetType();
+            var type = module.GetType();
             var genericType = typeof(GameModule<>).MakeGenericType(type);
             var method = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
             if (method == null)
@@ -87,55 +86,55 @@ namespace XuchFramework.Core
                 Log.Error($"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
                 return;
             }
-            method.Invoke(null, new object[] { manager });
+            method.Invoke(null, new object[] { module });
 
-            _cachedManagers.Add(manager);
+            _cachedModules.Add(module);
         }
 
         private void Update()
         {
-            for (int i = 0; i < _cachedManagers.Count; i++)
+            for (int i = 0; i < _cachedModules.Count; i++)
             {
-                var manager = _cachedManagers[i];
-                if (manager.IsInitialized && !manager.IsDisposed)
+                var module = _cachedModules[i];
+                if (module.IsInitialized && !module.IsDisposed)
                 {
-                    manager.UpdateInternal(Time.deltaTime, Time.unscaledDeltaTime);
+                    module.UpdateInternal(Time.deltaTime, Time.unscaledDeltaTime);
                 }
             }
         }
 
         private void LateUpdate()
         {
-            for (int i = 0; i < _cachedManagers.Count; i++)
+            for (int i = 0; i < _cachedModules.Count; i++)
             {
-                var manager = _cachedManagers[i];
-                if (manager.IsInitialized && !manager.IsDisposed)
+                var module = _cachedModules[i];
+                if (module.IsInitialized && !module.IsDisposed)
                 {
-                    manager.LateUpdateInternal(Time.deltaTime, Time.unscaledDeltaTime);
+                    module.LateUpdateInternal(Time.deltaTime, Time.unscaledDeltaTime);
                 }
             }
         }
 
         private void FixedUpdate()
         {
-            for (int i = 0; i < _cachedManagers.Count; i++)
+            for (int i = 0; i < _cachedModules.Count; i++)
             {
-                var manager = _cachedManagers[i];
-                if (manager.IsInitialized && !manager.IsDisposed)
+                var module = _cachedModules[i];
+                if (module.IsInitialized && !module.IsDisposed)
                 {
-                    manager.FixedUpdateInternal(Time.fixedDeltaTime);
+                    module.FixedUpdateInternal(Time.fixedDeltaTime);
                 }
             }
         }
 
         private void OnDestroy()
         {
-            for (int i = _cachedManagers.Count - 1; i >= 0; i--)
+            for (int i = _cachedModules.Count - 1; i >= 0; i--)
             {
-                var manager = _cachedManagers[i];
-                if (manager.IsInitialized && !manager.IsDisposed)
+                var module = _cachedModules[i];
+                if (module.IsInitialized && !module.IsDisposed)
                 {
-                    manager.Dispose();
+                    module.Dispose();
                 }
             }
         }

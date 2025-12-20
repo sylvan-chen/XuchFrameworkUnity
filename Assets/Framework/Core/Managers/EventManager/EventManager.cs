@@ -6,7 +6,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Managers/Event Manager")]
-    public sealed class EventManager : ManagerBase
+    public sealed class EventManager : ModuleBase
     {
         private interface IEventBinding { }
 

@@ -11,7 +11,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("Xuch/UI Manager")]
-    public sealed class UIManager : ManagerBase
+    public sealed class UIManager : ModuleBase
     {
         public enum UICameraType
         {

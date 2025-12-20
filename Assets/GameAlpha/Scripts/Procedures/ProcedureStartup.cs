@@ -12,7 +12,7 @@ namespace Gameplay.Procedures
 
         private async UniTaskVoid StartGame()
         {
-            await GameRunner.Instance.LaunchManagers("[game_managers]");
+            await GameRunner.Instance.LaunchModules("[game_modules]");
 
             GameProcedure.Instance.ChangeProcedure<ProcedureEnterGame>();
         }

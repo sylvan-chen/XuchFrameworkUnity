@@ -1,11 +1,10 @@
 using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
-    public abstract class ManagerBase : MonoBehaviour
+    public abstract class ModuleBase : MonoBehaviour
     {
         public bool IsInitialized { get; private set; } = false;
         public bool IsDisposed { get; private set; } = false;

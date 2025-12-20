@@ -6,7 +6,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Pool Manager")]
-    public sealed class PoolManager : ManagerBase
+    public sealed class PoolManager : ModuleBase
     {
         public const int DEFAULT_CAPACITY = int.MaxValue;
         public const float DEFAULT_OBJECT_EXPIRED_TIME = float.MaxValue;

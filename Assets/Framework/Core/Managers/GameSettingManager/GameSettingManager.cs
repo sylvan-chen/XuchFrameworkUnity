@@ -6,7 +6,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Managers/Game Setting Manager")]
-    public sealed class GameSettingManager : ManagerBase
+    public sealed class GameSettingManager : ModuleBase
     {
         [SerializeField, Tooltip("Frame rate, -1 presents to use the platform's default frame rate")]
         private int _frameRate = -1;

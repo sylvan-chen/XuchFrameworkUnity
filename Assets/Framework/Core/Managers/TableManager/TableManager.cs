@@ -10,7 +10,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("Xuch/Table Manager")]
-    public class TableManager : ManagerBase
+    public class TableManager : ModuleBase
     {
         [Header("预加载设置")]
         [SerializeField]

@@ -5,7 +5,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("XuchFramework/Managers/Fsm Manager")]
-    public sealed class FsmManager : ManagerBase
+    public sealed class FsmManager : ModuleBase
     {
         private readonly Dictionary<string, Fsm> _fsms = new();
 

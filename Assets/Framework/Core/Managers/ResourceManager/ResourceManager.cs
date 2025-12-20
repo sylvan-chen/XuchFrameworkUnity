@@ -13,7 +13,7 @@ namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
     [AddComponentMenu("Xuch/Resource Manager")]
-    public partial class ResourceManager : ManagerBase
+    public partial class ResourceManager : ModuleBase
     {
         #region 生命周期
 

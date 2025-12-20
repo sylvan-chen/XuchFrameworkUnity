@@ -1,6 +1,6 @@
 ﻿namespace XuchFramework.Core
 {
-    public class GameModule<T> where T : ManagerBase
+    public class GameModule<T> where T : ModuleBase
     {
         public static T Instance { get; private set; }
 
