@@ -13,8 +13,8 @@ namespace XuchFramework.Editor
     public class TableClassGenerator : EditorWindow
     {
         private const string DEFAULT_JSON_DIR = "DEFAULT:./Res/tables";
-        private const string DEFAULT_OUTPUT_DIR = "DEFAULT:./MonkeyLike/TableConfigs";
-        private const string DEFAULT_NAMESPACE = "Xuch.Table";
+        private const string DEFAULT_OUTPUT_DIR = "DEFAULT:./TableConfigs";
+        private const string DEFAULT_NAMESPACE = "XuchFramework.Table";
 
         private const string JSON_DIR_KEY = "ConfigGenerator_JsonDir";
         private const string OUTPUT_DIR_KEY = "ConfigGenerator_OutputDir";
@@ -27,7 +27,7 @@ namespace XuchFramework.Editor
         private string _namespaceName = DEFAULT_NAMESPACE;
         private Vector2 _jsonFilesScroll;
 
-        [MenuItem("Tools/Designer/Table Class Generator")]
+        [MenuItem("Tools/Designer Tools/Table Class Generator", priority = 10002)]
         private static void ShowWindow()
         {
             var window = GetWindow<TableClassGenerator>();
@@ -54,6 +54,20 @@ namespace XuchFramework.Editor
 
         private void OnGUI()
         {
+            EditorGUILayout.Space(10);
+
+            // Title
+            GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fontSize = 16,
+                alignment = TextAnchor.MiddleCenter
+            };
+            EditorGUILayout.LabelField("Table Class Generator", titleStyle);
+
+            EditorGUILayout.Space(10);
+            DrawHorizontalLine();
+            EditorGUILayout.Space(10);
+
             GUILayout.Label("Base", EditorStyles.boldLabel);
 
             EditorGUILayout.Space(5);
@@ -138,12 +152,14 @@ namespace XuchFramework.Editor
             EditorGUILayout.Space(10);
 
             GUI.enabled = jsonDirExists && namespaceNameValid;
+            GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
             if (GUILayout.Button("Generate", GUILayout.Height(35)))
             {
                 Debug.Log(
                     $"[TableClassGenerator] Generated: JSON Directory = {_jsonDirectory}, Output Directory = {_outputDirectory}, Namespace = {_namespaceName}");
                 GenerateClasses();
             }
+            GUI.backgroundColor = Color.white;
 
             GUI.enabled = true;
 
@@ -338,6 +354,13 @@ namespace XuchFramework.Editor
             sb.AppendLine("}");
 
             return sb.ToString();
+        }
+
+        private void DrawHorizontalLine()
+        {
+            Rect rect = EditorGUILayout.GetControlRect(false, 1);
+            rect.height = 1;
+            EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
         }
 
         private string InferTypeName(JToken value)

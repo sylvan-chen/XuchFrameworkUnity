@@ -7,11 +7,10 @@ using UnityEngine;
 namespace XuchFramework.Editor
 {
     /// <summary>
-    /// 场景快速打开窗口：
-    /// 1. 自动扫描项目中所有 Scene 资源 (排除 Packages 内资源)
-    /// 2. 支持搜索过滤
-    /// 3. 支持单击选中，双击直接打开并关闭窗口，也可以通过底部按钮打开当前选中的场景
-    /// 5. 监听工程变更自动刷新
+    /// 1. Auto scan all Scene assets in the project (excluding those in Packages)
+    /// 2. Support search filtering
+    /// 3. Support single click to select, double click to open and close the window, or use the bottom button to open the currently selected scene
+    /// 5. Listen to project changes and auto refresh
     /// </summary>
     public class SceneQuickOpenWindow : EditorWindow
     {
@@ -27,8 +26,8 @@ namespace XuchFramework.Editor
         private Vector2 _scroll;
         private int _selectedIndex = -1;
         private string _search = string.Empty;
-        private double _lastClickTime;                   // 用于防止误判（备用）
-        private const double DoubleClickInterval = 0.3f; // 备用阈值 (秒)
+        private double _lastClickTime;                   // For preventing misjudgment (backup)
+        private const double DoubleClickInterval = 0.3f; // Backup threshold (seconds)
         private GUIStyle _rowStyleOdd;
         private GUIStyle _rowStyleEven;
         private GUIStyle _selectedStyle;
@@ -68,7 +67,6 @@ namespace XuchFramework.Editor
 
         private void OnProjectChanged()
         {
-            // 延迟到获得焦点再刷新，避免频繁刷新
             _needRescan = true;
         }
 
@@ -105,7 +103,7 @@ namespace XuchFramework.Editor
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 if (path.StartsWith("Packages/"))
-                    continue; // 排除包内场景
+                    continue;
                 if (!path.EndsWith(".unity"))
                     continue;
                 _scenes.Add(
@@ -133,11 +131,11 @@ namespace XuchFramework.Editor
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                // 搜索框
+                GUI.SetNextControlName("SceneSearchField");
                 var newSearch = GUILayout.TextField(
                     _search,
-                    GUI.skin.FindStyle("ToolbarSeachTextField") ?? GUI.skin.textField,
-                    GUILayout.MinWidth(120));
+                    GUI.skin.FindStyle("ToolbarSearchTextField") ?? GUI.skin.textField,
+                    GUILayout.Width(200));
                 if (newSearch != null && newSearch != _search)
                 {
                     _search = newSearch;
@@ -150,9 +148,18 @@ namespace XuchFramework.Editor
                 }
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("刷新", EditorStyles.toolbarButton, GUILayout.Width(50)))
+                if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(50)))
                 {
                     RefreshScenes();
+                }
+            }
+
+            if (Event.current.type == EventType.MouseDown)
+            {
+                if (GUI.GetNameOfFocusedControl() == "SceneSearchField")
+                {
+                    GUI.FocusControl(null);
+                    Repaint();
                 }
             }
         }
@@ -168,14 +175,13 @@ namespace XuchFramework.Editor
                 for (int i = 0; i < filtered.Count; i++)
                 {
                     var scene = filtered[i];
-                    var globalIndex = _scenes.IndexOf(scene); // 还原原始索引，保证选中状态一致
+                    var globalIndex = _scenes.IndexOf(scene); // Revert to original index to ensure selection consistency
                     DrawSceneRow(scene, globalIndex, i);
                 }
             }
 
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                // 点击空白区域取消选中
                 Repaint();
             }
         }
@@ -186,13 +192,11 @@ namespace XuchFramework.Editor
             var isSelected = originalIndex == _selectedIndex;
             var style = isSelected ? _selectedStyle : (visibleRow % 2 == 0 ? _rowStyleEven : _rowStyleOdd);
 
-            // 背景
             if (Event.current.type == EventType.Repaint)
             {
                 style.Draw(rowRect, false, false, isSelected, false);
             }
 
-            // 内容区域
             var iconRect = new Rect(rowRect.x + 4, rowRect.y + 2, rowRect.height - 4, rowRect.height - 4);
             var nameRect = new Rect(iconRect.xMax + 4, rowRect.y + 2, rowRect.width * 0.35f, rowRect.height - 4);
             var folderRect = new Rect(nameRect.xMax + 6, rowRect.y + 2, rowRect.width - (nameRect.xMax - rowRect.x) - 10, rowRect.height - 4);
@@ -223,7 +227,6 @@ namespace XuchFramework.Editor
                 }
                 else
                 {
-                    // 已选中，再点击 -> 检查是否双击
                     if (evt.clickCount == 2 || (EditorApplication.timeSinceStartup - _lastClickTime) < DoubleClickInterval)
                     {
                         OpenSelectedSceneAndClose();
@@ -235,17 +238,16 @@ namespace XuchFramework.Editor
             }
             else if (evt.type == EventType.MouseDown && evt.button == 1)
             {
-                // 右键弹出菜单
                 var menu = new GenericMenu();
                 menu.AddItem(
-                    new GUIContent("打开"),
+                    new GUIContent("Open"),
                     false,
                     () =>
                     {
                         _selectedIndex = index;
                         OpenSelectedSceneAndClose();
                     });
-                menu.AddItem(new GUIContent("在 Project 中定位"), false, () => { EditorGUIUtility.PingObject(scene.SceneAsset); });
+                menu.AddItem(new GUIContent("Find in Project"), false, () => { EditorGUIUtility.PingObject(scene.SceneAsset); });
                 menu.ShowAsContext();
                 evt.Use();
             }
@@ -257,11 +259,9 @@ namespace XuchFramework.Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUI.enabled = _selectedIndex >= 0 && _selectedIndex < _scenes.Count;
-                if (GUILayout.Button("打开所选场景", GUILayout.Height(26)))
+                if (GUILayout.Button("Open", GUILayout.Height(26)))
                     OpenSelectedSceneAndClose();
                 GUI.enabled = true;
-
-                // if (GUILayout.Button("关闭", GUILayout.Width(80), GUILayout.Height(26))) Close();
             }
         }
 

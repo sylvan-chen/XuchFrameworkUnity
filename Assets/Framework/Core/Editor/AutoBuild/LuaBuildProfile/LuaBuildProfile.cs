@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace XuchFramework.Editor
 {
-    [CreateAssetMenu(fileName = "LuaBuildProfile", menuName = "Xuch/Settings/LuaBuildProfile")]
+    [CreateAssetMenu(fileName = "LuaBuildProfile", menuName = "XuchFramework/Settings/LuaBuildProfile")]
     public sealed class LuaBuildProfile : ScriptableObject
     {
         public string LuaScriptsDirectory = "../Lua";

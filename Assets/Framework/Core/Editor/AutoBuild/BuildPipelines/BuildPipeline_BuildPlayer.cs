@@ -101,7 +101,7 @@ namespace XuchFramework.Editor
                 {
                     buildOptions |= BuildOptions.ConnectWithProfiler;
                 }
-                if (buildConfig.DeepProfilingSurpport)
+                if (buildConfig.DeepProfilingSupport)
                 {
                     buildOptions |= BuildOptions.EnableDeepProfilingSupport;
                 }

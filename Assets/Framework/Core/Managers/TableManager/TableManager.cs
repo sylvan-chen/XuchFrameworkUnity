@@ -18,7 +18,7 @@ namespace XuchFramework.Core
         [SerializeField, EnableIf(nameof(_preloadOnInit))]
         private string _preloadTableAddressLabel = "table";
         [SerializeField, EnableIf(nameof(_preloadOnInit))]
-        private string _tableClassNamespace = "Xuch.Table";
+        private string _tableClassNamespace = "XuchFramework.Table";
 
         // typeof(T) -> (id -> T)
         private readonly Dictionary<Type, Dictionary<int, ITableConfig>> _cachedTables = new();

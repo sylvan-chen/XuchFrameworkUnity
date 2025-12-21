@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace XuchFramework.Editor
             copiedComponents = Selection.activeGameObject.GetComponents<Component>();
             SaveComponentsToSession(copiedComponents);
 
-            Debug.Log($"已复制以下组件（{copiedComponents.Length} 个）：");
+            Debug.Log($"Copied {copiedComponents.Length} components:");
             foreach (var component in copiedComponents)
             {
                 if (!component)
@@ -58,7 +59,7 @@ namespace XuchFramework.Editor
 
             if (copiedComponents == null || copiedComponents.Length == 0)
             {
-                Debug.LogWarning("没有复制的组件可粘贴。请先复制组件");
+                Debug.LogWarning("No components to paste. Please copy components first.");
                 return;
             }
 
@@ -66,7 +67,7 @@ namespace XuchFramework.Editor
             {
                 if (targetGameObject == null)
                     continue;
-                Debug.Log($"开始粘贴 {copiedComponents.Length} 个 组件到以下对象：{targetGameObject.name}");
+                Debug.Log($"Paste {copiedComponents.Length} components to '{targetGameObject.name}'");
 
                 foreach (var copiedComponent in copiedComponents)
                 {
@@ -81,14 +82,14 @@ namespace XuchFramework.Editor
                         if (mode == PasteMode.PasteValuesOnly)
                             continue;
                         UnityEditorInternal.ComponentUtility.PasteComponentAsNew(targetGameObject);
-                        Debug.Log("已粘贴新组件: " + copiedComponent.GetType().Name);
+                        Debug.Log($"Paste new component: {copiedComponent.GetType().Name}");
                     }
                     else
                     {
                         if (mode == PasteMode.PasteAsNewOnly)
                             continue;
                         UnityEditorInternal.ComponentUtility.PasteComponentValues(existingComponent);
-                        Debug.Log("已更新现有组件: " + copiedComponent.GetType().Name);
+                        Debug.Log($"Paste value on component: {copiedComponent.GetType().Name}");
                     }
                 }
             }
@@ -114,7 +115,7 @@ namespace XuchFramework.Editor
             if (count == 0)
                 return null;
 
-            int[] instanceIds = SessionState.GetIntArray(SESSION_KEY_COMPONENT_IDS, new int[0]);
+            int[] instanceIds = SessionState.GetIntArray(SESSION_KEY_COMPONENT_IDS, Array.Empty<int>());
             if (instanceIds.Length == 0)
                 return null;
 

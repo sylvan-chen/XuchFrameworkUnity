@@ -3,7 +3,6 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Pipeline.Utilities;
-using UnityEngine;
 using XuchFramework.Core;
 
 namespace XuchFramework.Editor

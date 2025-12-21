@@ -322,7 +322,10 @@ namespace XuchFramework.Editor
                             var currentDir = Directory.GetCurrentDirectory();
                             try
                             {
-                                var selectedPath = EditorUtility.OpenFolderPanel("选择构建输出目录", Path.GetDirectoryName(Application.dataPath), "");
+                                var selectedPath = EditorUtility.OpenFolderPanel(
+                                    "Choose Build Output",
+                                    Path.GetDirectoryName(Application.dataPath),
+                                    "");
                                 if (!string.IsNullOrEmpty(selectedPath))
                                 {
                                     outputDirProperty.stringValue = selectedPath;
@@ -442,7 +445,7 @@ namespace XuchFramework.Editor
                     {
                         EditorGUILayout.PropertyField(_serializedConfig.FindProperty(nameof(BuildConfig.AutoconnectProfiler)));
                         EditorGUILayout.PropertyField(
-                            _serializedConfig.FindProperty(nameof(BuildConfig.DeepProfilingSurpport)),
+                            _serializedConfig.FindProperty(nameof(BuildConfig.DeepProfilingSupport)),
                             new GUIContent("Deep Profiling"));
                         EditorGUILayout.PropertyField(_serializedConfig.FindProperty(nameof(BuildConfig.ScriptDebugging)));
                     }

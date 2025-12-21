@@ -29,7 +29,7 @@ MonoBehaviour:
   MacroDefinitions: ENABLE_LOG;ENABLE_LOG_DEBUG;DOTWEEN
   DevelopmentBuild: 0
   AutoconnectProfiler: 0
-  DeepProfilingSurpport: 0
+  DeepProfilingSupport: 0
   ScriptDebugging: 0
   PlayerCompression: 0
   DebugSymbols: 0

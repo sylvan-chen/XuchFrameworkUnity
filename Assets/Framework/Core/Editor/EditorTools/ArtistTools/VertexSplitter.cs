@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
+using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
 {
@@ -30,7 +31,7 @@ namespace XuchFramework.Editor
         private bool _checkBoneWeight = true;
         private bool _checkVertexColorGray = false;
 
-        [MenuItem("Tools/Artist/Vertex Splitter")]
+        [MenuItem("Tools/Artist Tools/Vertex Splitter", priority = 10001)]
         public static void ShowWindow()
         {
             var window = GetWindow<VertexSplitter>("Vertex Splitter");
@@ -476,7 +477,6 @@ namespace XuchFramework.Editor
             if (!confirmed)
                 return;
 
-            int totalCount = 0;
             int deletedCount = 0;
             var deletedFiles = new List<string>();
             var fileNameToIssues = new Dictionary<string, List<string>>();
@@ -485,7 +485,7 @@ namespace XuchFramework.Editor
             {
                 // Get all assets under _savePath
                 string[] meshGuids = AssetDatabase.FindAssets("t:Mesh", new[] { _savePath });
-                totalCount = meshGuids.Length;
+                var totalCount = meshGuids.Length;
 
                 if (totalCount == 0)
                 {
@@ -626,7 +626,7 @@ namespace XuchFramework.Editor
                                 float r = color.r;
                                 float g = color.g;
                                 float b = color.b;
-                                if (r != g || r != b || g != b)
+                                if (GameHelper.FloatEquals(r, g) || GameHelper.FloatEquals(r, b) || GameHelper.FloatEquals(g, b))
                                 {
                                     allGray = false;
                                     break;
@@ -812,7 +812,7 @@ namespace XuchFramework.Editor
                     resultMessage += "\nNo mesh overrides found to revert.";
                 }
 
-                EditorUtility.DisplayDialog(revertedRenderers > 0 ? "Revert Complete" : "Revert Complete", resultMessage, "OK");
+                EditorUtility.DisplayDialog("Revert Complete", resultMessage, "OK");
 
                 Debug.Log($"Mesh revert operation completed - Processed prefabs: {processedPrefabs}, Reverted renderers: {revertedRenderers}");
             }

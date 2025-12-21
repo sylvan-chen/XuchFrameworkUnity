@@ -9,7 +9,7 @@ namespace XuchFramework.Editor
         LZ4HC = 1,
     }
 
-    [CreateAssetMenu(fileName = "BuildConfig", menuName = "Xuch/Build Config")]
+    [CreateAssetMenu(fileName = "BuildConfig", menuName = "XuchFramework/Settings/Build Config")]
     public class BuildConfig : ScriptableObject
     {
         public BuildTarget BuildTarget;
@@ -36,7 +36,7 @@ namespace XuchFramework.Editor
 
         public bool DevelopmentBuild = false;
         public bool AutoconnectProfiler = false;
-        public bool DeepProfilingSurpport = false;
+        public bool DeepProfilingSupport = false;
         public bool ScriptDebugging = false;
 
         public PlayerCompressionType PlayerCompression;

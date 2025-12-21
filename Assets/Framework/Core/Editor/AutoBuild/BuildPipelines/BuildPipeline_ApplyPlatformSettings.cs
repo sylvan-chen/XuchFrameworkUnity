@@ -9,11 +9,11 @@ namespace XuchFramework.Editor
     {
         public static void Run(BuildConfig buildConfig)
         {
-#if UNITY_ANDROID
             BuildUtils.ShowProcessBar("Apply platform settings", "Applying...", 0.2f);
 
             if (buildConfig.BuildTarget == BuildTarget.Android)
             {
+#if UNITY_ANDROID
                 // Set Android Debug Symbols
                 int symbols = 1 << buildConfig.DebugSymbols;
                 UnityEditor.Android.UserBuildSettings.DebugSymbols.level = (DebugSymbolLevel)symbols;
@@ -37,6 +37,7 @@ namespace XuchFramework.Editor
 
                 // Should build app bundle
                 EditorUserBuildSettings.buildAppBundle = buildConfig.BuildAppBundle;
+#endif
             }
 
             BuildUtils.ShowProcessBar("Apply platform settings", "Save assets...", 0.5f);
@@ -44,7 +45,6 @@ namespace XuchFramework.Editor
             AssetDatabase.SaveAssets();
 
             BuildUtils.ShowProcessBar("Apply platform settings", "Done!", 1f);
-#endif
         }
     }
 }
