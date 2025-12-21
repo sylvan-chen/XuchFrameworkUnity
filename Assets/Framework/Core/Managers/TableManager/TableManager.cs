@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -9,27 +10,24 @@ using XuchFramework.Core.Utils;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Table Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Table Manager")]
     public class TableManager : ModuleBase
     {
-        [Header("预加载设置")]
         [SerializeField]
         private bool _preloadOnInit = false;
-
-        [SerializeField]
-        private string _tableAddressLabel = "table";
-
-        [SerializeField]
+        [SerializeField, EnableIf(nameof(_preloadOnInit))]
+        private string _preloadTableAddressLabel = "table";
+        [SerializeField, EnableIf(nameof(_preloadOnInit))]
         private string _tableClassNamespace = "Xuch.Table";
 
-        // 所有配置表缓存: typeof(T) -> (id -> T)
+        // typeof(T) -> (id -> T)
         private readonly Dictionary<Type, Dictionary<int, ITableConfig>> _cachedTables = new();
 
         protected override UniTask OnInitialize()
         {
             if (_preloadOnInit)
             {
-                LoadAllTables(true).Forget();
+                LoadAllTables(_preloadTableAddressLabel, _tableClassNamespace, true).Forget();
             }
 
             return UniTask.CompletedTask;
@@ -40,14 +38,11 @@ namespace XuchFramework.Core
             ClearAllConfigCache();
         }
 
-        /// <summary>
-        /// 加载所有配置表
-        /// </summary>
-        public async UniTask LoadAllTables(bool isOverride = false)
+        public async UniTask LoadAllTables(string preloadTableAddressLabel, string tableClassNamespace, bool isOverride = false)
         {
             Log.Debug("[TableManager] Start loading tables...");
 
-            var handle = await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(_tableAddressLabel);
+            var handle = await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(preloadTableAddressLabel);
 
             if (!handle.IsValid)
             {
@@ -59,7 +54,7 @@ namespace XuchFramework.Core
             {
                 var jsonContent = jsonAsset.text;
                 var fileName = StringHelper.ToPascalCase(jsonAsset.name);
-                var typeFullName = $"{_tableClassNamespace}.Config{fileName}";
+                var typeFullName = $"{tableClassNamespace}.Config{fileName}";
                 var tableType = TypeHelper.GetType(typeFullName);
                 if (tableType == null)
                 {
@@ -72,51 +67,34 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 异步加载配置表实例
-        /// </summary>
-        /// <typeparam name="T">配置表类型</typeparam>
-        /// <param name="tableAddress">配置表资源地址</param>
-        /// <param name="isOverride">是否覆盖已加载的配置</param>
-        public async UniTask LoadTable<T>(string tableAddress, bool isOverride = false) where T : ITableConfig
+        public async UniTask LoadTable<T>(string key, bool isOverride = false) where T : ITableConfig
         {
-            Log.Debug($"[TableManager] Start loading table: {tableAddress}, Type: {typeof(T).FullName}...");
-            var handle = await GameModule<ResourceManager>.Instance.LoadAssetAsync<TextAsset>(tableAddress);
+            Log.Debug($"[TableManager] Start loading table: {key}, Type: {typeof(T).FullName}...");
+            var handle = await GameModule<ResourceManager>.Instance.LoadAssetAsync<TextAsset>(key);
             if (handle.IsValid)
             {
                 CacheTableAsync<T>(handle.Asset.text, isOverride);
             }
             else
             {
-                Log.Error($"[TableManager] Failed to load table: {tableAddress}.");
+                Log.Error($"[TableManager] Failed to load table: {key}.");
             }
         }
 
-        /// <summary>
-        /// 异步加载配置表实例
-        /// </summary>
-        /// <param name="tableType">配置表类型</param>
-        /// <param name="tableAddress">配置表资源地址</param>
-        /// <param name="isOverride">是否覆盖已加载的配置</param>
-        public async UniTask LoadTable(Type tableType, string tableAddress, bool isOverride = false)
+        public async UniTask LoadTable(Type tableType, string key, bool isOverride = false)
         {
-            Log.Debug($"[TableManager] Start loading table: {tableAddress}...");
-            var handle = await GameModule<ResourceManager>.Instance.LoadAssetAsync<TextAsset>(tableAddress);
+            Log.Debug($"[TableManager] Start loading table: {key}...");
+            var handle = await GameModule<ResourceManager>.Instance.LoadAssetAsync<TextAsset>(key);
             if (handle.IsValid)
             {
                 CacheTableAsync(tableType, handle.Asset.text, isOverride);
             }
             else
             {
-                Log.Error($"[TableManager] Failed to load table: {tableAddress}.");
+                Log.Error($"[TableManager] Failed to load table: {key}.");
             }
         }
 
-        /// <summary>
-        /// 获取配置表实例
-        /// </summary>
-        /// <typeparam name="T">配置表类型</typeparam>
-        /// <returns>配置表内容列表</returns>
         public Dictionary<int, T> GetTable<T>() where T : ITableConfig
         {
             var tableType = typeof(T);
@@ -130,27 +108,24 @@ namespace XuchFramework.Core
             return null;
         }
 
-        /// <summary>
-        /// 获取配置表实例
-        /// </summary>
-        /// <param name="id"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetConfigById<T>(int id) where T : ITableConfig
+        public T GetConfigById<T>(int id) where T : class, ITableConfig
         {
             var table = GetTable<T>();
-            if (table != null && table.TryGetValue(id, out var config))
+            if (table == null)
             {
-                return config;
+                Log.Error($"[TableManager] Table not found: {typeof(T).Name}");
+                return null;
             }
 
-            Log.Error($"[TableManager] Config with ID {id} not found in table {typeof(T).Name}");
-            return default;
+            if (!table.TryGetValue(id, out var config))
+            {
+                Log.Error($"[TableManager] Config with ID {id} not found in table {typeof(T).Name}");
+                return null;
+            }
+
+            return config;
         }
 
-        /// <summary>
-        /// 清除所有配置文件缓存
-        /// </summary>
         public void ClearAllConfigCache()
         {
             _cachedTables.Clear();
@@ -168,7 +143,7 @@ namespace XuchFramework.Core
             {
                 if (isOverride)
                 {
-                    Log.Debug($"[TableManager] Duplicate config cache attempt, covering it. Type: {tableType.Name}");
+                    Log.Debug($"[TableManager] Duplicate config cache attempt, override it. Type: {tableType.Name}");
                 }
                 else
                 {

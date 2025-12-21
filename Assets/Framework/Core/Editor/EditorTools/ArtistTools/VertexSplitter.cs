@@ -30,20 +30,20 @@ namespace XuchFramework.Editor
         private bool _checkBoneWeight = true;
         private bool _checkVertexColorGray = false;
 
-        [MenuItem("Tools/美术工具/顶点拆分工具")]
+        [MenuItem("Tools/Artist/Vertex Splitter")]
         public static void ShowWindow()
         {
-            var window = GetWindow<VertexSplitter>("顶点拆分工具");
+            var window = GetWindow<VertexSplitter>("Vertex Splitter");
             window.minSize = new Vector2(600, 800);
             // window.CollectPrefabs();
         }
 
         private void OnGUI()
         {
-            EditorGUILayout.LabelField("顶点拆分工具", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Vertex Splitter", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField($"目标预制体目录:");
+            EditorGUILayout.LabelField($"Target prefabs directory:");
 
             using (var scrollView = new EditorGUILayout.ScrollViewScope(_pathScrollPosition, GUILayout.Height(150)))
             {
@@ -53,14 +53,14 @@ namespace XuchFramework.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _prefabDirs[i] = EditorGUILayout.TextField($"目录 {i + 1}:", _prefabDirs[i]);
+                        _prefabDirs[i] = EditorGUILayout.TextField($"Directory {i + 1}:", _prefabDirs[i]);
 
-                        if (GUILayout.Button("浏览", GUILayout.Width(50)))
+                        if (GUILayout.Button("...", GUILayout.Width(50)))
                         {
-                            string selectedPath = EditorUtility.OpenFolderPanel("选择预制体目录", _prefabDirs[i], "");
+                            string selectedPath = EditorUtility.OpenFolderPanel("Choose prefab directory", _prefabDirs[i], "");
                             if (!string.IsNullOrEmpty(selectedPath))
                             {
-                                // 转换为相对路径
+                                // Convert to relative path
                                 string relativePath = "Assets" + selectedPath.Substring(Application.dataPath.Length);
                                 _prefabDirs[i] = relativePath;
                             }
@@ -77,11 +77,11 @@ namespace XuchFramework.Editor
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("添加目录"))
+                if (GUILayout.Button("Add"))
                 {
                     _prefabDirs.Add("Assets/");
                 }
-                if (GUILayout.Button("重置为默认"))
+                if (GUILayout.Button("Reset"))
                 {
                     _prefabDirs = new List<string>()
                     {
@@ -94,7 +94,7 @@ namespace XuchFramework.Editor
                 }
             }
 
-            if (GUILayout.Button("收集预制体"))
+            if (GUILayout.Button("Collect"))
             {
                 CollectPrefabs();
             }
@@ -103,14 +103,13 @@ namespace XuchFramework.Editor
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                _savePath = EditorGUILayout.TextField("保存路径:", _savePath);
+                _savePath = EditorGUILayout.TextField("Save Path:", _savePath);
 
-                if (GUILayout.Button("浏览", GUILayout.Width(50)))
+                if (GUILayout.Button("...", GUILayout.Width(50)))
                 {
-                    string selectedPath = EditorUtility.OpenFolderPanel("选择保存路径", _savePath, "");
+                    string selectedPath = EditorUtility.OpenFolderPanel("Choose Save Path", _savePath, "");
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
-                        // 转换为相对路径
                         string relativePath = "Assets" + selectedPath.Substring(Application.dataPath.Length);
                         if (!relativePath.EndsWith("/"))
                         {
@@ -123,16 +122,16 @@ namespace XuchFramework.Editor
 
             EditorGUILayout.Space();
 
-            _showClearSettings = EditorGUILayout.Foldout(_showClearSettings, "网格清理", EditorStyles.boldFont);
+            _showClearSettings = EditorGUILayout.Foldout(_showClearSettings, "Mesh Clean", EditorStyles.boldFont);
             if (_showClearSettings)
             {
                 EditorGUI.indentLevel++;
 
-                _checkNormal = EditorGUILayout.Toggle("检查法线完整性", _checkNormal);
-                _checkBoneWeight = EditorGUILayout.Toggle("检查骨骼权重完整性", _checkBoneWeight);
-                _checkVertexColorGray = EditorGUILayout.Toggle("检查顶点色是否为灰度", _checkVertexColorGray);
+                _checkNormal = EditorGUILayout.Toggle("Normal check", _checkNormal);
+                _checkBoneWeight = EditorGUILayout.Toggle("Bone weight check", _checkBoneWeight);
+                _checkVertexColorGray = EditorGUILayout.Toggle("Ensure vertex color gray", _checkVertexColorGray);
 
-                if (GUILayout.Button("检查并清理网格资源"))
+                if (GUILayout.Button("Check and Clean"))
                 {
                     ValidateMeshAssets();
                 }
@@ -142,7 +141,7 @@ namespace XuchFramework.Editor
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField($"找到 {_prefabs.Count} 个预制体:");
+            EditorGUILayout.LabelField($"Found {_prefabs.Count} prefabs.");
 
             using (var scrollView = new EditorGUILayout.ScrollViewScope(_scrollPosition, GUILayout.Height(250)))
             {
@@ -154,22 +153,22 @@ namespace XuchFramework.Editor
                     EditorGUILayout.ObjectField(prefab, typeof(GameObject), false);
 
                     var renderers = prefab.GetComponentsInChildren<SkinnedMeshRenderer>();
-                    EditorGUILayout.LabelField($"({renderers.Length} 个渲染器)", GUILayout.Width(100));
+                    EditorGUILayout.LabelField($"({renderers.Length} renderers)", GUILayout.Width(100));
                     EditorGUILayout.EndHorizontal();
                 }
             }
 
             EditorGUILayout.Space();
 
-            _isAutoApply = EditorGUILayout.Toggle("处理后自动应用到预制体", _isAutoApply);
+            _isAutoApply = EditorGUILayout.Toggle("Apply to prefab", _isAutoApply);
 
-            _skipExist = EditorGUILayout.Toggle("跳过已存在的网格", _skipExist);
+            _skipExist = EditorGUILayout.Toggle("Skip exists", _skipExist);
 
             EditorGUILayout.Space();
 
             using (new EditorGUI.DisabledGroupScope(_isProcessing || _prefabs.Count == 0))
             {
-                if (GUILayout.Button("开始批量处理", GUILayout.Height(30)))
+                if (GUILayout.Button("Start", GUILayout.Height(30)))
                 {
                     ProcessAllPrefabs();
                 }
@@ -177,12 +176,12 @@ namespace XuchFramework.Editor
 
             if (_isProcessing)
             {
-                EditorGUILayout.HelpBox("正在处理中，请稍候...", MessageType.Info);
+                EditorGUILayout.HelpBox("Processing, please wait...", MessageType.Info);
             }
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("还原所有预制体网格", GUILayout.Height(30)))
+            if (GUILayout.Button("Revert All Meshes", GUILayout.Height(30)))
             {
                 RevertAllMeshes();
             }
@@ -196,7 +195,7 @@ namespace XuchFramework.Editor
             {
                 if (!Directory.Exists(dir))
                 {
-                    Debug.LogWarning($"路径不存在: {dir}");
+                    Debug.LogWarning($"Path not found: {dir}");
                     return;
                 }
 
@@ -217,7 +216,7 @@ namespace XuchFramework.Editor
                     }
                 }
 
-                Debug.Log($"从 '{dir}' 找到 {_prefabs.Count} 个预制体");
+                Debug.Log($"Found {_prefabs.Count} prefabs in '{dir}'");
             }
         }
 
@@ -238,19 +237,19 @@ namespace XuchFramework.Editor
                 foreach (var prefab in _prefabs)
                 {
                     EditorUtility.DisplayProgressBar(
-                        "批量网格分离",
-                        $"正在处理: {prefab.name} ({processedCount + 1}/{totalCount})",
+                        "Splitting Vertices",
+                        $"Processing: {prefab.name} ({processedCount + 1}/{totalCount})",
                         (float)processedCount / totalCount);
 
                     ProcessPrefab(prefab);
                     processedCount++;
                 }
 
-                EditorUtility.DisplayDialog("完成", $"批量处理完成！\n成功处理了 {processedCount}/{totalCount} 个预制体。", "确定");
+                EditorUtility.DisplayDialog("Done", $"Done!\nProcessed {processedCount}/{totalCount} prefabs.", "OK");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"批量分离网格失败: {ex.Message}");
+                Debug.LogError($"Failed to split vertices: {ex.Message}\n{ex.StackTrace}");
             }
             finally
             {
@@ -268,7 +267,7 @@ namespace XuchFramework.Editor
             {
                 if (renderer.sharedMesh == null)
                 {
-                    Debug.LogWarning($"预制体 {prefab.name} 的渲染器没有共享网格，跳过处理。");
+                    Debug.LogWarning($"No shared vertices in renderer for {prefab.name}, skipping.");
                     continue;
                 }
 
@@ -280,7 +279,7 @@ namespace XuchFramework.Editor
                     if (_isAutoApply)
                         renderer.sharedMesh = splitedMesh;
 
-                    Debug.Log($"已处理: {prefab.name}.{renderer.name}.{renderer.sharedMesh.name} -> {splitedMesh.name}");
+                    Debug.Log($"Processed: {prefab.name}.{renderer.name}.{renderer.sharedMesh.name} -> {splitedMesh.name}");
                 }
             }
         }
@@ -306,12 +305,12 @@ namespace XuchFramework.Editor
             var originalBoneWeights = originalMesh.GetAllBoneWeights().ToArray();
             var originalColors = originalMesh.colors;
 
-            // 分析顶点使用情况
+            // Analyze vertex usage
             var vertexSubMeshUsage = new Dictionary<int, HashSet<int>>();
             for (int subMeshIndex = 0; subMeshIndex < originalMesh.subMeshCount; subMeshIndex++)
             {
                 var subTriangles = originalMesh.GetTriangles(subMeshIndex);
-                Debug.Log($"分析子网格 {subMeshIndex}，索引数量：{subTriangles.Length}");
+                Debug.Log($"Analyzing submesh {subMeshIndex}, index count: {subTriangles.Length}");
                 if (!vertexSubMeshUsage.ContainsKey(subMeshIndex))
                 {
                     vertexSubMeshUsage[subMeshIndex] = new HashSet<int>();
@@ -322,7 +321,8 @@ namespace XuchFramework.Editor
                 }
             }
 
-            Debug.Log($"子网格数量：{originalMesh.subMeshCount}, 各子网格使用顶点数量：{string.Join(", ", vertexSubMeshUsage.Select(kvp => kvp.Value.Count))}");
+            Debug.Log(
+                $"Submesh count: {originalMesh.subMeshCount}, vertex count per submesh: {string.Join(", ", vertexSubMeshUsage.Select(kvp => kvp.Value.Count))}");
 
             var newVertices = new List<Vector3>();
             var newNormals = new List<Vector3>();
@@ -335,7 +335,7 @@ namespace XuchFramework.Editor
 
             var originalIndexToNewIndex = new Dictionary<int, Dictionary<int, int>>();
 
-            // 预先计算骨骼权重的起始索引
+            // Pre-calculate bone weight start indices
             var boneWeightStartIndex = new int[originalMesh.vertexCount + 1];
             int currentBoneWeightIndex = 0;
             for (int i = 0; i < originalMesh.vertexCount; i++)
@@ -374,14 +374,14 @@ namespace XuchFramework.Editor
                         originalIndexToNewIndex[originalIndex] = new Dictionary<int, int>();
                     originalIndexToNewIndex[originalIndex][submeshIndex] = newIndex;
 
-                    // 处理骨骼信息
+                    // Process bone info
                     if (originalBonesPerVertex != null && originalBonesPerVertex.Length > originalIndex)
                     {
                         var boneCount = originalBonesPerVertex[originalIndex];
 
                         newBonesPerVertex.Add(boneCount);
 
-                        // 复制这个顶点的所有骨骼权重
+                        // Copy all bone weights for this vertex
                         int startIndex = boneWeightStartIndex[originalIndex];
                         for (int boneIdx = 0; boneIdx < boneCount; boneIdx++)
                         {
@@ -394,9 +394,9 @@ namespace XuchFramework.Editor
                 }
             }
 
-            Debug.Log($"源顶点数：{originalMesh.vertexCount}，新顶点数：{newVertices.Count}");
+            Debug.Log($"Original vertex count: {originalMesh.vertexCount}, new vertex count: {newVertices.Count}");
 
-            // 重新构建三角形索引
+            // Rebuild triangle indices
             for (int subMeshIndex = 0; subMeshIndex < originalMesh.subMeshCount; subMeshIndex++)
             {
                 newSubTriangles[subMeshIndex] = new List<int>();
@@ -444,7 +444,7 @@ namespace XuchFramework.Editor
         private void SaveMeshAsAsset(Mesh mesh)
         {
             string fileName = $"{mesh.name}.asset";
-            // 如果 fileName 存在，增加后缀
+            // If fileName exists, add suffix
             int index = 1;
             while (File.Exists(Path.Combine(_savePath, fileName)))
             {
@@ -455,7 +455,7 @@ namespace XuchFramework.Editor
             }
             string fullPath = Path.Combine(_savePath, fileName);
 
-            // 保存网格资源
+            // Save mesh asset
             AssetDatabase.CreateAsset(mesh, fullPath);
         }
 
@@ -463,11 +463,15 @@ namespace XuchFramework.Editor
         {
             if (!Directory.Exists(_savePath))
             {
-                EditorUtility.DisplayDialog("错误", $"保存路径不存在: {_savePath}", "确定");
+                EditorUtility.DisplayDialog("Error", $"Save path does not exist: {_savePath}", "OK");
                 return;
             }
 
-            bool confirmed = EditorUtility.DisplayDialog("确认清理", $"将检查并清理路径 '{_savePath}' 下的网格资源。\n\n" + "确定要继续吗？", "确定", "取消");
+            bool confirmed = EditorUtility.DisplayDialog(
+                "Confirm Cleanup",
+                $"Will check and clean up mesh assets in path '{_savePath}'.\n\n" + "Do you want to continue?",
+                "OK",
+                "Cancel");
 
             if (!confirmed)
                 return;
@@ -479,17 +483,17 @@ namespace XuchFramework.Editor
 
             try
             {
-                // 获取_savePath下所有资源
+                // Get all assets under _savePath
                 string[] meshGuids = AssetDatabase.FindAssets("t:Mesh", new[] { _savePath });
                 totalCount = meshGuids.Length;
 
                 if (totalCount == 0)
                 {
-                    EditorUtility.DisplayDialog("完成", $"在路径 '{_savePath}' 下没有找到任何网格文件。", "确定");
+                    EditorUtility.DisplayDialog("Done", $"No mesh files found in path '{_savePath}'.", "OK");
                     return;
                 }
 
-                EditorUtility.DisplayProgressBar("检查网格资源", "正在检查...", 0f);
+                EditorUtility.DisplayProgressBar("Checking Mesh Assets", "Checking...", 0f);
 
                 for (int i = 0; i < meshGuids.Length; i++)
                 {
@@ -498,15 +502,18 @@ namespace XuchFramework.Editor
                     string fileName = Path.GetFileName(path);
                     Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
 
-                    EditorUtility.DisplayProgressBar("检查网格资源", $"正在检查: {Path.GetFileName(path)} ({i + 1}/{totalCount})", (float)i / totalCount);
+                    EditorUtility.DisplayProgressBar(
+                        "Checking Mesh Assets",
+                        $"Checking: {Path.GetFileName(path)} ({i + 1}/{totalCount})",
+                        (float)i / totalCount);
 
                     var fileIssues = new List<string>();
 
-                    // 检查网格是否损坏
+                    // Check if mesh is corrupted
                     if (mesh == null)
                     {
-                        fileIssues.Add("网格损坏或无法加载");
-                        Debug.Log($"网格资源损坏或无法加载: {path}");
+                        fileIssues.Add("Mesh corrupted or cannot be loaded");
+                        Debug.Log($"Mesh asset corrupted or cannot be loaded: {path}");
                         AssetDatabase.DeleteAsset(path);
                         deletedFiles.Add(fileName);
                         deletedCount++;
@@ -515,21 +522,21 @@ namespace XuchFramework.Editor
 
                     bool shouldDelete = false;
 
-                    // 检查顶点数据完整性
+                    // Check vertex data integrity
                     if (mesh.vertexCount == 0)
                     {
-                        fileIssues.Add("网格顶点数据为空");
-                        Debug.Log($"网格顶点数据为空: {path}");
+                        fileIssues.Add("Mesh vertex data is empty");
+                        Debug.Log($"Mesh vertex data is empty: {path}");
                         shouldDelete = true;
                     }
                     else if (mesh.triangles == null || mesh.triangles.Length == 0)
                     {
-                        fileIssues.Add("网格三角形数据为空");
-                        Debug.Log($"网格三角形数据为空: {path}");
+                        fileIssues.Add("Mesh triangle data is empty");
+                        Debug.Log($"Mesh triangle data is empty: {path}");
                         shouldDelete = true;
                     }
 
-                    // 检查子网格完整性
+                    // Check submesh integrity
                     if (!shouldDelete && mesh.subMeshCount > 0)
                     {
                         for (int subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
@@ -537,58 +544,58 @@ namespace XuchFramework.Editor
                             var triangles = mesh.GetTriangles(subMeshIndex);
                             if (triangles.Length == 0)
                             {
-                                fileIssues.Add($"子网格 {subMeshIndex} 没有三角形数据");
-                                Debug.Log($"子网格 {subMeshIndex} 没有三角形数据: {path}");
+                                fileIssues.Add($"Submesh {subMeshIndex} has no triangle data");
+                                Debug.Log($"Submesh {subMeshIndex} has no triangle data: {path}");
                                 shouldDelete = true;
                             }
                             else if (triangles.Length % 3 != 0)
                             {
-                                fileIssues.Add($"子网格 {subMeshIndex} 三角形索引数不是3的倍数");
-                                Debug.Log($"子网格 {subMeshIndex} 三角形索引数不是3的倍数: {path}");
+                                fileIssues.Add($"Submesh {subMeshIndex} triangle index count is not a multiple of 3");
+                                Debug.Log($"Submesh {subMeshIndex} triangle index count is not a multiple of 3: {path}");
                                 shouldDelete = true;
                             }
                         }
                     }
 
-                    // 检查法线
+                    // Check normals
                     if (!shouldDelete && _checkNormal)
                     {
                         Vector3[] normals = mesh.normals;
                         if (normals == null || normals.Length == 0)
                         {
-                            fileIssues.Add("法线数据为空");
-                            Debug.Log($"法线数据为空: {path}");
+                            fileIssues.Add("Normal data is empty");
+                            Debug.Log($"Normal data is empty: {path}");
                             shouldDelete = true;
                         }
                         if (normals != null && normals.Length > 0 && normals.Length != mesh.vertexCount)
                         {
-                            fileIssues.Add("法线数量与顶点数量不匹配");
-                            Debug.Log($"法线数量与顶点数量不匹配: {path}");
+                            fileIssues.Add("Normal count does not match vertex count");
+                            Debug.Log($"Normal count does not match vertex count: {path}");
                             shouldDelete = true;
                         }
                     }
 
-                    // 检查骨骼权重
+                    // Check bone weights
                     if (!shouldDelete && _checkBoneWeight)
                     {
                         BoneWeight[] boneWeights = mesh.boneWeights;
                         if (boneWeights == null || boneWeights.Length == 0)
                         {
-                            fileIssues.Add("骨骼权重为空");
-                            Debug.Log($"骨骼权重为空: {path}");
+                            fileIssues.Add("Bone weights are empty");
+                            Debug.Log($"Bone weights are empty: {path}");
                             shouldDelete = true;
                         }
                         if (boneWeights != null && boneWeights.Length > 0)
                         {
                             if (boneWeights.Length != mesh.vertexCount)
                             {
-                                fileIssues.Add("骨骼权重数量与顶点数量不匹配");
-                                Debug.Log($"骨骼权重数量与顶点数量不匹配: {path}");
+                                fileIssues.Add("Bone weight count does not match vertex count");
+                                Debug.Log($"Bone weight count does not match vertex count: {path}");
                                 shouldDelete = true;
                             }
                             else
                             {
-                                // 检查权重总和
+                                // Check weight sum
                                 for (int w = 0; w < boneWeights.Length; w++)
                                 {
                                     float weightSum = boneWeights[w].weight0
@@ -597,17 +604,17 @@ namespace XuchFramework.Editor
                                                       + boneWeights[w].weight3;
                                     if (Mathf.Abs(weightSum - 1.0f) > 0.01f)
                                     {
-                                        fileIssues.Add($"顶点 {w} 的骨骼权重总和不等于 1 (实际: {weightSum:F3})");
-                                        Debug.Log($"顶点 {w} 的骨骼权重总和不等于 1 (实际: {weightSum:F3}): {path}");
+                                        fileIssues.Add($"Vertex {w} bone weight sum is not 1 (actual: {weightSum:F3})");
+                                        Debug.Log($"Vertex {w} bone weight sum is not 1 (actual: {weightSum:F3}): {path}");
                                         shouldDelete = true;
-                                        break; // 只报告第一个错误，避免太多日志
+                                        break; // Only report the first error to avoid too many logs
                                     }
                                 }
                             }
                         }
                     }
 
-                    // 检查顶点色是否为灰度
+                    // Check if vertex color is grayscale
                     if (!shouldDelete && _checkVertexColorGray)
                     {
                         Color[] vertexColors = mesh.colors;
@@ -627,14 +634,14 @@ namespace XuchFramework.Editor
                             }
                             if (!allGray)
                             {
-                                fileIssues.Add("顶点色不为灰度");
-                                Debug.Log($"顶点色不为灰度: {path}");
+                                fileIssues.Add("Vertex color is not grayscale");
+                                Debug.Log($"Vertex color is not grayscale: {path}");
                                 shouldDelete = true;
                             }
                         }
                     }
 
-                    // 执行删除或记录修复
+                    // Perform delete or record for fix
                     if (shouldDelete)
                     {
                         AssetDatabase.DeleteAsset(path);
@@ -650,15 +657,15 @@ namespace XuchFramework.Editor
 
                 AssetDatabase.Refresh();
 
-                // 显示结果
+                // Show results
                 ShowValidationResults(totalCount, deletedCount, deletedFiles, fileNameToIssues);
 
-                Debug.Log($"网格资源验证完成 - 检查: {totalCount}, 删除: {deletedCount}");
+                Debug.Log($"Mesh asset validation completed - Checked: {totalCount}, Deleted: {deletedCount}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"验证网格资源时发生错误: {ex.Message}");
-                EditorUtility.DisplayDialog("错误", $"验证过程中发生错误:\n{ex.Message}", "确定");
+                Debug.LogError($"Error occurred during mesh asset validation: {ex.Message}");
+                EditorUtility.DisplayDialog("Error", $"Error occurred during validation:\n{ex.Message}", "OK");
             }
             finally
             {
@@ -669,11 +676,11 @@ namespace XuchFramework.Editor
         private void ShowValidationResults(
             int totalCount, int deletedCount, List<string> deletedFiles, Dictionary<string, List<string>> fileNameToIssues)
         {
-            string resultMessage = $"检查完成！\n\n" + $"总共检查: {totalCount} 个网格文件\n" + $"删除文件: {deletedCount} 个\n";
+            string resultMessage = $"Check completed!\n\n" + $"Total checked: {totalCount} mesh files\n" + $"Deleted files: {deletedCount}\n";
 
             if (deletedCount > 0)
             {
-                resultMessage += $"\n删除的文件:\n";
+                resultMessage += $"\nDeleted files:\n";
                 foreach (string fileName in deletedFiles)
                 {
                     resultMessage += $"• {fileName}\n";
@@ -682,7 +689,7 @@ namespace XuchFramework.Editor
 
             if (fileNameToIssues.Count > 0)
             {
-                resultMessage += "\n存在问题的文件:\n";
+                resultMessage += "\nFiles with issues:\n";
                 foreach (var kvp in fileNameToIssues.Take(5))
                 {
                     resultMessage += $"\n{kvp.Key}:\n";
@@ -693,21 +700,21 @@ namespace XuchFramework.Editor
                 }
                 if (fileNameToIssues.Count > 5)
                 {
-                    resultMessage += $"\n...还有 {fileNameToIssues.Count - 5} 个问题文件未显示 (详见控制台日志)";
+                    resultMessage += $"\n...{fileNameToIssues.Count - 5} more files with issues not shown (see console logs)";
                 }
             }
 
-            EditorUtility.DisplayDialog(deletedCount > 0 ? "清理完成" : "检查完成", resultMessage, "确定");
+            EditorUtility.DisplayDialog(deletedCount > 0 ? "Cleanup Complete" : "Check Complete", resultMessage, "OK");
         }
 
         /// <summary>
-        /// 复原所有服装的网格为分离之前
+        /// Revert all clothing meshes to pre-split state
         /// </summary>
         private void RevertAllMeshes()
         {
             if (_prefabs.Count == 0)
             {
-                EditorUtility.DisplayDialog("提示", "没有收集到任何预制体，请先点击\"收集预制体\"按钮。", "确定");
+                EditorUtility.DisplayDialog("Notice", "No prefabs collected. Please click the \"Collect\" button first.", "OK");
                 return;
             }
 
@@ -724,16 +731,16 @@ namespace XuchFramework.Editor
                 }
             }
 
-            // 确认对话框
+            // Confirmation dialog
             bool confirmed = EditorUtility.DisplayDialog(
-                "确认还原",
-                $"将还原以下预制体的网格到原始状态：\n\n"
-                + $"• 预制体数量: {affectedPrefabs} 个\n"
-                + $"• 渲染器数量: {totalRenderers} 个\n\n"
-                + "此操作将撤销所有网格修改，恢复到分离前的状态。\n\n"
-                + "确定要继续吗？",
-                "确定还原",
-                "取消");
+                "Confirm Revert",
+                $"Will revert the following prefab meshes to original state:\n\n"
+                + $"• Prefab count: {affectedPrefabs}\n"
+                + $"• Renderer count: {totalRenderers}\n\n"
+                + "This operation will undo all mesh modifications and restore to pre-split state.\n\n"
+                + "Do you want to continue?",
+                "Confirm Revert",
+                "Cancel");
 
             if (!confirmed)
                 return;
@@ -748,8 +755,8 @@ namespace XuchFramework.Editor
                 foreach (var prefab in _prefabs)
                 {
                     EditorUtility.DisplayProgressBar(
-                        "还原网格",
-                        $"正在处理: {prefab.name} ({processedPrefabs + 1}/{affectedPrefabs})",
+                        "Reverting Meshes",
+                        $"Processing: {prefab.name} ({processedPrefabs + 1}/{affectedPrefabs})",
                         (float)processedPrefabs / affectedPrefabs);
 
                     var renderers = prefab.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -763,14 +770,14 @@ namespace XuchFramework.Editor
 
                         if (sp == null)
                         {
-                            Debug.LogWarning($"未找到网格属性: {renderer.name}");
+                            Debug.LogWarning($"Mesh property not found: {renderer.name}");
                             continue;
                         }
 
                         PrefabUtility.RevertPropertyOverride(sp, InteractionMode.UserAction);
                         revertedRenderers++;
                         prefabChanged = true;
-                        Debug.Log($"已还原网格: {renderer.name} (预制体: {prefab.name})");
+                        Debug.Log($"Reverted mesh: {renderer.name} (prefab: {prefab.name})");
                     }
                     if (prefabChanged)
                     {
@@ -782,37 +789,37 @@ namespace XuchFramework.Editor
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
-                // 显示结果
-                string resultMessage = $"网格还原完成！\n\n"
-                                       + $"处理的预制体: {processedPrefabs} 个\n"
-                                       + $"处理的渲染器: {processedRenderers} 个\n"
-                                       + $"成功还原的渲染器: {revertedRenderers} 个\n";
+                // Show results
+                string resultMessage = $"Mesh revert completed!\n\n"
+                                       + $"Processed prefabs: {processedPrefabs}\n"
+                                       + $"Processed renderers: {processedRenderers}\n"
+                                       + $"Successfully reverted renderers: {revertedRenderers}\n";
 
                 if (revertedPrefabs.Count > 0)
                 {
-                    resultMessage += $"\n已修改的预制体:\n";
-                    foreach (string prefabName in revertedPrefabs.Take(10)) // 最多显示10个
+                    resultMessage += $"\nModified prefabs:\n";
+                    foreach (string prefabName in revertedPrefabs.Take(10)) // Show max 10
                     {
                         resultMessage += $"• {prefabName}\n";
                     }
                     if (revertedPrefabs.Count > 10)
                     {
-                        resultMessage += $"... 还有 {revertedPrefabs.Count - 10} 个预制体";
+                        resultMessage += $"... {revertedPrefabs.Count - 10} more prefabs";
                     }
                 }
                 else
                 {
-                    resultMessage += "\n没有发现需要还原的网格覆盖。";
+                    resultMessage += "\nNo mesh overrides found to revert.";
                 }
 
-                EditorUtility.DisplayDialog(revertedRenderers > 0 ? "还原完成" : "还原完成", resultMessage, "确定");
+                EditorUtility.DisplayDialog(revertedRenderers > 0 ? "Revert Complete" : "Revert Complete", resultMessage, "OK");
 
-                Debug.Log($"网格还原操作完成 - 处理预制体: {processedPrefabs}, 还原渲染器: {revertedRenderers}");
+                Debug.Log($"Mesh revert operation completed - Processed prefabs: {processedPrefabs}, Reverted renderers: {revertedRenderers}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"还原网格时发生错误: {ex.Message}");
-                EditorUtility.DisplayDialog("错误", $"还原过程中发生错误:\n{ex.Message}", "确定");
+                Debug.LogError($"Error occurred while reverting meshes: {ex.Message}");
+                EditorUtility.DisplayDialog("Error", $"Error occurred during revert:\n{ex.Message}", "OK");
             }
             finally
             {

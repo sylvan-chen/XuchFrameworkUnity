@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -13,7 +12,7 @@ namespace XuchFramework.Core
     }
 
     /// <summary>
-    /// 通过ResourceManager加载的资源句柄，获取后需要通过 IsValid 检查是否可用
+    /// It's recommend to check IsValid before using the Asset
     /// </summary>
     public struct ResourceHandle<T> : IResourceHandle
     {

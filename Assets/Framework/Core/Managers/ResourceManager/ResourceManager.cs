@@ -7,15 +7,14 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/Resource Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Resource Manager")]
     public partial class ResourceManager : ModuleBase
     {
-        #region 生命周期
+        #region Lifecycle
 
         protected override async UniTask OnInitialize()
         {
@@ -31,11 +30,8 @@ namespace XuchFramework.Core
 
         #endregion
 
-        #region 资源管理
+        #region Assets Loading
 
-        /// <summary>
-        /// 异步加载资源
-        /// </summary>
         public async UniTask<ResourceHandle<T>> LoadAssetAsync<T>(string key)
         {
             if (!ValidateKey(key))
@@ -56,9 +52,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 异步加载资源（回调方式）
-        /// </summary>
         public void LoadAssetAsync<T>(string key, Action<ResourceHandle<T>> callback)
         {
             if (!ValidateKey(key))
@@ -83,10 +76,7 @@ namespace XuchFramework.Core
             };
         }
 
-        /// <summary>
-        /// 同步加载资源（阻塞方式，不推荐）
-        /// </summary>
-        [Obsolete("Synchronous loading is not recommended, please use LoadAssetAsync instead.")]
+        [Obsolete("Synchronous loading is not recommended, please use LoadAssetAsync instead")]
         public ResourceHandle<T> LoadAsset<T>(string key)
         {
             if (!ValidateKey(key))
@@ -107,9 +97,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 批量加载资源
-        /// </summary>
         public async UniTask<ResourceHandle<IList<T>>> LoadAssetsAsync<T>(string key)
         {
             if (!ValidateKey(key))
@@ -130,9 +117,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 批量加载资源（回调方式）
-        /// </summary>
         public void LoadAssetsAsync<T>(string key, Action<T> callback)
         {
             if (!ValidateKey(key))
@@ -141,9 +125,6 @@ namespace XuchFramework.Core
             Addressables.LoadAssetsAsync<T>(key, callback);
         }
 
-        /// <summary>
-        /// 释放资源
-        /// </summary>
         public void Release(IResourceHandle resourceHandle)
         {
             resourceHandle.Release();
@@ -151,11 +132,8 @@ namespace XuchFramework.Core
 
         #endregion
 
-        #region Prefab 管理
+        #region Prefab Instantiation
 
-        /// <summary>
-        /// 异步加载并实例化 Prefab，单独跟踪实例句柄，销毁需调用 DestroyInstance。
-        /// </summary>
         public async UniTask<GameObject> InstantiateAsync(string key, Transform parent = null, bool worldPositionStays = false)
         {
             if (!ValidateKey(key))
@@ -176,9 +154,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 异步加载并实例化 Prefab（回调方式），单独跟踪实例句柄，销毁需调用 DestroyInstance。
-        /// </summary>
         public void InstantiateAsync(string key, Action<GameObject> callback, Transform parent = null, bool worldPositionStays = false)
         {
             if (!ValidateKey(key))
@@ -203,9 +178,6 @@ namespace XuchFramework.Core
             };
         }
 
-        /// <summary>
-        /// 同步加载并实例化 Prefab（阻塞方式，不推荐），单独跟踪实例句柄，销毁需调用 DestroyInstance。
-        /// </summary>
         [Obsolete("Synchronous loading is not recommended, please use InstantiateAsync instead.")]
         public GameObject Instantiate(string key, Transform parent = null, bool worldPositionStays = false)
         {
@@ -227,9 +199,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 销毁通过 InstantiateAsync 创建的实例。
-        /// </summary>
         public void DestroyInstance(GameObject instance)
         {
             if (instance == null)
@@ -240,14 +209,14 @@ namespace XuchFramework.Core
 
             if (!Addressables.ReleaseInstance(instance))
             {
-                // 不是由 Adressable 创建，尝试普通销毁
+                // Not created by Addressable, try normal destroy
                 GameObject.Destroy(instance);
             }
         }
 
         #endregion
 
-        #region 场景管理
+        #region Scene Loading
 
         public enum SceneState
         {
@@ -279,9 +248,6 @@ namespace XuchFramework.Core
 
         private readonly Dictionary<string, SceneHandle> _cachedSceneHandle = new();
 
-        /// <summary>
-        /// 异步加载场景
-        /// </summary>
         public async UniTask<bool> LoadSceneAsync(
             string key, LoadSceneMode mode = LoadSceneMode.Single, bool activateOnLoad = true, Action<float> onProgress = null)
         {
@@ -317,9 +283,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 异步加载场景（回调方式）
-        /// </summary>
         public void LoadSceneAsync(
             string key, Action<bool> callback, LoadSceneMode mode = LoadSceneMode.Single, bool activateOnLoad = true, Action<float> onProgress = null)
         {
@@ -373,18 +336,12 @@ namespace XuchFramework.Core
                    && sceneHandle.State is SceneState.LoadedActive or SceneState.LoadedInactive or SceneState.Loading;
         }
 
-        /// <summary>
-        /// 预加载场景
-        /// </summary>
         public UniTask<bool> PreloadSceneAsync(string key, Action<float> onProgress = null) => LoadSceneAsync(
             key,
             LoadSceneMode.Additive,
             activateOnLoad: false,
             onProgress: onProgress);
 
-        /// <summary>
-        /// 预加载场景（回调方式）
-        /// </summary>
         public void PreloadSceneAsync(string key, Action<bool> callback, Action<float> onProgress = null) => LoadSceneAsync(
             key,
             callback,
@@ -392,9 +349,6 @@ namespace XuchFramework.Core
             activateOnLoad: false,
             onProgress: onProgress);
 
-        /// <summary>
-        /// 激活场景
-        /// </summary>
         public async UniTask<bool> ActivateSceneAsync(string key)
         {
             if (_cachedSceneHandle.TryGetValue(key, out var sceneHandle))
@@ -415,9 +369,6 @@ namespace XuchFramework.Core
             return false;
         }
 
-        /// <summary>
-        /// 激活场景（回调方式）
-        /// </summary>
         public void ActivateSceneAsync(string key, Action<bool> callback)
         {
             if (_cachedSceneHandle.TryGetValue(key, out var sceneHandle))
@@ -443,9 +394,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 卸载场景
-        /// </summary>
         public async UniTask<bool> UnloadSceneAsync(string key)
         {
             if (_cachedSceneHandle.TryGetValue(key, out var sceneHandle))
@@ -468,7 +416,7 @@ namespace XuchFramework.Core
                 else
                 {
                     Log.Error($"[ResourceManager] Failed to unload scene failed for {key}: {unloadOp.OperationException?.Message}");
-                    sceneHandle.State = preState; // 回退状态
+                    sceneHandle.State = preState; // Revert state
                     return false;
                 }
             }
@@ -477,9 +425,6 @@ namespace XuchFramework.Core
             return false;
         }
 
-        /// <summary>
-        /// 卸载场景（回调方式）
-        /// </summary>
         public void UnloadSceneAsync(string key, Action<bool> callback)
         {
             if (_cachedSceneHandle.TryGetValue(key, out var sceneHandle))
@@ -504,7 +449,7 @@ namespace XuchFramework.Core
                     else
                     {
                         Log.Error($"[ResourceManager] Failed to unload scene for {key}: {op.OperationException?.Message}");
-                        sceneHandle.State = preState; // 回退状态
+                        sceneHandle.State = preState; // Revert state
                         callback?.Invoke(false);
                     }
                 };
@@ -516,9 +461,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 卸载所有已加载场景
-        /// </summary>
         public async UniTask<int> UnloadAllScenesAsync(bool excludeActiveScene = true)
         {
             var activeName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -542,7 +484,7 @@ namespace XuchFramework.Core
 
         #endregion
 
-        #region 辅助方法
+        #region Helpers
 
         private static bool ValidateKey(string key)
         {

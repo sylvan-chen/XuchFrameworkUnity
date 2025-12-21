@@ -5,7 +5,7 @@ using UnityEngine;
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("XuchFramework/Pool Manager")]
+    [AddComponentMenu("XuchFramework/Managers/Pool Manager")]
     public sealed class PoolManager : ModuleBase
     {
         public const int DEFAULT_CAPACITY = int.MaxValue;
