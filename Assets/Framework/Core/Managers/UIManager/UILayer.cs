@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Alchemy.Inspector;
 using UnityEngine;
 using UnityEngine.UI;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
@@ -20,19 +19,19 @@ namespace XuchFramework.Core
             PauseAndClose = 3,
         }
 
-        [SerializeField, Tooltip("UI层名称，留空使用 GameObject 名称")]
+        [SerializeField, Tooltip("UI layer name, use GameObject name if empty")]
         private string _layerName;
 
         [Button]
         private void UseGameObjectName() => _layerName = name;
 
-        [SerializeField, Tooltip("当有新面板覆盖在栈顶时，栈顶面板的行为")]
+        [SerializeField, Tooltip("Behaviour of top panel when covered by a new panel")]
         private TopCoverBehaviour _onTopPanelCovered;
 
         public string LayerName => _layerName;
         public Canvas Canvas { get; private set; }
 
-        private readonly Stack<UIPanelBase> _openedPanelStack = new(); // 管理打开的面板
+        private readonly Stack<UIPanelBase> _openedPanelStack = new();
 
         public void Init(Camera uiCamera)
         {
@@ -57,9 +56,6 @@ namespace XuchFramework.Core
                 Canvas.worldCamera = cam;
         }
 
-        /// <summary>
-        /// 将面板推入当前层的栈顶
-        /// </summary>
         public void PushPanel(UIPanelBase panel)
         {
             if (panel == null)
@@ -85,9 +81,6 @@ namespace XuchFramework.Core
             _openedPanelStack.Push(panel);
         }
 
-        /// <summary>
-        /// 移除指定的面板
-        /// </summary>
         public void PopPanel(UIPanelBase panel)
         {
             if (panel == null)
@@ -99,7 +92,8 @@ namespace XuchFramework.Core
             if (_openedPanelStack.Count == 0 || !_openedPanelStack.Contains(panel))
                 return;
 
-            if (_openedPanelStack.Peek() == panel) // 如果要移除的面板是栈顶面板，则需要恢复上一个面板
+            // If removing the top panel, restore the previous panel
+            if (_openedPanelStack.Peek() == panel)
             {
                 _openedPanelStack.Pop();
                 if (_openedPanelStack.Count > 0)
@@ -116,11 +110,10 @@ namespace XuchFramework.Core
                     }
                 }
             }
-            else // 如果要移除的面板不是栈顶面板，则直接从栈中移除
+            else
             {
                 var tempStack = new Stack<UIPanelBase>();
 
-                // 将栈顶元素弹出，直到找到要移除的面板
                 while (_openedPanelStack.Count > 0)
                 {
                     var currentPanel = _openedPanelStack.Pop();
@@ -130,7 +123,6 @@ namespace XuchFramework.Core
                     }
                 }
 
-                // 恢复之前弹出的面板
                 while (tempStack.Count > 0)
                 {
                     var remainingPanel = tempStack.Pop();

@@ -234,7 +234,7 @@ namespace XuchFramework.Editor
                             continue;
                         }
 
-                        string className = StringHelper.ToPascalCase(fileName);
+                        string className = GameHelper.ToPascalCase(fileName);
                         string code = GenerateClassCode(file, className, sampleObj);
 
                         string outputPath = Path.Combine(_outputDirectory, $"Config{className}.cs");
@@ -311,7 +311,7 @@ namespace XuchFramework.Editor
             foreach (var property in jsonObj.Properties())
             {
                 string propertyType = InferTypeName(property.Value);
-                string propertyName = StringHelper.ToPascalCase(property.Name);
+                string propertyName = GameHelper.ToPascalCase(property.Name);
 
                 propertyDefs.Add($"[JsonProperty(\"{property.Name}\")]");
                 propertyDefs.Add($"public {propertyType} {propertyName} {{ get; set; }}");

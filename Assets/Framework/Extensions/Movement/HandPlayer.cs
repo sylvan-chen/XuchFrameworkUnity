@@ -157,7 +157,7 @@ namespace XuchFramework.Gameplay
 
         protected virtual void Start()
         {
-            PlayerLayerMask = LayerMaskHelper.GetPhysicsLayerMask(gameObject.layer);
+            PlayerLayerMask = GameHelper.GetPhysicsLayerMask(gameObject.layer);
         }
 
         private void EnableHand(Hand hand)

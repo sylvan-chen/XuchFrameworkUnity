@@ -120,7 +120,7 @@ namespace XuchFramework.Editor
         /// </summary>
         private void UpdateSubtypeNames()
         {
-            _allProcedureTypeNames = TypeHelper.GetDerivedTypeNames(typeof(ProcedureBase));
+            _allProcedureTypeNames = GameHelper.GetDerivedTypeNames(typeof(ProcedureBase));
             // Read the old _availableProcedureTypeNames, for comparing with new _allProcedureTypeNames
             _currentAvailableProcedureTypeNames.Clear();
             for (int i = 0; i < _availableProcedureTypeNames.arraySize; i++)

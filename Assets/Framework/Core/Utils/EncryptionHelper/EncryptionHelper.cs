@@ -6,13 +6,8 @@ namespace XuchFramework.Core.Utils
 {
     public static class EncryptionHelper
     {
-        private static readonly byte[] _encrptionKey = Encoding.UTF8.GetBytes("Xuch@202304*QWERTYU-Mnbvcxz#");
+        private static readonly byte[] _encryptionKey = Encoding.UTF8.GetBytes("XuchFramework@202512*QWERTYU-Mnbvcxz#");
 
-        /// <summary>
-        /// 加密字符串
-        /// </summary>
-        /// <param name="text">待加密的字符串</param>
-        /// <returns>加密后的字符串</returns>
         public static string Encrypt(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -21,7 +16,7 @@ namespace XuchFramework.Core.Utils
             var textBytes = Encoding.UTF8.GetBytes(text);
             RijndaelManaged rm = new()
             {
-                Key = _encrptionKey,
+                Key = _encryptionKey,
                 Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             };
@@ -33,17 +28,12 @@ namespace XuchFramework.Core.Utils
             }
         }
 
-        /// <summary>
-        /// 解密字符串
-        /// </summary>
-        /// <param name="text">待解密的字符串</param>
-        /// <returns>解密结果</returns>
         public static byte[] Decrypt(string text)
         {
             var textBytes = Convert.FromBase64String(text);
             RijndaelManaged rm = new()
             {
-                Key = _encrptionKey,
+                Key = _encryptionKey,
                 Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             };

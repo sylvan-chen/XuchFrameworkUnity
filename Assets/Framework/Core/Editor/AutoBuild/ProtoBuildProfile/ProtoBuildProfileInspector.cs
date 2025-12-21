@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
 {
@@ -47,8 +48,8 @@ namespace XuchFramework.Editor
             _protoDirectory.stringValue = Path.GetFullPath(_protoDirectory.stringValue, Application.dataPath);
             _encryptedProtoOutputDirectory.stringValue = Path.GetFullPath(_encryptedProtoOutputDirectory.stringValue, Application.dataPath);
 
-            _protoDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_protoDirectory.stringValue);
-            _encryptedProtoOutputDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_encryptedProtoOutputDirectory.stringValue);
+            _protoDirectory.stringValue = GameHelper.GetRegularPath(_protoDirectory.stringValue);
+            _encryptedProtoOutputDirectory.stringValue = GameHelper.GetRegularPath(_encryptedProtoOutputDirectory.stringValue);
         }
     }
 }

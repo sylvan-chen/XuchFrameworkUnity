@@ -58,11 +58,11 @@ namespace XuchFramework.Editor
                         continue;
                     }
 
-                    var protoCode = FileHelper.ReadAllTextSafe(protoPath);
-                    var encryptedProtoCode = EncryptionHelper.Encrypt(protoCode);
+                    var protoCode = GameHelper.ReadAllTextSafe(protoPath);
+                    var encryptedProtoCode = GameHelper.Encrypt(protoCode);
                     var saveFileName = Path.GetFileNameWithoutExtension(protoPath) + ".bytes";
                     var encryptedFilePath = Path.Combine(encryptedProtoOutputDirectory, saveFileName);
-                    FileHelper.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
+                    GameHelper.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
                 }
 
                 AssetDatabase.Refresh();

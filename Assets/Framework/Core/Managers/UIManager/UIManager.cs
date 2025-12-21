@@ -5,12 +5,11 @@ using XuchFramework.Extensions;
 using UnityEngine.Rendering;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Core
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Xuch/UI Manager")]
+    [AddComponentMenu("XuchFramework/Managers/UI Manager")]
     public sealed class UIManager : ModuleBase
     {
         public enum UICameraType
@@ -86,21 +85,21 @@ namespace XuchFramework.Core
 
         private Camera CreateNewUICamera()
         {
-            // 排除主相机 UI 层级的渲染
+            // Exclude UI layer from main camera
             Camera.main.ExcludeLayer("UI");
-            // 创建 UI 层级专用的摄像机
+            // Create new UI camera for UI rendering
             var cameraObj = new GameObject("[UICamera]") { layer = LayerMask.NameToLayer("UI") };
             cameraObj.transform.SetParent(_uiRoot);
             cameraObj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
             var uiCamera = cameraObj.AddComponent<Camera>();
-            uiCamera.clearFlags = CameraClearFlags.Depth;            // 使用深度清除
-            uiCamera.cullingMask = 1 << LayerMask.NameToLayer("UI"); // 只渲染UI层
-            uiCamera.orthographic = true;                            // 使用正交投影
-            uiCamera.depth = 100;                                    // 确保在其他摄像机之上
-            uiCamera.useOcclusionCulling = false;                    // 不需要遮挡剔除，节约性能
+            uiCamera.clearFlags = CameraClearFlags.Depth;            // Use depth clear
+            uiCamera.cullingMask = 1 << LayerMask.NameToLayer("UI"); // Only render UI layer
+            uiCamera.orthographic = true;                            // Use orthographic projection
+            uiCamera.depth = 100;                                    // Ensure on top of other cameras
+            uiCamera.useOcclusionCulling = false;                    // No occlusion culling to save performance
 
-            // URP: 把 UICamera 添加到主相机的渲染堆栈中
+            // For URP: Add UICamera to main camera's render stack
             if (GraphicsSettings.defaultRenderPipeline is UniversalRenderPipelineAsset)
             {
                 var mainCamData = Camera.main.GetUniversalAdditionalCameraData();
@@ -129,9 +128,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 获取 UI Layer
-        /// </summary>
         public UILayer GetUILayer(string layerName)
         {
             var layer = _uiLayers.FirstOrDefault(x => x.name == layerName);
@@ -140,9 +136,6 @@ namespace XuchFramework.Core
             return layer;
         }
 
-        /// <summary>
-        /// 重设 UI 相机
-        /// </summary>
         public void ResetUICamera(Camera targetCamera = null)
         {
             targetCamera ??= Camera.main;
@@ -153,9 +146,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 异步加载面板
-        /// </summary>
         public async UniTask<UIPanelBase> LoadPanelAsync(string path)
         {
             var panelObj = await GameModule<ResourceManager>.Instance.InstantiateAsync(path);
@@ -187,9 +177,6 @@ namespace XuchFramework.Core
             return panel;
         }
 
-        /// <summary>
-        /// 卸载面板
-        /// </summary>
         public void UnloadPanel(int id)
         {
             if (_allPanels.TryGetValue(id, out var loadedPanel))
@@ -201,9 +188,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 卸载面板
-        /// </summary>
         public void UnloadPanel(UIPanelBase panel)
         {
             if (panel == null)
@@ -211,25 +195,20 @@ namespace XuchFramework.Core
             UnloadPanel(panel.ID);
         }
 
-        /// <summary>
-        /// 获取 UI 面板
-        /// </summary>
         public UIPanelBase GetPanel(int id)
         {
             return _allPanels.GetValueOrDefault(id);
         }
 
-        /// <summary>
-        /// 打开 UI 面板
-        /// </summary>
-        /// <param name="id">面板 ID</param>
         public UIPanelBase OpenPanel(int id)
         {
-            if (_openedPanels.TryGetValue(id, out var openedPanel)) // 已经打开
+            // Already opened
+            if (_openedPanels.TryGetValue(id, out var openedPanel))
             {
                 return openedPanel;
             }
-            else if (_allPanels.TryGetValue(id, out var loadedPanel)) // 已经加载但未打开
+            // Already loaded but not opened
+            else if (_allPanels.TryGetValue(id, out var loadedPanel))
             {
                 var layer = loadedPanel.CurrentLayer;
                 if (layer == null)
@@ -250,9 +229,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 关闭 UI 面板
-        /// </summary>
         public void ClosePanel(int id)
         {
             if (_openedPanels.TryGetValue(id, out var openedPanel))
@@ -263,9 +239,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 关闭 UI 面板
-        /// </summary>
         public void ClosePanel(UIPanelBase panel)
         {
             if (panel == null)
@@ -273,9 +246,6 @@ namespace XuchFramework.Core
             ClosePanel(panel.ID);
         }
 
-        /// <summary>
-        /// 切换 UI 面板所属的层级
-        /// </summary>
         public void ChangePanelLayer(UIPanelBase panel, string targetLayerName)
         {
             if (panel == null)
@@ -293,16 +263,13 @@ namespace XuchFramework.Core
                 oldLayer.PopPanel(panel);
             panel.SetLayer(newLayer);
 
-            // 只有在面板已经打开的情况下，才将其推入新层级的栈顶
+            // Only push to the new layer stack if the panel is already opened
             if (panel.IsOpened)
             {
                 newLayer.PushPanel(panel);
             }
         }
 
-        /// <summary>
-        /// 恢复 UI 面板所属层级到其默认层级
-        /// </summary>
         public void RestorePanelLayer(UIPanelBase panel)
         {
             if (panel == null)

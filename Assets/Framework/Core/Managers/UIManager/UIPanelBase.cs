@@ -2,15 +2,12 @@ using UnityEngine;
 
 namespace XuchFramework.Core
 {
-    /// <summary>
-    /// UI 界面基类
-    /// </summary>
     public abstract class UIPanelBase : MonoBehaviour
     {
         [SerializeField]
         protected int _id;
 
-        [SerializeField, Tooltip("默认所属的UI层，留空则使用第一个 UILayer")]
+        [SerializeField]
         protected string _defaultLayerName;
 
         public int ID => _id;

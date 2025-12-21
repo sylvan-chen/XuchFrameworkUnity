@@ -71,11 +71,11 @@ namespace XuchFramework.Editor
                         continue;
                     }
 
-                    var luaCode = FileHelper.ReadAllTextSafe(luaFilePath);
-                    var encryptedLuaCode = EncryptionHelper.Encrypt(luaCode);
+                    var luaCode = GameHelper.ReadAllTextSafe(luaFilePath);
+                    var encryptedLuaCode = GameHelper.Encrypt(luaCode);
                     var saveFileName = Path.GetFileNameWithoutExtension(luaFilePath) + ".bytes";
                     var encryptedFilePath = Path.Combine(encryptedLuaScriptsOutputDirectory, saveFileName);
-                    FileHelper.WriteAllTextSafe(encryptedFilePath, encryptedLuaCode);
+                    GameHelper.WriteAllTextSafe(encryptedFilePath, encryptedLuaCode);
                 }
 
                 AssetDatabase.Refresh();

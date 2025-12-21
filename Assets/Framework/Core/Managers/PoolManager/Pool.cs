@@ -121,8 +121,8 @@ namespace XuchFramework.Core
             }
 
             var poolObject = PoolObject.Create(target);
-            poolObject.OnSpawn = onSpawn == null ? null : () => onSpawn.Invoke(target);
-            poolObject.OnUnspawn = onUnspawn == null ? null : () => onUnspawn.Invoke(target);
+            poolObject.OnAcquire = onSpawn == null ? null : () => onSpawn.Invoke(target);
+            poolObject.OnRelease = onUnspawn == null ? null : () => onUnspawn.Invoke(target);
             poolObject.OnDiscard = onDiscard == null ? null : () => onDiscard.Invoke(target);
             poolObject.ReferenceCount = 1;
             _typeToPoolObjectMap.Add(target, poolObject);
@@ -144,20 +144,20 @@ namespace XuchFramework.Core
             return poolObjectInfos;
         }
 
-        public T Spawn()
+        public T Acquire()
         {
             foreach (PoolObject poolObject in _typeToPoolObjectMap.Values)
             {
                 if (_allowMultiReference || !poolObject.IsInUse)
                 {
-                    return poolObject.Spawn().Target as T;
+                    return poolObject.Acquire().Target as T;
                 }
             }
 
             return null;
         }
 
-        public void Unspawn(T target)
+        public void Release(T target)
         {
             if (target == null)
             {
@@ -166,7 +166,7 @@ namespace XuchFramework.Core
 
             if (_typeToPoolObjectMap.TryGetValue(target, out var poolObject))
             {
-                poolObject.Unspawn();
+                poolObject.Release();
                 if (Count > Capacity && poolObject.ReferenceCount <= 0)
                 {
                     Squeeze();
@@ -245,9 +245,6 @@ namespace XuchFramework.Core
             return true;
         }
 
-        /// <summary>
-        /// 清理对象池中所有未使用的对象
-        /// </summary>
         public override void DiscardAllUnused()
         {
             UpdateDiscardablePoolObjectsWithoutExpiredCheck();
@@ -259,9 +256,6 @@ namespace XuchFramework.Core
             _cachedDiscardablePoolObjects.Clear();
         }
 
-        /// <summary>
-        /// 清理对象池中所有过期的对象
-        /// </summary>
         public override void DiscardAllExpired()
         {
             UpdateDiscardablePoolObjects();
@@ -273,9 +267,6 @@ namespace XuchFramework.Core
             _cachedDiscardablePoolObjects.Clear();
         }
 
-        /// <summary>
-        /// 收缩，使得池中对象数量不要超出容量限制
-        /// </summary>
         public override void Squeeze()
         {
             int discardCount = Count - Capacity;
@@ -294,10 +285,6 @@ namespace XuchFramework.Core
             _cachedDiscardablePoolObjects.Clear();
         }
 
-        /// <summary>
-        /// 更新可丢弃对象缓存列表，包括未使用、未锁定且过期的对象
-        /// </summary>
-        /// <returns></returns>
         private void UpdateDiscardablePoolObjects()
         {
             _cachedDiscardablePoolObjects.Clear();
@@ -307,7 +294,7 @@ namespace XuchFramework.Core
                     continue;
 
                 double remainingTime = (poolObject.LastUseUtcTime - DateTime.MinValue).TotalSeconds + _objectExpiredTime;
-                // 如果过期时间为无穷大，则认为该对象永不过期
+                // If expired time is infinite, skip it
                 if (remainingTime.CompareTo(float.MaxValue) >= 0)
                     continue;
 
@@ -319,9 +306,6 @@ namespace XuchFramework.Core
             }
         }
 
-        /// <summary>
-        /// 更新可丢弃对象缓存列表，包括未使用、未锁定的对象，不检查过期时间
-        /// </summary>
         private void UpdateDiscardablePoolObjectsWithoutExpiredCheck()
         {
             _cachedDiscardablePoolObjects.Clear();

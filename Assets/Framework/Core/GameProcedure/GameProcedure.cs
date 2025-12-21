@@ -37,7 +37,7 @@ namespace XuchFramework.Core
             for (int i = 0; i < _availableProcedureTypeNames.Length; i++)
             {
                 string typeName = _availableProcedureTypeNames[i];
-                procedures[i] = Activator.CreateInstance(TypeHelper.GetType(typeName)) as ProcedureBase;
+                procedures[i] = Activator.CreateInstance(GameHelper.GetType(typeName)) as ProcedureBase;
                 if (typeName == _startupProcedureTypeName)
                 {
                     _startupProcedure = procedures[i];

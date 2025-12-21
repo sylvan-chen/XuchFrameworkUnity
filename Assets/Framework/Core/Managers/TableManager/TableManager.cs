@@ -53,9 +53,9 @@ namespace XuchFramework.Core
             foreach (var jsonAsset in handle.Asset)
             {
                 var jsonContent = jsonAsset.text;
-                var fileName = StringHelper.ToPascalCase(jsonAsset.name);
+                var fileName = GameHelper.ToPascalCase(jsonAsset.name);
                 var typeFullName = $"{tableClassNamespace}.Config{fileName}";
-                var tableType = TypeHelper.GetType(typeFullName);
+                var tableType = GameHelper.GetType(typeFullName);
                 if (tableType == null)
                 {
                     Log.Warning($"[TableManager] Failed to load table: {fileName}. Type not found.");

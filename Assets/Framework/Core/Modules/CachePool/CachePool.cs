@@ -41,7 +41,7 @@ namespace XuchFramework.Core
         {
             foreach (var collection in _cacheCollections.Values)
             {
-                collection.IdleTime += Time.deltaTime;
+                collection.IdleTime += deltaTime;
                 if (collection.IdleTime >= _cacheExpireTime)
                 {
                     collection.DiscardAll();

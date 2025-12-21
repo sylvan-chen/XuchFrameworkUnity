@@ -3,40 +3,28 @@ using System;
 namespace XuchFramework.Core
 {
     /// <summary>
-    /// 池对象 - 对象池不直接管理实际对象，而是管理池对象，池对象中再包含实际对象
+    /// Pool do not manager actual object directly, but manager PoolObject which contains actual object.
     /// </summary>
     public sealed class PoolObject : ICache
     {
-        internal Action OnSpawn;
-        internal Action OnUnspawn;
+        internal Action OnAcquire;
+        internal Action OnRelease;
         internal Action OnDiscard;
 
         /// <summary>
-        /// 实际管理的对象
+        /// Actual managed object
         /// </summary>
         public object Target { get; private set; }
 
         /// <summary>
-        /// 是否被锁定
+        /// Locked object will not be released by any automatic discard mechanism even if its reference count is 0, but will be kept in the object pool until manually unlocked
         /// </summary>
-        /// <remarks>
-        /// 锁定的对象即使引用计数为 0 也不会被任何形式的自动丢弃机制释放，而是一直保留在对象池中，直到手动解锁。
-        /// </remarks>
         public bool Locked { get; internal set; }
 
-        /// <summary>
-        /// 上次使用时间
-        /// </summary>
         public DateTime LastUseUtcTime { get; internal set; }
 
-        /// <summary>
-        /// 引用计数
-        /// </summary>
         public int ReferenceCount { get; internal set; }
 
-        /// <summary>
-        /// 是否正在使用
-        /// </summary>
         public bool IsInUse
         {
             get => ReferenceCount > 0;
@@ -52,23 +40,17 @@ namespace XuchFramework.Core
             return poolObject;
         }
 
-        /// <summary>
-        /// 借出
-        /// </summary>
-        internal PoolObject Spawn()
+        internal PoolObject Acquire()
         {
             ReferenceCount++;
             LastUseUtcTime = DateTime.UtcNow;
-            OnSpawn?.Invoke();
+            OnAcquire?.Invoke();
             return this;
         }
 
-        /// <summary>
-        /// 归还
-        /// </summary>
-        internal void Unspawn()
+        internal void Release()
         {
-            OnUnspawn?.Invoke();
+            OnRelease?.Invoke();
             LastUseUtcTime = DateTime.UtcNow;
             ReferenceCount--;
             if (ReferenceCount < 0)
@@ -89,8 +71,8 @@ namespace XuchFramework.Core
 
         private void Clear()
         {
-            OnSpawn = null;
-            OnUnspawn = null;
+            OnAcquire = null;
+            OnRelease = null;
             OnDiscard = null;
             Target = null;
             Locked = false;

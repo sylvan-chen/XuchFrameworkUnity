@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Editor
 {
@@ -47,8 +48,8 @@ namespace XuchFramework.Editor
             _luaScriptsDirectory.stringValue = Path.GetFullPath(_luaScriptsDirectory.stringValue, Application.dataPath);
             _encryptedLuaScriptsOutputDirectory.stringValue = Path.GetFullPath(_encryptedLuaScriptsOutputDirectory.stringValue, Application.dataPath);
 
-            _luaScriptsDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_luaScriptsDirectory.stringValue);
-            _encryptedLuaScriptsOutputDirectory.stringValue = Core.Utils.PathHelper.GetRegularPath(_encryptedLuaScriptsOutputDirectory.stringValue);
+            _luaScriptsDirectory.stringValue = GameHelper.GetRegularPath(_luaScriptsDirectory.stringValue);
+            _encryptedLuaScriptsOutputDirectory.stringValue = GameHelper.GetRegularPath(_encryptedLuaScriptsOutputDirectory.stringValue);
         }
     }
 }

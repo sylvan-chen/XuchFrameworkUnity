@@ -106,7 +106,7 @@ namespace XuchFramework.Editor
                                 EditorGUILayout.LabelField(cacheCollectionInfo.CreatedCount.ToString(), centeredStyle, GUILayout.Width(80));
                                 EditorGUILayout.LabelField(cacheCollectionInfo.DiscardedCount.ToString(), centeredStyle, GUILayout.Width(80));
                                 EditorGUILayout.LabelField(
-                                    StringHelper.SecondsToTimeStr_hms(cacheCollectionInfo.IdleTime),
+                                    GameHelper.SecondsToTimeStr_hms(cacheCollectionInfo.IdleTime),
                                     centeredStyle,
                                     GUILayout.Width(80));
                             }

@@ -33,7 +33,7 @@ namespace XuchFramework.Editor
             }
 
             if (_protoBuildProfile.IgnoredDirectoryNames != null)
-                _ignoredDirectoriesStr = StringHelper.ConvertArrayToStr(_protoBuildProfile.IgnoredDirectoryNames);
+                _ignoredDirectoriesStr = GameHelper.ConvertArrayToStr(_protoBuildProfile.IgnoredDirectoryNames);
         }
 
         [MenuItem("Build/Proto Build Profile", priority = 51)]
@@ -111,7 +111,7 @@ namespace XuchFramework.Editor
             EditorGUILayout.LabelField("- Split directory names with space");
             EditorGUILayout.LabelField("- eg. test temp");
             _ignoredDirectoriesStr = EditorGUILayout.TextField(_ignoredDirectoriesStr, GUILayout.MinWidth(200));
-            _protoBuildProfile.IgnoredDirectoryNames = StringHelper.ConvertStrToArray(_ignoredDirectoriesStr);
+            _protoBuildProfile.IgnoredDirectoryNames = GameHelper.ConvertStrToArray(_ignoredDirectoriesStr);
 
             EditorGUILayout.Space(10);
 
@@ -136,7 +136,7 @@ namespace XuchFramework.Editor
                 _protoBuildProfile.EncryptedProtoOutputDirectory = DEFAULT_ENCRYPTED_PROTO_OUTPUT_DIRECTORY;
                 _protoBuildProfile.IgnoredDirectoryNames = DEFAULT_IGNORED_DIRECTORIES;
 
-                _ignoredDirectoriesStr = StringHelper.ConvertArrayToStr(_protoBuildProfile.IgnoredDirectoryNames);
+                _ignoredDirectoriesStr = GameHelper.ConvertArrayToStr(_protoBuildProfile.IgnoredDirectoryNames);
 
                 _protoBuildProfile.AddressableGroupName = DEFAULT_ADDRESSABLE_GROUP_NAME;
                 _protoBuildProfile.AddressableLabel = DEFAULT_ADDRESSABLE_LABEL;
@@ -160,7 +160,7 @@ namespace XuchFramework.Editor
         private string GetFullRegularPath(string path)
         {
             var fullPath = Path.GetFullPath(path, Application.dataPath);
-            return Core.Utils.PathHelper.GetRegularPath(fullPath);
+            return GameHelper.GetRegularPath(fullPath);
         }
 
         private void SaveCurrentProfile()
