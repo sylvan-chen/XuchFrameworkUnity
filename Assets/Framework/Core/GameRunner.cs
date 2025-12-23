@@ -3,8 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 
 namespace XuchFramework.Core
 {
@@ -19,9 +19,9 @@ namespace XuchFramework.Core
         }
 
         [Space(5)]
-        [SerializeField]
+        [SerializeField, EnumToggleButtons]
         private GameEntryType _entryType = GameEntryType.CustomEntry;
-        [SerializeField, ShowIf(nameof(IsCustomEntry))]
+        [SerializeField, ShowIf(nameof(_entryType), GameEntryType.CustomEntry)]
         private GameEntryBase _gameEntry;
 
         private readonly List<ModuleBase> _cachedModules = new();
@@ -46,7 +46,8 @@ namespace XuchFramework.Core
             var moduleRoot = transform.Find(rootName);
             if (moduleRoot == null)
             {
-                Log.Error($"[GameRunner] Launch modules failed. Can not find root for modules (Expected root name: '{rootName}')");
+                Log.Error(
+                    $"[GameRunner] Launch modules failed. Can not find root for modules (Expected root name: '{rootName}')");
                 return;
             }
 
@@ -74,7 +75,8 @@ namespace XuchFramework.Core
         {
             if (_cachedModules.Any(x => x == module))
             {
-                Log.Warning($"[GameRunner] Duplicate module register. Module '{module.GetType().FullName}' has already been registered");
+                Log.Warning(
+                    $"[GameRunner] Duplicate module register. Module '{module.GetType().FullName}' has already been registered");
                 return;
             }
 
@@ -83,7 +85,8 @@ namespace XuchFramework.Core
             var method = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
             if (method == null)
             {
-                Log.Error($"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
+                Log.Error(
+                    $"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
                 return;
             }
             method.Invoke(null, new object[] { module });
@@ -137,15 +140,6 @@ namespace XuchFramework.Core
                     module.Dispose();
                 }
             }
-        }
-
-        private bool IsCustomEntry => _entryType == GameEntryType.CustomEntry;
-
-        [Button]
-        public void LogTime()
-        {
-            var now = DateTime.Now;
-            Log.Debug($"{now.Year}_{now.Month:D2}_{now.Day:D2}_{now.Hour:D2}_{now.Minute:D2}_{now.Second:D2}");
         }
     }
 }

@@ -5,10 +5,39 @@ using System.Collections.Generic;
 namespace XuchFramework.Core.Utils
 {
     /// <summary>
-    /// 在 LinkedList 的基础上增加了节点缓存机制，减少内存分配和 GC 以提升性能
+    /// Implements a linked list with node pooling to reduce memory allocations and garbage collection for improved performance
     /// </summary>
     public sealed partial class LinkedListPro<T> : ICollection<T>, ICollection
     {
+        public struct Enumerator : IEnumerator<T>
+        {
+            private LinkedList<T>.Enumerator _enumerator;
+
+            internal Enumerator(LinkedList<T> linkedList)
+            {
+                _enumerator = linkedList!.GetEnumerator();
+            }
+
+            public T Current => _enumerator.Current;
+
+            readonly object IEnumerator.Current => (_enumerator as IEnumerator).Current;
+
+            public void Dispose()
+            {
+                _enumerator.Dispose();
+            }
+
+            public bool MoveNext()
+            {
+                return _enumerator.MoveNext();
+            }
+
+            readonly void IEnumerator.Reset()
+            {
+                (_enumerator as IEnumerator).Reset();
+            }
+        }
+
         private readonly LinkedList<T> _linkedList = new();
         private readonly Queue<LinkedListNode<T>> _nodePool = new();
 
@@ -90,7 +119,7 @@ namespace XuchFramework.Core.Utils
         }
 
         /// <summary>
-        /// 包括节点池缓存在内的完全清除
+        /// Clears the linked list and also clears the node pool
         /// </summary>
         public void ClearEntirely()
         {
@@ -113,21 +142,11 @@ namespace XuchFramework.Core.Utils
             (_linkedList as ICollection).CopyTo(array, index);
         }
 
-        /// <summary>
-        /// 查找第一个包含指定值的节点
-        /// </summary>
-        /// <param name="value">要查找的值</param>
-        /// <returns>第一个包含指定值的节点</returns>
         public LinkedListNode<T> Find(T value)
         {
             return _linkedList.Find(value);
         }
 
-        /// <summary>
-        /// 查找最后一个包含指定值的节点
-        /// </summary>
-        /// <param name="value">要查找的值</param>
-        /// <returns>最后一个包含指定值的节点</returns>
         public LinkedListNode<T> FindLast(T value)
         {
             return _linkedList.FindLast(value);
@@ -181,11 +200,6 @@ namespace XuchFramework.Core.Utils
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// 尝试从缓存中获取节点，如果缓存中没有节点，则创建一个新的节点
-        /// </summary>
-        /// <param name="value">节点值</param>
-        /// <returns></returns>
         private LinkedListNode<T> AcquireNode(T value)
         {
             if (_nodePool.Count > 0)
@@ -200,9 +214,6 @@ namespace XuchFramework.Core.Utils
             }
         }
 
-        /// <summary>
-        /// 释放节点到缓存中
-        /// </summary>
         private void ReleaseNode(LinkedListNode<T> node)
         {
             if (node is null)

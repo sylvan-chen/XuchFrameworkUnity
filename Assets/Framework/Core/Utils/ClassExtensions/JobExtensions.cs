@@ -5,14 +5,11 @@ namespace XuchFramework.Extensions
 {
     public static class JobExtensions
     {
-        /// <summary>
-        /// 异步等待 Job 完成
-        /// </summary>
         public static UniTask CompleteAsync(this JobHandle handle)
         {
             var tcs = new UniTaskCompletionSource();
 
-            JobHandle.ScheduleBatchedJobs(); // 通知 JobSystem 尽快启动已排队任务
+            JobHandle.ScheduleBatchedJobs(); // Notify the job system to start processing jobs sooner
 
             UniTask.Void(async () =>
             {
