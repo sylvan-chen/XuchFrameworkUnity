@@ -1,24 +1,24 @@
 ﻿using Autohand;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
-using UnityEngine;
 using XuchFramework.Core;
 using XuchFramework.Core.Utils;
+using UnityEngine;
+using XuchFramework.Gameplay;
 
-namespace XuchFramework.Gameplay
+namespace XuchFramework.Extensions.Movement
 {
+    public delegate void HandPlayerEvent(HandPlayer player);
+
     [RequireComponent(typeof(Rigidbody))]
     [DefaultExecutionOrder(5000)]
-    public partial class HandPlayer : MonoSingleton<HandPlayer>
+    public class HandPlayer : MonoSingleton<HandPlayer>
     {
         public enum TurningType
         {
             Snap,
             Smooth,
         }
-
-        [AutoHeader("Hand Player")]
-        public bool IgnoreMe;
 
         [Space(5)]
         [BoxGroup("Tracker"), SerializeField]
@@ -36,8 +36,8 @@ namespace XuchFramework.Gameplay
         [HorizontalGroup("Arms"), BoxGroup("Arms/RightHand"), SerializeField]
         private Hand _handRight;
 
-        [Tooltip("Player model following this")]
-        public Transform PlayerHeadOffset;
+        [Tooltip("The offset transform for the player dummy used")]
+        public Transform PlayerDummyOffset;
 
         [AutoSmallHeader("Movement")]
         public bool IgnoreMe1;
@@ -48,8 +48,7 @@ namespace XuchFramework.Gameplay
 
         [AutoToggleHeader("Turning")]
         public bool AllowTurning = true;
-        [SerializeField, EnableIf(nameof(AllowTurning)),
-         Tooltip("Whether or not to use snap turning or smooth turning")]
+        [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("Whether or not to use snap turning or smooth turning")]
         private TurningType _turningType = TurningType.Snap;
         [SerializeField, ShowIf(nameof(IsSnapTurning)), EnableIf(nameof(AllowTurning))]
         [Tooltip("Turn angle per snap when using snap turning")]
@@ -59,8 +58,7 @@ namespace XuchFramework.Gameplay
         private float _smoothTurnSpeed = 180f;
         [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("The deadzone for turning input"), Min(0)]
         private float _turnDeadzone = 0.4f;
-        [SerializeField, EnableIf(nameof(AllowTurning)),
-         Tooltip("Amount of input required to reset the turn state for snap turning"), Min(0)]
+        [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("Amount of input required to reset the turn state for snap turning"), Min(0)]
         private float _turnResetzone = 0.3f;
 
         [AutoToggleHeader("Height")]
@@ -71,18 +69,14 @@ namespace XuchFramework.Gameplay
         private float _targetHeight = 0.35f;
         // [SerializeField, EnableIf(nameof(ShowHeight))]
         // private float _sneakHeight = 0.15f;
-        // [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
-        // private bool _autoAdjustColliderHeight = true;
-        // [SerializeField, EnableIf(nameof(ShowHeight)),
-        //  Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
-        // private Vector2 _minMaxHeight = new Vector2(0.5f, 2.5f);
+        [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
+        public bool AutoAdjustColliderHeight = true;
+        [SerializeField, EnableIf(nameof(ShowHeight)),
+         Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
+        private Vector2 _minMaxHeight = new Vector2(0.5f, 2.5f);
 
-#if UNITY_EDITOR
-        [AutoToggleHeader("Debug"), OnValueChanged(nameof(OnEnableDebugChanged))]
-        public bool EnableDebug = false;
-        [SerializeField, EnableIf(nameof(EnableDebug)), OnValueChanged(nameof(OnShowHandFollowSpheresChanged))]
-        private bool _showHandFollowSpheres = true;
-#endif
+        public HandPlayerEvent OnTurned;
+        public HandPlayerEvent OnTeleported;
 
         private Gorillamotion2 _gorilla;
         private Hand _lastLeftHand, _lastRightHand;
@@ -93,6 +87,8 @@ namespace XuchFramework.Gameplay
 
         private float _turningAxis;
         private bool _isTurningAxisReset = true;
+
+        private bool _hasInitTracking = false;
 
         public Hand HandLeft
         {
@@ -139,22 +135,20 @@ namespace XuchFramework.Gameplay
             _gorilla = GetComponent<Gorillamotion2>();
             if (_gorilla == null)
             {
-                Log.Error(
-                    $"[HandPlayer] Gorillamotion2 component not found on HandPlayer GameObject. Disabling Gorillamotion functionality.");
+                Log.Error($"[HandPlayer] Gorillamotion2 component not found on HandPlayer GameObject. Disabling Gorillamotion functionality.");
                 UseGorillamotion = false;
             }
 
+            if (_hasInitTracking)
+                return UniTask.CompletedTask;
             if (_trackingContainer == null || _headCamera == null)
                 return UniTask.CompletedTask;
 
             _lastUpdatePos = transform.position;
             _targetTrackedPos = _trackingContainer.position;
             _trackingPosOffset = Vector3.zero;
+            _hasInitTracking = true;
 
-#if UNITY_EDITOR
-            if (EnableDebug)
-                OnEnableDebugChanged(EnableDebug);
-#endif
             return UniTask.CompletedTask;
         }
 
@@ -203,6 +197,9 @@ namespace XuchFramework.Gameplay
 
         protected void FixedUpdate()
         {
+            if (!_hasInitTracking)
+                return;
+
             if (UseGorillamotion)
                 _gorilla.Jump();
 
@@ -211,14 +208,11 @@ namespace XuchFramework.Gameplay
 
         protected virtual void Update()
         {
+            if (!_hasInitTracking)
+                return;
+
             if (UseGorillamotion)
                 _gorilla.ApplyGorillamotion();
-
-            if (MountingObj != null)
-            {
-                transform.position = MountingObj.MountPoint.position;
-                Body.position = transform.position;
-            }
 
             UpdateTrackingContainer();
             UpdateTurn();
@@ -277,10 +271,7 @@ namespace XuchFramework.Gameplay
 
                     _trackingContainer.RotateAround(transform.position, Vector3.up, angle);
                     _trackingPosOffset = Vector3.zero;
-                    _targetTrackedPos = new Vector3(
-                        _trackingContainer.position.x,
-                        _targetTrackedPos.y,
-                        _trackingContainer.position.z);
+                    _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
 
                     if (_handRight.holdingObj != null && !_handRight.IsGrabbing())
                     {
@@ -300,7 +291,7 @@ namespace XuchFramework.Gameplay
                     PreventHandClipping(_handLeft, handLeftStartPos);
                     Physics.SyncTransforms();
 
-                    // OnSnapTurn?.Invoke(this);
+                    OnTurned?.Invoke(this);
                     _isTurningAxisReset = false;
                 }
             }
@@ -313,16 +304,13 @@ namespace XuchFramework.Gameplay
                     _smoothTurnSpeed * (Mathf.MoveTowards(_turningAxis, 0, _turnDeadzone)) * Time.deltaTime);
 
                 _trackingPosOffset = Vector3.zero;
-                _targetTrackedPos = new Vector3(
-                    _trackingContainer.position.x,
-                    _targetTrackedPos.y,
-                    _trackingContainer.position.z);
+                _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
 
                 _handRight.handFollow.AverageSetMoveTo();
                 _handLeft.handFollow.AverageSetMoveTo();
                 Physics.SyncTransforms();
 
-                // OnSmoothTurn?.Invoke(this);
+                OnTurned?.Invoke(this);
                 _isTurningAxisReset = false;
             }
 
@@ -335,10 +323,8 @@ namespace XuchFramework.Gameplay
                 if (deltaHandPos.magnitude < Physics.defaultContactOffset)
                     return;
 
-                var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center)
-                             - deltaHandPos;
-                var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size)
-                                  / 2f;
+                var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center) - deltaHandPos;
+                var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size) / 2f;
                 var hits = Physics.BoxCastAll(
                     center,
                     halfExtents,
@@ -358,10 +344,7 @@ namespace XuchFramework.Gameplay
                             && !hand.holdingObj.jointedBodies.Contains(hit.collider.attachedRigidbody)))
                     {
                         var deltaHitPos = hit.point - hand.transform.position;
-                        hand.transform.position = Vector3.MoveTowards(
-                            hand.transform.position,
-                            startPosition,
-                            deltaHitPos.magnitude);
+                        hand.transform.position = Vector3.MoveTowards(hand.transform.position, startPosition, deltaHitPos.magnitude);
 
                         break;
                     }
@@ -382,48 +365,76 @@ namespace XuchFramework.Gameplay
             _turningAxis = turnAxis;
         }
 
+        public void Teleport(Vector3 position)
+        {
+            SetPosition(position);
+            OnTeleported?.Invoke(this);
+        }
+
+        public void Teleport(Vector3 position, Quaternion rotation)
+        {
+            SetPosition(position);
+            SetRotation(rotation);
+            OnTeleported?.Invoke(this);
+        }
+
         public void SetPosition(Vector3 position)
         {
-            transform.position = position;
+            var deltaPos = position - transform.position;
+            transform.position += deltaPos;
             Body.position = position;
+
+            var trackerDeltaPos = transform.position - _headCamera.transform.position;
+            trackerDeltaPos.y = deltaPos.y;
+            _trackingContainer.position += trackerDeltaPos;
+
+            _lastUpdatePos = transform.position;
+            _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y + deltaPos.y, _trackingContainer.position.z);
+
+            SafeMoveHandToPosition(_handRight, transform, _handRight.transform.position);
+            SafeMoveHandToPosition(_handLeft, transform, _handLeft.transform.position);
+        }
+
+        public virtual void SetRotation(Quaternion rotation)
+        {
+            var targetPos = transform.position - _headCamera.transform.position;
+            targetPos.y = 0;
+
+            _trackingContainer.position += targetPos;
+
+            _lastUpdatePos = transform.position;
+
+            var deltaRot = rotation * Quaternion.Inverse(_headCamera.transform.rotation);
+            _trackingContainer.RotateAround(_headCamera.transform.position, Vector3.up, deltaRot.eulerAngles.y);
+
+            _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
+
+            SafeMoveHandToPosition(_handRight, transform, _handRight.transform.position);
+            SafeMoveHandToPosition(_handLeft, transform, _handLeft.transform.position);
+        }
+
+        private void SafeMoveHandToPosition(Hand hand, Transform playerTransform, Vector3 desiredHandPosition)
+        {
+            var handBody = hand.body;
+            Vector3 bodyXZCenter = new Vector3(playerTransform.position.x, handBody.position.y, playerTransform.position.z);
+
+            handBody.position = bodyXZCenter;
+            handBody.transform.position = bodyXZCenter;
+
+            Vector3 offset = desiredHandPosition - bodyXZCenter;
+            float distance = offset.magnitude;
+            if (distance < 0.0001f)
+                return;
+
+            Vector3 direction = offset.normalized;
+
+            if (handBody.SweepTest(direction, out var hit, distance))
+                hand.handFollow.SetHandLocation(bodyXZCenter + direction * hit.distance);
+            else
+                hand.handFollow.SetHandLocation(desiredHandPosition);
         }
 
         private bool IsSnapTurning => _turningType == TurningType.Snap;
         private bool IsSmoothTurning => _turningType == TurningType.Smooth;
-
-#if UNITY_EDITOR
-        private Transform _debugHandFollowSphereLeft;
-        private Transform _debugHandFollowSphereRight;
-
-        private void OnEnableDebugChanged(bool value)
-        {
-            if (!Application.isPlaying)
-                return;
-
-            if (value)
-            {
-                var handFollowSphere = Resources.Load<GameObject>("hand_follow_sphere").transform;
-                _debugHandFollowSphereLeft = Instantiate(handFollowSphere, _handLeft.follow);
-                _debugHandFollowSphereRight = Instantiate(handFollowSphere, _handRight.follow);
-                OnShowHandFollowSpheresChanged(_showHandFollowSpheres);
-            }
-            else
-            {
-                DestroyImmediate(_debugHandFollowSphereLeft.gameObject);
-                DestroyImmediate(_debugHandFollowSphereRight.gameObject);
-            }
-        }
-
-        private void OnShowHandFollowSpheresChanged(bool value)
-        {
-            if (!Application.isPlaying)
-                return;
-
-            if (_debugHandFollowSphereLeft != null)
-                _debugHandFollowSphereLeft.gameObject.SetActive(value);
-            if (_debugHandFollowSphereRight != null)
-                _debugHandFollowSphereRight.gameObject.SetActive(value);
-        }
-#endif
     }
 }
