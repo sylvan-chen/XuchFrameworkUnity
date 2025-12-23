@@ -1,10 +1,12 @@
-using Alchemy.Inspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Autohand.Demo{
+namespace Autohand.Demo
+{
     [HelpURL("https://app.gitbook.com/s/5zKO0EvOjzUDeT2aiFk3/auto-hand/extras/smashing")]
-    public class Smash : MonoBehaviour{
+    public class Smash : MonoBehaviour
+    {
         [Header("Smash Options")]
         [Tooltip("Required velocity magnitude from Smasher to smash")]
         public float smashForce = 1;
@@ -21,46 +23,47 @@ namespace Autohand.Demo{
         public bool createNewEffect = true;
         [Tooltip("Whether or not to apply rigidbody velocity to particle velocity on smash")]
         public bool applyVelocityOnSmash = true;
-        
+
         [Header("Sound Options")]
         public AudioClip smashSound;
         public float smashVolume = 1f;
-        
 
         [Header("Event")]
         public UnityEvent OnSmash;
-        
+
         //Progammer Events <3
         public SmashEvent OnSmashEvent;
 
-
         internal Grabbable grabbable;
 
-        public void Start() {
-            if(!(grabbable = GetComponent<Grabbable>())){
+        public void Start()
+        {
+            if (!(grabbable = GetComponent<Grabbable>()))
+            {
                 GrabbableChild grabChild;
-                if(grabChild = GetComponent<GrabbableChild>())
+                if (grabChild = GetComponent<GrabbableChild>())
                     grabbable = grabChild.grabParent;
             }
 
             OnSmashEvent += (smasher, smashable) => { OnSmash?.Invoke(); };
         }
 
-
-        public void DelayedSmash(float delay) {
+        public void DelayedSmash(float delay)
+        {
             Invoke("DoSmash", delay);
         }
 
-
-        public void DoSmash() {
+        public void DoSmash()
+        {
             DoSmash(null);
         }
 
-
-        public void DoSmash(Smasher smash){
-            if(effect){
+        public void DoSmash(Smasher smash)
+        {
+            if (effect)
+            {
                 ParticleSystem particles;
-                if(createNewEffect)
+                if (createNewEffect)
                     particles = Instantiate(effect, grabbable.transform.position, grabbable.transform.rotation);
                 else
                     particles = effect;
@@ -69,7 +72,8 @@ namespace Autohand.Demo{
                 particles.Play();
 
                 Rigidbody rb;
-                if(applyVelocityOnSmash && ((rb = grabbable.body) || gameObject.CanGetComponent(out rb))){
+                if (applyVelocityOnSmash && ((rb = grabbable.body) || gameObject.CanGetComponent(out rb)))
+                {
                     ParticleSystem.VelocityOverLifetimeModule module = particles.velocityOverLifetime;
                     module.x = rb.linearVelocity.x;
                     module.y = rb.linearVelocity.y;
@@ -78,15 +82,15 @@ namespace Autohand.Demo{
             }
 
             //Play the audio sound
-            if(smashSound)
+            if (smashSound)
                 AudioSource.PlayClipAtPoint(smashSound, transform.position, smashVolume);
 
             OnSmashEvent?.Invoke(smash, this);
 
-            if((destroyOnSmash || releaseOnSmash) && grabbable)
+            if ((destroyOnSmash || releaseOnSmash) && grabbable)
                 grabbable.ForceHandsRelease();
 
-            if(destroyOnSmash)
+            if (destroyOnSmash)
                 Destroy(gameObject);
         }
     }

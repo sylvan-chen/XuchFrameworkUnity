@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Alchemy.Inspector;
 using Autohand;
 using DG.Tweening;
 using RootMotion.FinalIK;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -22,11 +22,11 @@ namespace XuchFramework.Gameplay
             public LimbIK IK;
             public Vector3 PositionOffset;
             public Vector3 RotationOffset;
-            [Group("Axis")]
+            [BoxGroup("Axis")]
             public AxisMask ReverseAxis;
-            [Group("Axis")]
+            [BoxGroup("Axis")]
             public AxisMask FreezePosition;
-            [Group("Axis")]
+            [BoxGroup("Axis")]
             public AxisMask FreezeRotation;
         }
 
@@ -213,7 +213,8 @@ namespace XuchFramework.Gameplay
                 _reverseBackSide);
             _limbTargetBackRight.rotation = backFollowHandRight.follow.rotation;
 
-            Vector3 PlayerToMountable(Vector3 playerHandPosition, Transform mountableSpaceCenter, Vector3 mountableSpaceSize, bool reverse)
+            Vector3 PlayerToMountable(
+                Vector3 playerHandPosition, Transform mountableSpaceCenter, Vector3 mountableSpaceSize, bool reverse)
             {
                 var playerRelativePos = _playerSpaceCenter.InverseTransformPoint(playerHandPosition);
 
@@ -233,7 +234,10 @@ namespace XuchFramework.Gameplay
                     normalizedPos.z * (mountableSpaceSize.z / mountableSpaceCenter.lossyScale.z));
 
                 if (reverse)
-                    mountableRelativePos = new Vector3(-mountableRelativePos.x, mountableRelativePos.y, mountableRelativePos.z);
+                    mountableRelativePos = new Vector3(
+                        -mountableRelativePos.x,
+                        mountableRelativePos.y,
+                        mountableRelativePos.z);
 
                 return mountableSpaceCenter.TransformPoint(mountableRelativePos);
             }
@@ -324,10 +328,16 @@ namespace XuchFramework.Gameplay
                 }
                 else
                 {
-                    DOTween.To(() => limb.IK.solver.IKPositionWeight, x => limb.IK.solver.IKPositionWeight = x, 0f, _limbRestoreDuration)
-                        .SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
-                    DOTween.To(() => limb.IK.solver.IKRotationWeight, x => limb.IK.solver.IKRotationWeight = x, 0f, _limbRestoreDuration)
-                        .SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
+                    DOTween.To(
+                        () => limb.IK.solver.IKPositionWeight,
+                        x => limb.IK.solver.IKPositionWeight = x,
+                        0f,
+                        _limbRestoreDuration).SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
+                    DOTween.To(
+                        () => limb.IK.solver.IKRotationWeight,
+                        x => limb.IK.solver.IKRotationWeight = x,
+                        0f,
+                        _limbRestoreDuration).SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
                 }
             }
         }
@@ -376,7 +386,10 @@ namespace XuchFramework.Gameplay
                 Gizmos.matrix = playerCenter.localToWorldMatrix;
                 var size = Vector3.Scale(
                     _playerSpaceSize,
-                    new Vector3(1 / playerCenter.lossyScale.x, 1 / playerCenter.lossyScale.y, 1 / playerCenter.lossyScale.z));
+                    new Vector3(
+                        1 / playerCenter.lossyScale.x,
+                        1 / playerCenter.lossyScale.y,
+                        1 / playerCenter.lossyScale.z));
                 Gizmos.color = new Color(0, 1, 0, 0.3f);
                 Gizmos.DrawCube(Vector3.zero, size);
                 Gizmos.color = new Color(0, 1, 0, 0.6f);

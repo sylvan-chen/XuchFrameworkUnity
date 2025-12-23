@@ -1,6 +1,6 @@
-using Alchemy.Inspector;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,7 +15,8 @@ namespace Autohand
             "Enable Highlight",
             0,
             0,
-            tooltip = "Raycasting for grabbables to highlight is expensive, you can disable it here if you aren't using it")]
+            tooltip =
+                "Raycasting for grabbables to highlight is expensive, you can disable it here if you aren't using it")]
         public bool usingHighlight = true;
 
         [EnableIf("usingHighlight")]
@@ -169,7 +170,9 @@ namespace Autohand
 
         protected override void Awake()
         {
-            this.SetLayerRecursive(transform, LayerMask.NameToLayer(left ? Hand.leftHandLayerName : Hand.rightHandLayerName));
+            this.SetLayerRecursive(
+                transform,
+                LayerMask.NameToLayer(left ? Hand.leftHandLayerName : Hand.rightHandLayerName));
 
             if (highlightLayers.value == 0 || highlightLayers == LayerMask.GetMask(""))
             {
@@ -177,8 +180,9 @@ namespace Autohand
             }
 
             handLayers = LayerMask.GetMask(rightHandLayerName, leftHandLayerName, AutoHandPlayer.HandPlayerLayer);
-            handIgnoreCollisionLayers = AutoHandExtensions.GetPhysicsLayerMask(LayerMask.NameToLayer(rightHandLayerName))
-                                        & AutoHandExtensions.GetPhysicsLayerMask(LayerMask.NameToLayer(leftHandLayerName));
+            handIgnoreCollisionLayers =
+                AutoHandExtensions.GetPhysicsLayerMask(LayerMask.NameToLayer(rightHandLayerName))
+                & AutoHandExtensions.GetPhysicsLayerMask(LayerMask.NameToLayer(leftHandLayerName));
 
             if (grabCurve == null || grabCurve.keys.Length == 0)
                 grabCurve = AnimationCurve.Linear(0, 0, 1, 1);
@@ -278,7 +282,8 @@ namespace Autohand
             if (usingHighlight && !grabbing && holdingObj == null && highlighter.currentHighlightTarget != null)
             {
                 targetGrabType = GetGrabType(highlighter.currentHighlightTarget);
-                grabRoutine = StartCoroutine(GrabObject(highlighter.GetHighlightHit(), highlighter.currentHighlightTarget, targetGrabType));
+                grabRoutine = StartCoroutine(
+                    GrabObject(highlighter.GetHighlightHit(), highlighter.currentHighlightTarget, targetGrabType));
             }
             else if (!grabbing && holdingObj == null)
             {
@@ -286,7 +291,8 @@ namespace Autohand
                 if (highlighter.currentHighlightTarget != null)
                 {
                     targetGrabType = GetGrabType(highlighter.currentHighlightTarget);
-                    grabRoutine = StartCoroutine(GrabObject(highlighter.GetHighlightHit(), highlighter.currentHighlightTarget, targetGrabType));
+                    grabRoutine = StartCoroutine(
+                        GrabObject(highlighter.GetHighlightHit(), highlighter.currentHighlightTarget, targetGrabType));
                 }
 
                 highlighter.ClearHighlights();
@@ -359,7 +365,10 @@ namespace Autohand
                 triggerArea.Release(this);
             }
 
-            if (holdingObj && !holdingObj.wasForceReleased && holdingObj.CanGetComponent<GrabLock>(out GrabLock grablock) && grablock.enabled)
+            if (holdingObj
+                && !holdingObj.wasForceReleased
+                && holdingObj.CanGetComponent<GrabLock>(out GrabLock grablock)
+                && grablock.enabled)
                 return;
 
             if (holdingObj != null)
@@ -480,13 +489,19 @@ namespace Autohand
         /// <summary>Creates the grab connection at the current position of the hand and given grabbable</summary>
         public virtual void CreateGrabConnection(Grabbable grab, bool executeGrabEvents = false)
         {
-            CreateGrabConnection(grab, transform.position, transform.rotation, grab.transform.position, grab.transform.rotation, executeGrabEvents);
+            CreateGrabConnection(
+                grab,
+                transform.position,
+                transform.rotation,
+                grab.transform.position,
+                grab.transform.rotation,
+                executeGrabEvents);
         }
 
         /// <summary>Creates the grab connection</summary>
         public virtual void CreateGrabConnection(
-            Grabbable grab, Vector3 handPos, Quaternion handRot, Vector3 grabPos, Quaternion grabRot, bool executeGrabEvents = false,
-            bool ignorePoses = false)
+            Grabbable grab, Vector3 handPos, Quaternion handRot, Vector3 grabPos, Quaternion grabRot,
+            bool executeGrabEvents = false, bool ignorePoses = false)
         {
             if (executeGrabEvents)
             {
@@ -701,7 +716,11 @@ namespace Autohand
             else
                 foreach (var finger in fingers)
                 {
-                    if (!finger.BendFingerUntilHit(fingerBendSteps, mask, FingerPoseEnum.PinchOpen, FingerPoseEnum.PinchClosed))
+                    if (!finger.BendFingerUntilHit(
+                            fingerBendSteps,
+                            mask,
+                            FingerPoseEnum.PinchOpen,
+                            FingerPoseEnum.PinchClosed))
                         finger.BendFingerUntilHit(fingerBendSteps, mask);
                 }
 
@@ -723,7 +742,11 @@ namespace Autohand
             {
                 foreach (var finger in fingers)
                 {
-                    if (!finger.BendFingerUntilHit(fingerBendSteps, mask, FingerPoseEnum.PinchOpen, FingerPoseEnum.PinchClosed))
+                    if (!finger.BendFingerUntilHit(
+                            fingerBendSteps,
+                            mask,
+                            FingerPoseEnum.PinchOpen,
+                            FingerPoseEnum.PinchClosed))
                         finger.BendFingerUntilHit(fingerBendSteps, mask);
                 }
             }
@@ -1041,7 +1064,8 @@ namespace Autohand
                 ////Hand To Grabbable////
                 /////////////////////////
                 if (targetGrabType == GrabType.HandToGrabbable
-                    || (targetGrabType == GrabType.GrabbableToHand && (holdingObj.HeldCount() > 0 || !holdingObj.parentOnGrab)))
+                    || (targetGrabType == GrabType.GrabbableToHand
+                        && (holdingObj.HeldCount() > 0 || !holdingObj.parentOnGrab)))
                 {
                     //Loop until the hand is at the object
                     for (float i = 0; i < adjustedGrabTime; i += Time.deltaTime)
@@ -1053,7 +1077,10 @@ namespace Autohand
                             float maxDeltaTimeOffset = minGrabTime / adjustedGrabTime * Time.deltaTime * 5f;
 
                             float timeOffset = deltaDist * Time.deltaTime * velocityGrabHandAmplifier;
-                            timeOffset += holdingObj.GetVelocity().magnitude * Time.deltaTime * velocityGrabObjectAmplifier * 3f;
+                            timeOffset += holdingObj.GetVelocity().magnitude
+                                          * Time.deltaTime
+                                          * velocityGrabObjectAmplifier
+                                          * 3f;
                             i += Mathf.Clamp(timeOffset, 0, maxDeltaTimeOffset);
 
                             if (i < adjustedGrabTime)
@@ -1076,7 +1103,8 @@ namespace Autohand
                                         ref handAnimator.handPoseDataNonAlloc,
                                         ref targetOpenPose,
                                         ref handAnimator.targetGrabPose,
-                                        grabCurve.Evaluate((point - grabOpenHandPoint) * (1f / (1f - grabOpenHandPoint))));
+                                        grabCurve.Evaluate(
+                                            (point - grabOpenHandPoint) * (1f / (1f - grabOpenHandPoint))));
                                     handAnimator.handPoseDataNonAlloc.SetFingerPose(this);
                                 }
 

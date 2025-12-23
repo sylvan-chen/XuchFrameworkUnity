@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using XuchFramework.Core.Utils;
 
@@ -38,11 +38,13 @@ namespace XuchFramework.Core
             ClearAllConfigCache();
         }
 
-        public async UniTask LoadAllTables(string preloadTableAddressLabel, string tableClassNamespace, bool isOverride = false)
+        public async UniTask LoadAllTables(
+            string preloadTableAddressLabel, string tableClassNamespace, bool isOverride = false)
         {
             Log.Debug("[TableManager] Start loading tables...");
 
-            var handle = await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(preloadTableAddressLabel);
+            var handle =
+                await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(preloadTableAddressLabel);
 
             if (!handle.IsValid)
             {

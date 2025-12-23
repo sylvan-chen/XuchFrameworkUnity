@@ -1,5 +1,5 @@
-using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace XuchFramework.Core
@@ -43,7 +43,7 @@ namespace XuchFramework.Core
         protected virtual void Awake()
         {
             InitializeAsync().Forget();
-            
+
             async UniTaskVoid InitializeAsync()
             {
                 MakeSingleton();
@@ -52,7 +52,7 @@ namespace XuchFramework.Core
                 _singletonState = MonoSingletonState.Initialized;
             }
         }
-        
+
         private void OnDestroy()
         {
             if (_instance == this)
@@ -91,7 +91,7 @@ namespace XuchFramework.Core
         protected override void Awake()
         {
             InitializeAsync().Forget();
-            
+
             async UniTaskVoid InitializeAsync()
             {
                 MakeSingleton();

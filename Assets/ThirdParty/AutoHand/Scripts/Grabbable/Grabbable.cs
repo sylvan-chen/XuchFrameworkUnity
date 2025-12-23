@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using Alchemy.Inspector;
 using UnityEditor;
 using UnityEngine.Serialization;
 
@@ -23,7 +23,8 @@ namespace Autohand
     [HelpURL("https://app.gitbook.com/s/5zKO0EvOjzUDeT2aiFk3/auto-hand/grabbable"), DefaultExecutionOrder(-100)]
     public class Grabbable : GrabbableBase, IGrabbableEvents
     {
-        [Tooltip("This will copy the given grabbables settings to this grabbable when applied"), OnValueChanged("EditorCopyGrabbable")]
+        [Tooltip("This will copy the given grabbables settings to this grabbable when applied"),
+         OnValueChanged("EditorCopyGrabbable")]
         public Grabbable CopySettings;
 
         [Header("Grab Settings")]
@@ -48,7 +49,8 @@ namespace Autohand
              "If true (and using HandToGrabbable) the hand will only return to the follow while moving. Good for picking up objects without disrupting the things around them - you can change the speed of the hand return on the hand through the gentleGrabSpeed value")]
         public bool useGentleGrab = false;
 
-        [Tooltip("Creates an offset an grab so the hand will not return to the hand on grab - Good for statically jointed grabbable objects")]
+        [Tooltip(
+            "Creates an offset an grab so the hand will not return to the hand on grab - Good for statically jointed grabbable objects")]
         public bool maintainGrabOffset = false;
 
         [Tooltip(
@@ -67,7 +69,8 @@ namespace Autohand
         public bool allowHeldSwapping = true;
 
         [Header("Release Settings")]
-        [Tooltip("How much to multiply throw by for this grabbable when releasing - 0-1 for no or reduced throw strength")]
+        [Tooltip(
+            "How much to multiply throw by for this grabbable when releasing - 0-1 for no or reduced throw strength")]
         [FormerlySerializedAs("throwMultiplyer")]
         public float throwPower = 1;
 
@@ -93,16 +96,24 @@ namespace Autohand
          Min(0)]
         public float ignoreReleaseTime = 0.5f;
 
-        [Tooltip("The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"), Min(0)]
+        [Tooltip(
+             "The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"),
+         Min(0)]
         public float minHeldDrag = 1.5f;
 
-        [Tooltip("The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"), Min(0)]
+        [Tooltip(
+             "The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"),
+         Min(0)]
         public float minHeldAngleDrag = 3f;
 
-        [Tooltip("The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"), Min(0)]
+        [Tooltip(
+             "The minimum allow drag a held objects rigidbody can have, this can help prevent dramatic wobbling on held objects"),
+         Min(0)]
         public float minHeldMass = 0.1f;
 
-        [Tooltip("Lowing this value will help allow for more stable joint interactions and make objects seems heavier if lowered enough"), Min(0)]
+        [Tooltip(
+             "Lowing this value will help allow for more stable joint interactions and make objects seems heavier if lowered enough"),
+         Min(0)]
         public float maxHeldVelocity = 10f;
 
         [Space]
@@ -114,11 +125,13 @@ namespace Autohand
 
         [Space]
         [Min(0),
-         Tooltip("The joint that connects the hand and the grabbable. Defaults to the joint in AutoHand/Resources/DefaultJoint.prefab if empty")]
+         Tooltip(
+             "The joint that connects the hand and the grabbable. Defaults to the joint in AutoHand/Resources/DefaultJoint.prefab if empty")]
         public ConfigurableJoint customGrabJoint;
 
         [Space]
-        [Tooltip("For the special use case of having grabbable objects with physics jointed peices move properly while being held")]
+        [Tooltip(
+            "For the special use case of having grabbable objects with physics jointed peices move properly while being held")]
         public List<Rigidbody> jointedBodies = new List<Rigidbody>();
 
         [Tooltip(
@@ -160,7 +173,8 @@ namespace Autohand
         public UnityHandGrabEvent OnJointBreak = new UnityHandGrabEvent();
 
         //Advanced Hidden Settings
-        [HideInInspector, Tooltip("Lock hand in place on grab (This is a legacy setting, set hand kinematic on grab/release instead)")]
+        [HideInInspector,
+         Tooltip("Lock hand in place on grab (This is a legacy setting, set hand kinematic on grab/release instead)")]
         public bool lockHandOnGrab = false;
 
         //For programmers <3
@@ -229,8 +243,10 @@ namespace Autohand
 
             for (int i = 0; i < jointedBodies.Count; i++)
             {
-                jointedParents.Add(jointedBodies[i].transform.parent != null ? jointedBodies[i].transform.parent : null);
-                if (jointedBodies[i].gameObject.HasGrabbable(out var grabbable) && !jointedGrabbables.Contains(grabbable))
+                jointedParents.Add(
+                    jointedBodies[i].transform.parent != null ? jointedBodies[i].transform.parent : null);
+                if (jointedBodies[i].gameObject.HasGrabbable(out var grabbable)
+                    && !jointedGrabbables.Contains(grabbable))
                     jointedGrabbables.Add(grabbable);
             }
 
@@ -417,7 +433,8 @@ namespace Autohand
         }
 
         /// <summary>Called when the hand starts aiming at this item for pickup</summary>
-        protected internal virtual void Highlight(Hand hand, Material customMat = null, bool ignoreHighlightEvents = false)
+        protected internal virtual void Highlight(
+            Hand hand, Material customMat = null, bool ignoreHighlightEvents = false)
         {
             if (!hightlighting)
             {
@@ -432,7 +449,8 @@ namespace Autohand
         }
 
         /// <summary>Called when the hand stops aiming at this item</summary>
-        protected internal virtual void Unhighlight(Hand hand, Material customMat = null, bool ignoreHighlightEvents = false)
+        protected internal virtual void Unhighlight(
+            Hand hand, Material customMat = null, bool ignoreHighlightEvents = false)
         {
             if (hightlighting)
             {
@@ -506,7 +524,9 @@ namespace Autohand
             if (gameObject.activeInHierarchy)
             {
                 if (untilNone)
-                    resetLayerRoutine.Add(hand, StartCoroutine(IgnoreHandCollisionUntilNoneRoutine(hand, hand.maxGrabTime)));
+                    resetLayerRoutine.Add(
+                        hand,
+                        StartCoroutine(IgnoreHandCollisionUntilNoneRoutine(hand, hand.maxGrabTime)));
                 else
                     resetLayerRoutine.Add(hand, StartCoroutine(IgnoreHandCollision(hand, hand.maxGrabTime)));
             }
@@ -522,7 +542,9 @@ namespace Autohand
         {
             return enabled
                    && isGrabbable
-                   && (handType == HandType.both || (handType == HandType.left && hand.left) || (handType == HandType.right && !hand.left));
+                   && (handType == HandType.both
+                       || (handType == HandType.left && hand.left)
+                       || (handType == HandType.right && !hand.left));
         }
 
         /// <summary>Called by the hand whenever this item is grabbed</summary>
@@ -664,7 +686,8 @@ namespace Autohand
                 hand.Release();
                 throwPower = throwMult;
                 if (body != null && !body.isKinematic)
-                    body.linearVelocity = body.linearVelocity.normalized * Mathf.Clamp(body.linearVelocity.magnitude, 0, 1);
+                    body.linearVelocity = body.linearVelocity.normalized
+                                          * Mathf.Clamp(body.linearVelocity.magnitude, 0, 1);
             }
             else if (beingGrabbedBy.Contains(hand))
                 hand.BreakGrabConnection();
@@ -752,7 +775,8 @@ namespace Autohand
 
         /// <summary>Returns the number of hands currently holding this object [Call GetHeldBy() to get a list of the hand references]</summary>
         /// <param name="includedJointedCount">Whether or not to return the held count of only this grabbable, or the total of this grabbable and any jointed bodies with a grabbable attached</param>
-        public virtual int HeldCount(bool includedJointedCount = true, bool includeChildGrabbables = true, bool includeParentrabbables = true)
+        public virtual int HeldCount(
+            bool includedJointedCount = true, bool includeChildGrabbables = true, bool includeParentrabbables = true)
         {
             var count = heldBy.Count;
             if (includedJointedCount)
@@ -814,7 +838,9 @@ namespace Autohand
             if (body != null && !body.isKinematic && heldBy.Count == 0)
             {
                 body.linearVelocity = throwVel * throwPower;
-                if (!float.IsNaN(throwAngularVel.x) && !float.IsNaN(throwAngularVel.y) && !float.IsNaN(throwAngularVel.z))
+                if (!float.IsNaN(throwAngularVel.x)
+                    && !float.IsNaN(throwAngularVel.y)
+                    && !float.IsNaN(throwAngularVel.z))
                     body.angularVelocity = throwAngularVel;
             }
         }
@@ -863,7 +889,10 @@ namespace Autohand
             {
                 if (jointedBody.gameObject.HasGrabbable(out Grabbable otherGrabbable))
                 {
-                    if (otherGrabbable.parentOnGrab && HeldCount() > 0 && otherGrabbable.HeldCount() == 0 && rootTransform.parent != originalParent)
+                    if (otherGrabbable.parentOnGrab
+                        && HeldCount() > 0
+                        && otherGrabbable.HeldCount() == 0
+                        && rootTransform.parent != originalParent)
                     {
                         otherGrabbable.rootTransform.parent = rootTransform.parent;
                     }
@@ -1014,8 +1043,8 @@ namespace Autohand
 
                 if (body != null)
                 {
-                    body.collisionDetectionMode =
-                        body.isKinematic ? CollisionDetectionMode.ContinuousSpeculative : CollisionDetectionMode.ContinuousDynamic;
+                    body.collisionDetectionMode = body.isKinematic ? CollisionDetectionMode.ContinuousSpeculative
+                        : CollisionDetectionMode.ContinuousDynamic;
                     body.interpolation = RigidbodyInterpolation.None;
                     body.solverIterations = 100;
                     body.solverVelocityIterations = 100;
@@ -1036,7 +1065,9 @@ namespace Autohand
 
                     for (int i = 0; i < jointedBodies.Count; i++)
                     {
-                        if (jointedBodies[i] != null && jointedBodies[i].gameObject.HasGrabbable(out var grab) && grab != this)
+                        if (jointedBodies[i] != null
+                            && jointedBodies[i].gameObject.HasGrabbable(out var grab)
+                            && grab != this)
                         {
                             grab.SetGrabbedRigidbodySettings();
                         }

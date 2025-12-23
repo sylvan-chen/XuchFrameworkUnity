@@ -1,13 +1,16 @@
 using Autohand;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Autohand {
-    public class HandTouchButton : MonoBehaviour {
-        [Alchemy.Inspector.HideIf("startUnpress")]
+namespace Autohand
+{
+    public class HandTouchButton : MonoBehaviour
+    {
+        [HideIf("startUnpress")]
         public bool startPress = false;
-        [Alchemy.Inspector.HideIf("startPress")]
+        [HideIf("startPress")]
         public bool startUnpress = false;
         public HandTouchEvent touchEvent;
         public Transform button;
@@ -24,54 +27,64 @@ namespace Autohand {
         bool pressed = false;
         MeshRenderer buttonRenderer;
 
-        private void Start() {
-            if(startPress)
+        private void Start()
+        {
+            if (startPress)
                 PressButton(null);
-            else if(startUnpress)
+            else if (startUnpress)
                 ReleaseButton(null);
 
             buttonRenderer = button.GetComponent<MeshRenderer>();
         }
 
-        void OnEnable() {
+        void OnEnable()
+        {
             touchEvent.HandStartTouchEvent += OnTouch;
             touchEvent.HandStopTouchEvent += OnUntouch;
         }
-        void OnDisable() {
+
+        void OnDisable()
+        {
             touchEvent.HandStartTouchEvent -= OnTouch;
             touchEvent.HandStopTouchEvent -= OnUntouch;
         }
 
-        void OnTouch(Hand hand) {
-            if(toggle) {
-                if(!pressed)
+        void OnTouch(Hand hand)
+        {
+            if (toggle)
+            {
+                if (!pressed)
                     PressButton(hand);
-                else if(pressed)
+                else if (pressed)
                     ReleaseButton(hand);
             }
-            else if(!pressed)
+            else if (!pressed)
                 PressButton(hand);
         }
-        void OnUntouch(Hand hand) {
-            if(pressed && !toggle)
+
+        void OnUntouch(Hand hand)
+        {
+            if (pressed && !toggle)
                 ReleaseButton(hand);
         }
 
-        void PressButton(Hand hand) {
-            if(!pressed)
+        void PressButton(Hand hand)
+        {
+            if (!pressed)
                 button.localPosition += pressOffset;
             pressed = true;
-            OnPressed?.Invoke(hand); 
-            if(buttonRenderer != null && buttonRenderer.material != null)
+            OnPressed?.Invoke(hand);
+            if (buttonRenderer != null && buttonRenderer.material != null)
                 buttonRenderer.material.color = pressColor;
         }
 
-        void ReleaseButton(Hand hand) {
-            if(pressed)
+        void ReleaseButton(Hand hand)
+        {
+            if (pressed)
                 button.localPosition -= pressOffset;
-            pressed = false; 
+            pressed = false;
             OnUnpressed?.Invoke(hand);
-            if(buttonRenderer != null && buttonRenderer.material != null)
+            if (buttonRenderer != null && buttonRenderer.material != null)
                 buttonRenderer.material.color = unpressColor;
         }
     }

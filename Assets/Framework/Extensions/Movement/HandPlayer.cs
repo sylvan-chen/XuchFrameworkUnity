@@ -1,6 +1,6 @@
-﻿using Alchemy.Inspector;
-using Autohand;
+﻿using Autohand;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using XuchFramework.Core;
 using XuchFramework.Core.Utils;
@@ -48,7 +48,8 @@ namespace XuchFramework.Gameplay
 
         [AutoToggleHeader("Turning")]
         public bool AllowTurning = true;
-        [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("Whether or not to use snap turning or smooth turning")]
+        [SerializeField, EnableIf(nameof(AllowTurning)),
+         Tooltip("Whether or not to use snap turning or smooth turning")]
         private TurningType _turningType = TurningType.Snap;
         [SerializeField, ShowIf(nameof(IsSnapTurning)), EnableIf(nameof(AllowTurning))]
         [Tooltip("Turn angle per snap when using snap turning")]
@@ -58,7 +59,8 @@ namespace XuchFramework.Gameplay
         private float _smoothTurnSpeed = 180f;
         [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("The deadzone for turning input"), Min(0)]
         private float _turnDeadzone = 0.4f;
-        [SerializeField, EnableIf(nameof(AllowTurning)), Tooltip("Amount of input required to reset the turn state for snap turning"), Min(0)]
+        [SerializeField, EnableIf(nameof(AllowTurning)),
+         Tooltip("Amount of input required to reset the turn state for snap turning"), Min(0)]
         private float _turnResetzone = 0.3f;
 
         [AutoToggleHeader("Height")]
@@ -137,7 +139,8 @@ namespace XuchFramework.Gameplay
             _gorilla = GetComponent<Gorillamotion2>();
             if (_gorilla == null)
             {
-                Log.Error($"[HandPlayer] Gorillamotion2 component not found on HandPlayer GameObject. Disabling Gorillamotion functionality.");
+                Log.Error(
+                    $"[HandPlayer] Gorillamotion2 component not found on HandPlayer GameObject. Disabling Gorillamotion functionality.");
                 UseGorillamotion = false;
             }
 
@@ -274,7 +277,10 @@ namespace XuchFramework.Gameplay
 
                     _trackingContainer.RotateAround(transform.position, Vector3.up, angle);
                     _trackingPosOffset = Vector3.zero;
-                    _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
+                    _targetTrackedPos = new Vector3(
+                        _trackingContainer.position.x,
+                        _targetTrackedPos.y,
+                        _trackingContainer.position.z);
 
                     if (_handRight.holdingObj != null && !_handRight.IsGrabbing())
                     {
@@ -307,7 +313,10 @@ namespace XuchFramework.Gameplay
                     _smoothTurnSpeed * (Mathf.MoveTowards(_turningAxis, 0, _turnDeadzone)) * Time.deltaTime);
 
                 _trackingPosOffset = Vector3.zero;
-                _targetTrackedPos = new Vector3(_trackingContainer.position.x, _targetTrackedPos.y, _trackingContainer.position.z);
+                _targetTrackedPos = new Vector3(
+                    _trackingContainer.position.x,
+                    _targetTrackedPos.y,
+                    _trackingContainer.position.z);
 
                 _handRight.handFollow.AverageSetMoveTo();
                 _handLeft.handFollow.AverageSetMoveTo();
@@ -326,8 +335,10 @@ namespace XuchFramework.Gameplay
                 if (deltaHandPos.magnitude < Physics.defaultContactOffset)
                     return;
 
-                var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center) - deltaHandPos;
-                var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size) / 2f;
+                var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center)
+                             - deltaHandPos;
+                var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size)
+                                  / 2f;
                 var hits = Physics.BoxCastAll(
                     center,
                     halfExtents,
@@ -347,7 +358,10 @@ namespace XuchFramework.Gameplay
                             && !hand.holdingObj.jointedBodies.Contains(hit.collider.attachedRigidbody)))
                     {
                         var deltaHitPos = hit.point - hand.transform.position;
-                        hand.transform.position = Vector3.MoveTowards(hand.transform.position, startPosition, deltaHitPos.magnitude);
+                        hand.transform.position = Vector3.MoveTowards(
+                            hand.transform.position,
+                            startPosition,
+                            deltaHitPos.magnitude);
 
                         break;
                     }

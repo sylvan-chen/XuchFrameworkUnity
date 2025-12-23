@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using XuchFramework.Core.Audio;
 
@@ -16,7 +16,7 @@ namespace XuchFramework.Core
         private float _idleInstanceLivingDuration = 30f;
         [SerializeField]
         private bool _preloadBanks = false;
-        [Indent, SerializeField, EnableIf(nameof(_preloadBanks))]
+        [SerializeField, EnableIf(nameof(_preloadBanks))]
         private List<string> _preloadBankNames;
 
         private readonly Dictionary<string, ResourceHandle<TextAsset>> _bankResourceHandleMap = new();

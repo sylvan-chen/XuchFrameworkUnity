@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Alchemy.Inspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using Alchemy.Inspector;
 using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
@@ -44,9 +44,11 @@ namespace Autohand
 
         [Tooltip("The tracked headCamera object")]
         public Camera headCamera;
-        [Tooltip("The object that represents the forward direction movement, usually should be set as the camera or a tracked controller")]
+        [Tooltip(
+            "The object that represents the forward direction movement, usually should be set as the camera or a tracked controller")]
         public Transform forwardFollow;
-        [Tooltip("This should NOT be a child of this body. This should be a GameObject that contains all the tracked objects (head/controllers)")]
+        [Tooltip(
+            "This should NOT be a child of this body. This should be a GameObject that contains all the tracked objects (head/controllers)")]
         public Transform trackingContainer;
         public Hand handRight;
         public Hand handLeft;
@@ -86,7 +88,8 @@ namespace Autohand
         [Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
         public bool autoAdjustColliderHeight = true;
         [ShowIf("showHeight")]
-        [Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
+        [Tooltip(
+            "Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
         public Vector2 minMaxHeight = new Vector2(0.5f, 2.5f);
         [ShowIf("showHeight")]
         public bool useHeadCollision = true;
@@ -134,10 +137,12 @@ namespace Autohand
         public float pushUpStepHeightMultiplier = 3f;
 
         [AutoToggleHeader("Enable Platforming")]
-        [Tooltip("Platforms will move the player with them. A platform is an object with the Transform component on it")]
+        [Tooltip(
+            "Platforms will move the player with them. A platform is an object with the Transform component on it")]
         public bool allowPlatforms = true;
         [EnableIf("useGrounding"),
-         Tooltip("The layers that platforming will be enabled on, will not work with layers that the HandPlayer can't collide with")]
+         Tooltip(
+             "The layers that platforming will be enabled on, will not work with layers that the HandPlayer can't collide with")]
         public LayerMask platformingLayerMask = ~0;
 
         public AutoHandPlayerEvent OnSnapTurn;
@@ -464,21 +469,30 @@ namespace Autohand
             //1. Moves velocity towards desired push direction
             if (pushAxis != Vector3.zero)
             {
-                body.linearVelocity = Vector3.MoveTowards(body.linearVelocity, pushAxis, pushingAcceleration * Time.fixedDeltaTime);
+                body.linearVelocity = Vector3.MoveTowards(
+                    body.linearVelocity,
+                    pushAxis,
+                    pushingAcceleration * Time.fixedDeltaTime);
                 body.linearVelocity *= Mathf.Clamp01(1 - pushingDrag * Time.fixedDeltaTime);
             }
 
             //2. Moves velocity towards desired climb direction
             if (climbAxis != Vector3.zero)
             {
-                body.linearVelocity = Vector3.MoveTowards(body.linearVelocity, climbAxis, climbingAcceleration * Time.fixedDeltaTime);
+                body.linearVelocity = Vector3.MoveTowards(
+                    body.linearVelocity,
+                    climbAxis,
+                    climbingAcceleration * Time.fixedDeltaTime);
                 body.linearVelocity *= Mathf.Clamp01(1 - climbingDrag * Time.fixedDeltaTime);
             }
 
             //3. Moves velocity towards desired movement direction
             if (move != Vector3.zero && CanInputMove())
             {
-                var newVel = Vector3.MoveTowards(body.linearVelocity, move * maxMoveSpeed, moveAcceleration * Time.fixedDeltaTime);
+                var newVel = Vector3.MoveTowards(
+                    body.linearVelocity,
+                    move * maxMoveSpeed,
+                    moveAcceleration * Time.fixedDeltaTime);
                 if (newVel.magnitude > maxMoveSpeed)
                     newVel = newVel.normalized * maxMoveSpeed;
                 body.linearVelocity = newVel;
@@ -513,21 +527,29 @@ namespace Autohand
 
             //Moves the tracked objects based on the physics bodys delta movement
             targetTrackedPos += (transform.position - lastUpdatePosition);
-            trackingContainer.position = new Vector3(targetTrackedPos.x, trackingContainer.position.y, targetTrackedPos.z);
+            trackingContainer.position = new Vector3(
+                targetTrackedPos.x,
+                trackingContainer.position.y,
+                targetTrackedPos.z);
 
             //This slow moves the head + controllers on the Y-axis so it doesn't jump when stepping up
             if (isGrounded)
                 trackingContainer.position = Vector3.MoveTowards(
                     trackingContainer.position,
                     targetTrackedPos + Vector3.up * heightOffset,
-                    (Mathf.Abs(trackingContainer.position.y - targetTrackedPos.y) + 0.1f) * Time.deltaTime * heightSmoothSpeed);
+                    (Mathf.Abs(trackingContainer.position.y - targetTrackedPos.y) + 0.1f)
+                    * Time.deltaTime
+                    * heightSmoothSpeed);
             else
                 trackingContainer.position = targetTrackedPos + Vector3.up * heightOffset;
 
             //This code will move the tracking objects to match the body collider position when moving
             var targetPos = transform.position - headCamera.transform.position;
             targetPos.y = 0;
-            targetPosOffset = Vector3.MoveTowards(targetPosOffset, targetPos, body.linearVelocity.magnitude * Time.deltaTime);
+            targetPosOffset = Vector3.MoveTowards(
+                targetPosOffset,
+                targetPos,
+                body.linearVelocity.magnitude * Time.deltaTime);
             trackingContainer.position += targetPosOffset;
 
             //This helps prevent the hands from clipping
@@ -552,7 +574,8 @@ namespace Autohand
             if (deltaHandPos.magnitude < Physics.defaultContactOffset)
                 return;
 
-            var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center) - deltaHandPos;
+            var center = hand.handEncapsulationBox.transform.TransformPoint(hand.handEncapsulationBox.center)
+                         - deltaHandPos;
             var halfExtents = hand.handEncapsulationBox.transform.TransformVector(hand.handEncapsulationBox.size) / 2f;
             var hits = Physics.BoxCastAll(
                 center,
@@ -573,7 +596,10 @@ namespace Autohand
                         && !hand.holdingObj.jointedBodies.Contains(hit.collider.attachedRigidbody)))
                 {
                     var deltaHitPos = hit.point - hand.transform.position;
-                    hand.transform.position = Vector3.MoveTowards(hand.transform.position, startPosition, deltaHitPos.magnitude);
+                    hand.transform.position = Vector3.MoveTowards(
+                        hand.transform.position,
+                        startPosition,
+                        deltaHitPos.magnitude);
 
                     break;
                 }
@@ -624,7 +650,8 @@ namespace Autohand
                                 var preColliderHeight = bodyCapsule.height;
 
                                 if ((handLeft.IsHolding() && handLeft.holdingObj.grabColliders.Contains(otherCollider))
-                                    || (handRight.IsHolding() && handRight.holdingObj.grabColliders.Contains(otherCollider)))
+                                    || (handRight.IsHolding()
+                                        && handRight.holdingObj.grabColliders.Contains(otherCollider)))
                                     continue;
                                 //Temporarily increase the height of the capsule to prevent the depenetration from using the Y-axis
                                 //This should prevent bugs in most cases, but it might cause some issues with some very specific edge cases (E.G a giant inverted sphere shapped mesh collider)
@@ -641,7 +668,8 @@ namespace Autohand
                                         out var closestDepenetrationDistance))
                                 {
                                     // Adding the 1.05f multiplier to the depenetration direction will make the body move a bit further away from the collider helping to prevent the body from getting stuck
-                                    averageDepentration += closestDepentrationDirection * (closestDepenetrationDistance * 1.05f);
+                                    averageDepentration += closestDepentrationDirection
+                                                           * (closestDepenetrationDistance * 1.05f);
                                     averageDepentration.y = 0;
                                 }
 
@@ -682,7 +710,8 @@ namespace Autohand
                 Vector3 capsuleCenter = colTransform.TransformPoint(col.center);
                 float actualHeight = col.height * 0.5f - col.radius;
                 float scaledHeight = actualHeight * Vector3.Scale(colTransform.lossyScale, Vector3.up).magnitude;
-                radius = col.radius * Mathf.Max(colTransform.lossyScale.x, colTransform.lossyScale.y, colTransform.lossyScale.z);
+                radius = col.radius
+                         * Mathf.Max(colTransform.lossyScale.x, colTransform.lossyScale.y, colTransform.lossyScale.z);
 
                 top = capsuleCenter + Vector3.up * scaledHeight;
                 bottom = capsuleCenter - Vector3.up * scaledHeight;
@@ -752,7 +781,10 @@ namespace Autohand
                     cameraHeadPosition -= averageDepentration;
                     body.position = transform.position;
 
-                    cameraHeadPosition = Vector3.MoveTowards(cameraHeadPosition, currentHeadPosition, headRadius * 0.95f);
+                    cameraHeadPosition = Vector3.MoveTowards(
+                        cameraHeadPosition,
+                        currentHeadPosition,
+                        headRadius * 0.95f);
 
                     overlapCount = Physics.OverlapSphereNonAlloc(
                         cameraHeadPosition,
@@ -831,7 +863,10 @@ namespace Autohand
 
                     trackingContainer.RotateAround(transform.position, Vector3.up, angle);
                     targetPosOffset = Vector3.zero;
-                    targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y, trackingContainer.position.z);
+                    targetTrackedPos = new Vector3(
+                        trackingContainer.position.x,
+                        targetTrackedPos.y,
+                        trackingContainer.position.z);
 
                     if (handRight.holdingObj != null && !handRight.IsGrabbing())
                     {
@@ -864,7 +899,10 @@ namespace Autohand
                     smoothTurnSpeed * (Mathf.MoveTowards(turningAxis, 0, turnDeadzone)) * deltaTime);
 
                 targetPosOffset = Vector3.zero;
-                targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y, trackingContainer.position.z);
+                targetTrackedPos = new Vector3(
+                    trackingContainer.position.x,
+                    targetTrackedPos.y,
+                    trackingContainer.position.z);
 
                 handRight.handFollow.AverageSetMoveTo();
                 handLeft.handFollow.AverageSetMoveTo();
@@ -891,7 +929,8 @@ namespace Autohand
 
                 float stepAngle;
                 float dist;
-                float scale = transform.lossyScale.x > transform.lossyScale.z ? transform.lossyScale.x : transform.lossyScale.z;
+                float scale = transform.lossyScale.x > transform.lossyScale.z ? transform.lossyScale.x
+                    : transform.lossyScale.z;
 
                 var stepHeight = this.maxStepHeight;
                 stepHeight *= climbAxis.y > 0 ? climbUpStepHeightMultiplier : 1;
@@ -945,7 +984,8 @@ namespace Autohand
 
                         if (hit.collider != bodyCapsule)
                         {
-                            if (hit.point.y >= point2.y && hit.point.y <= point2.y + stepHeight + groundingPenetrationOffset)
+                            if (hit.point.y >= point2.y
+                                && hit.point.y <= point2.y + stepHeight + groundingPenetrationOffset)
                             {
                                 stepAngle = Vector3.Angle(hit.normal, Vector3.up);
                                 dist = hit.point.y - transform.position.y;
@@ -1012,7 +1052,10 @@ namespace Autohand
 
             if (autoAdjustColliderHeight)
             {
-                playerHeight = Mathf.Clamp(headCamera.transform.position.y - transform.position.y, minMaxHeight.x, minMaxHeight.y);
+                playerHeight = Mathf.Clamp(
+                    headCamera.transform.position.y - transform.position.y,
+                    minMaxHeight.x,
+                    minMaxHeight.y);
                 bodyCapsule.height = playerHeight;
                 var centerHeight = playerHeight / 2f > bodyCapsule.radius ? playerHeight / 2f : bodyCapsule.radius;
                 bodyCapsule.center = new Vector3(0, centerHeight, 0);
@@ -1043,10 +1086,17 @@ namespace Autohand
                         ruler.position += lastPlatformingHit.transform.position - lastPlatformPosition;
 
                         var deltaPos = ruler.transform.position - transform.position;
-                        var deltaRot = (lastPlatformingHit.transform.rotation * Quaternion.Inverse(lastPlatformRotation));
+                        var deltaRot =
+                            (lastPlatformingHit.transform.rotation * Quaternion.Inverse(lastPlatformRotation));
 
-                        ruler.transform.RotateAround(lastPlatformingHit.transform.position, Vector3.up, deltaRot.eulerAngles.y);
-                        trackingContainer.RotateAround(headCamera.transform.position, Vector3.up, deltaRot.eulerAngles.y);
+                        ruler.transform.RotateAround(
+                            lastPlatformingHit.transform.position,
+                            Vector3.up,
+                            deltaRot.eulerAngles.y);
+                        trackingContainer.RotateAround(
+                            headCamera.transform.position,
+                            Vector3.up,
+                            deltaRot.eulerAngles.y);
 
                         transform.position += deltaPos;
                         body.position = transform.position;
@@ -1057,7 +1107,10 @@ namespace Autohand
 
                         targetPosOffset = Vector3.zero;
 
-                        targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y + deltaPos.y, trackingContainer.position.z);
+                        targetTrackedPos = new Vector3(
+                            trackingContainer.position.x,
+                            targetTrackedPos.y + deltaPos.y,
+                            trackingContainer.position.z);
                         lastPlatformPosition = lastPlatformingHit.transform.position;
                         lastPlatformRotation = lastPlatformingHit.transform.rotation;
                     }
@@ -1211,7 +1264,9 @@ namespace Autohand
                         Vector3 offset = Vector3.zero;
                         var distance = Vector3.Distance(push.Value.body.position, push.Value.moveTo.position);
                         if (distance > 0)
-                            offset = Vector3.Scale((push.Value.body.position - push.Value.moveTo.position), push.Key.strengthScale);
+                            offset = Vector3.Scale(
+                                (push.Value.body.position - push.Value.moveTo.position),
+                                push.Key.strengthScale);
 
                         offset = Vector3.Scale(offset, pushingStrength);
                         pushAxis += offset / 2f;
@@ -1225,7 +1280,9 @@ namespace Autohand
                         Vector3 offset = Vector3.zero;
                         var distance = Vector3.Distance(push.Value.body.position, push.Value.moveTo.position);
                         if (distance > 0)
-                            offset = Vector3.Scale((push.Value.body.position - push.Value.moveTo.position), push.Key.strengthScale);
+                            offset = Vector3.Scale(
+                                (push.Value.body.position - push.Value.moveTo.position),
+                                push.Key.strengthScale);
 
                         offset = Vector3.Scale(offset, pushingStrength);
                         pushAxis += offset / 2f;
@@ -1256,7 +1313,10 @@ namespace Autohand
             if (!allowClimbing)
                 return;
 
-            if (!climbing.ContainsKey(hand) && grab != null && grab.CanGetComponent(out Climbable climbbable) && climbbable.enabled)
+            if (!climbing.ContainsKey(hand)
+                && grab != null
+                && grab.CanGetComponent(out Climbable climbbable)
+                && climbbable.enabled)
             {
                 if (climbing.Count == 0)
                 {
@@ -1328,7 +1388,10 @@ namespace Autohand
 
             // Update tracking positions.
             lastUpdatePosition = transform.position;
-            targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y + deltaPos.y, trackingContainer.position.z);
+            targetTrackedPos = new Vector3(
+                trackingContainer.position.x,
+                targetTrackedPos.y + deltaPos.y,
+                trackingContainer.position.z);
 
             targetPosOffset = Vector3.zero;
             body.position = transform.position;
@@ -1367,7 +1430,10 @@ namespace Autohand
             trackingContainer.RotateAround(headCamera.transform.position, Vector3.up, deltaRot.eulerAngles.y);
 
             targetPosOffset = Vector3.zero;
-            targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y, trackingContainer.position.z);
+            targetTrackedPos = new Vector3(
+                trackingContainer.position.x,
+                targetTrackedPos.y,
+                trackingContainer.position.z);
 
             SafeMoveHandToPosition(handRight, transform, handRight.transform.position);
             SafeMoveHandToPosition(handLeft, transform, handLeft.transform.position);
@@ -1392,7 +1458,10 @@ namespace Autohand
             trackingContainer.RotateAround(headCamera.transform.position, Vector3.up, addRotation.eulerAngles.y);
 
             targetPosOffset = Vector3.zero;
-            targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y, trackingContainer.position.z);
+            targetTrackedPos = new Vector3(
+                trackingContainer.position.x,
+                targetTrackedPos.y,
+                trackingContainer.position.z);
 
             SafeMoveHandToPosition(handRight, transform, handRight.transform.position);
             SafeMoveHandToPosition(handLeft, transform, handLeft.transform.position);
@@ -1404,7 +1473,10 @@ namespace Autohand
         private void SafeMoveHandToPosition(Hand hand, Transform playerTransform, Vector3 desiredHandPosition)
         {
             var handBody = hand.body;
-            Vector3 bodyXZCenter = new Vector3(playerTransform.position.x, handBody.position.y, playerTransform.position.z);
+            Vector3 bodyXZCenter = new Vector3(
+                playerTransform.position.x,
+                handBody.position.y,
+                playerTransform.position.z);
 
             handBody.position = bodyXZCenter;
             handBody.transform.position = bodyXZCenter;
@@ -1436,7 +1508,10 @@ namespace Autohand
             lastUpdatePosition = transform.position;
 
             targetPosOffset = Vector3.zero;
-            targetTrackedPos = new Vector3(trackingContainer.position.x, targetTrackedPos.y, trackingContainer.position.z);
+            targetTrackedPos = new Vector3(
+                trackingContainer.position.x,
+                targetTrackedPos.y,
+                trackingContainer.position.z);
         }
 
         public bool IsHolding(Grabbable grab)
@@ -1447,7 +1522,8 @@ namespace Autohand
         protected virtual Vector3 AlterDirection(Vector3 moveAxis)
         {
             if (useGrounding)
-                return Quaternion.AngleAxis(forwardFollow.eulerAngles.y, Vector3.up) * (new Vector3(moveAxis.x, moveAxis.y, moveAxis.z));
+                return Quaternion.AngleAxis(forwardFollow.eulerAngles.y, Vector3.up)
+                       * (new Vector3(moveAxis.x, moveAxis.y, moveAxis.z));
             else
                 return forwardFollow.rotation * (new Vector3(moveAxis.x, moveAxis.y, moveAxis.z));
         }

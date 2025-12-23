@@ -1,5 +1,5 @@
 ﻿using Autohand;
-using Alchemy.Inspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace XuchFramework.Gameplay
@@ -27,9 +27,11 @@ namespace XuchFramework.Gameplay
         private float _gravityStength = 10f;
         [SerializeField]
         private bool _limitArmLength = true;
-        [SerializeField, Indent, EnableIf(nameof(_limitArmLength)), Tooltip("Left shoulder transform for arm length calculation")]
+        [SerializeField, Indent, EnableIf(nameof(_limitArmLength)),
+         Tooltip("Left shoulder transform for arm length calculation")]
         private Transform _leftShoulder;
-        [SerializeField, Indent, EnableIf(nameof(_limitArmLength)), Tooltip("Right shoulder transform for arm length calculation")]
+        [SerializeField, Indent, EnableIf(nameof(_limitArmLength)),
+         Tooltip("Right shoulder transform for arm length calculation")]
         private Transform _rightShoulder;
         [SerializeField, Indent, EnableIf(nameof(_limitArmLength)), Tooltip("Max arm length on moving")]
         private float _maxArmLength = 1.5f;
@@ -45,7 +47,8 @@ namespace XuchFramework.Gameplay
         private float _jumpingStrength = 1.1f;
         [SerializeField, Tooltip("Maximum jump speed")]
         private float _maxJumpSpeed = 6.5f;
-        [SerializeField, Tooltip("Size of the velocity history used to determine if the player trigger a jump"), Range(3, 10)]
+        [SerializeField, Tooltip("Size of the velocity history used to determine if the player trigger a jump"),
+         Range(3, 10)]
         private int _velocityHistorySize = 8;
 
         [Title("Surface")]
@@ -147,7 +150,15 @@ namespace XuchFramework.Gameplay
             Vector3 gravityOffset = Physics.gravity * (_gravityStength * Time.deltaTime * Time.deltaTime);
 
             var traveledVector = currentLeftHandPos - _lastLeftHandPos + gravityOffset;
-            if (ApplySphereMovement(_lastLeftHandPos, _handSphereRadius, traveledVector, out var finalPosition, out _, true, false, out _))
+            if (ApplySphereMovement(
+                    _lastLeftHandPos,
+                    _handSphereRadius,
+                    traveledVector,
+                    out var finalPosition,
+                    out _,
+                    true,
+                    false,
+                    out _))
             {
                 // this lets you stick to the position you touch, as long as you keep touching the surface this will be the zero point for that hand
                 if (_wasLeftHandTouching)
@@ -163,7 +174,15 @@ namespace XuchFramework.Gameplay
             }
 
             traveledVector = currentRightHandPos - _lastRightHandPos + gravityOffset;
-            if (ApplySphereMovement(_lastRightHandPos, _handSphereRadius, traveledVector, out finalPosition, out _, true, false, out _))
+            if (ApplySphereMovement(
+                    _lastRightHandPos,
+                    _handSphereRadius,
+                    traveledVector,
+                    out finalPosition,
+                    out _,
+                    true,
+                    false,
+                    out _))
             {
                 if (_wasRightHandTouching)
                     rightHandMovement = _lastRightHandPos - currentRightHandPos;
@@ -195,7 +214,15 @@ namespace XuchFramework.Gameplay
             void PreventClipping()
             {
                 traveledVector = _bodyCollider.transform.position + BodyMovement - _lastBodyPos;
-                if (ApplySphereMovement(_lastBodyPos, _handSphereRadius, traveledVector, out _, out _, false, true, out _))
+                if (ApplySphereMovement(
+                        _lastBodyPos,
+                        _handSphereRadius,
+                        traveledVector,
+                        out _,
+                        out _,
+                        false,
+                        true,
+                        out _))
                 {
                     BodyMovement = finalPosition - _lastBodyPos;
 
@@ -214,7 +241,15 @@ namespace XuchFramework.Gameplay
                 if (_useHeadCollider)
                 {
                     traveledVector = _headCollider.transform.position + BodyMovement - _lastHeadPos;
-                    if (ApplySphereMovement(_lastHeadPos, _headCollider.radius, traveledVector, out finalPosition, out _, false, true, out _))
+                    if (ApplySphereMovement(
+                            _lastHeadPos,
+                            _headCollider.radius,
+                            traveledVector,
+                            out finalPosition,
+                            out _,
+                            false,
+                            true,
+                            out _))
                     {
                         BodyMovement = finalPosition - _lastHeadPos;
 
@@ -244,10 +279,19 @@ namespace XuchFramework.Gameplay
 
             // Update final position for hands after body movement
 
-            var singleHand = !((_leftHandColliding || _wasLeftHandTouching) && (_rightHandColliding || _wasRightHandTouching));
+            var singleHand = !((_leftHandColliding || _wasLeftHandTouching)
+                               && (_rightHandColliding || _wasRightHandTouching));
 
             var handTraveled = currentLeftHandPos - _lastLeftHandPos;
-            if (ApplySphereMovement(_lastLeftHandPos, _handSphereRadius, handTraveled, out finalPosition, out _, singleHand, false, out _))
+            if (ApplySphereMovement(
+                    _lastLeftHandPos,
+                    _handSphereRadius,
+                    handTraveled,
+                    out finalPosition,
+                    out _,
+                    singleHand,
+                    false,
+                    out _))
             {
                 _leftHandColliding = true;
                 _lastLeftHandPos = finalPosition;
@@ -258,7 +302,15 @@ namespace XuchFramework.Gameplay
             }
 
             handTraveled = currentRightHandPos - _lastRightHandPos;
-            if (ApplySphereMovement(_lastRightHandPos, _handSphereRadius, handTraveled, out finalPosition, out _, singleHand, false, out _))
+            if (ApplySphereMovement(
+                    _lastRightHandPos,
+                    _handSphereRadius,
+                    handTraveled,
+                    out finalPosition,
+                    out _,
+                    singleHand,
+                    false,
+                    out _))
             {
                 _rightHandColliding = true;
                 _lastRightHandPos = finalPosition;
@@ -342,13 +394,19 @@ namespace XuchFramework.Gameplay
         /// <summary>Move sphere with collision check and apply sliding</summary>
         /// <returns>Does sphere hit on surface</returns>
         private bool ApplySphereMovement(
-            Vector3 startPosition, float sphereRadius, Vector3 movementVector, out Vector3 finalPosition, out RaycastHit finalHitInfo,
-            bool singleHand, bool fullSlide, out float finalSlideFactor)
+            Vector3 startPosition, float sphereRadius, Vector3 movementVector, out Vector3 finalPosition,
+            out RaycastHit finalHitInfo, bool singleHand, bool fullSlide, out float finalSlideFactor)
         {
             finalSlideFactor = _defaultSlideFactor;
 
             // Cast 1: Direct movement cast
-            if (!AccurateSphereCast(startPosition, sphereRadius, movementVector, out finalPosition, out finalHitInfo, _surfaceLayerMask.value))
+            if (!AccurateSphereCast(
+                    startPosition,
+                    sphereRadius,
+                    movementVector,
+                    out finalPosition,
+                    out finalHitInfo,
+                    _surfaceLayerMask.value))
             {
                 // If the movement path is completely clear, do nothing
                 return false;
@@ -357,7 +415,8 @@ namespace XuchFramework.Gameplay
             // Get slide factor
             if (finalHitInfo.collider.gameObject.TryGetComponent(out SurfaceOverride surfaceOverride))
             {
-                finalSlideFactor = surfaceOverride.slideFactor <= _defaultSlideFactor ? _defaultSlideFactor : surfaceOverride.slideFactor;
+                finalSlideFactor = surfaceOverride.slideFactor <= _defaultSlideFactor ? _defaultSlideFactor
+                    : surfaceOverride.slideFactor;
             }
             else
             {
@@ -372,10 +431,17 @@ namespace XuchFramework.Gameplay
             var firstHitPosition = finalPosition;
             var targetPosition = startPosition + movementVector;
             // The bigger slide factor, the more motion on surface is allowed
-            var surfaceMovement = Vector3.ProjectOnPlane(targetPosition - firstHitPosition, finalHitInfo.normal) * finalSlideFactor;
+            var surfaceMovement = Vector3.ProjectOnPlane(targetPosition - firstHitPosition, finalHitInfo.normal)
+                                  * finalSlideFactor;
 
             // Cast 2: Surface movement cast
-            if (AccurateSphereCast(firstHitPosition, sphereRadius, surfaceMovement, out finalPosition, out finalHitInfo, _surfaceLayerMask.value))
+            if (AccurateSphereCast(
+                    firstHitPosition,
+                    sphereRadius,
+                    surfaceMovement,
+                    out finalPosition,
+                    out finalHitInfo,
+                    _surfaceLayerMask.value))
             {
                 return true;
             }
@@ -402,13 +468,18 @@ namespace XuchFramework.Gameplay
         /// </summary>
         /// <returns>Does sphere hit on surface</returns>
         private bool AccurateSphereCast(
-            Vector3 startPosition, float sphereRadius, Vector3 movementVector, out Vector3 finalPosition, out RaycastHit finalHitInfo,
-            int layerMask = ~0)
+            Vector3 startPosition, float sphereRadius, Vector3 movementVector, out Vector3 finalPosition,
+            out RaycastHit finalHitInfo, int layerMask = ~0)
         {
             RaycastHit tempHitInfo;
 
             // Ensure sphere is non-overlap at the start position
-            AutoHandExtensions.TryGetMaxSphereRadiusForNonOverlap(startPosition, sphereRadius, sphereRadius * 0.75f, out var finalRadius1, layerMask);
+            AutoHandExtensions.TryGetMaxSphereRadiusForNonOverlap(
+                startPosition,
+                sphereRadius,
+                sphereRadius * 0.75f,
+                out var finalRadius1,
+                layerMask);
 
             // Cast 1.1: Movement vector cast
             ClearHitBuffer(ref _hitsNonAlloc5);
@@ -569,7 +640,8 @@ namespace XuchFramework.Gameplay
 
             bool IsSimpleCollision(RaycastHit hit, Vector3 movement)
             {
-                return Vector3.Dot(hit.normal, -movement.normalized) > 0.9f && movement.sqrMagnitude < (sphereRadius * 2f) * (sphereRadius * 2f);
+                return Vector3.Dot(hit.normal, -movement.normalized) > 0.9f
+                       && movement.sqrMagnitude < (sphereRadius * 2f) * (sphereRadius * 2f);
             }
         }
     }

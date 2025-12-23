@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Autohand
@@ -19,7 +18,7 @@ namespace Autohand
         public bool setRotations = true;
         public bool setScale = false;
 
-        [SerializeField,HideInInspector]
+        [SerializeField, HideInInspector]
         private Transform[] transformReferences;
         [SerializeField, HideInInspector]
         private Vector3[] maxValuePositions;
@@ -35,7 +34,7 @@ namespace Autohand
         [SerializeField, HideInInspector]
         private Vector3[] minValueScales;
 
-        Transform transformRoot;
+        private Transform transformRoot;
 
         public void SetAnimation(float point)
         {
@@ -45,7 +44,10 @@ namespace Autohand
 
             if (setRotations)
                 for (int i = 0; i < transformReferences.Length; i++)
-                    transformReferences[i].localRotation = Quaternion.Lerp(minValueRotations[i], maxValueRotations[i], animationCurve.Evaluate(point));
+                    transformReferences[i].localRotation = Quaternion.Lerp(
+                        minValueRotations[i],
+                        maxValueRotations[i],
+                        animationCurve.Evaluate(point));
 
             if (setScale)
                 for (int i = 0; i < transformReferences.Length; i++)
@@ -57,33 +59,35 @@ namespace Autohand
             return Vector3.Lerp(minValuePositions[index], maxValuePositions[index], animationCurve.Evaluate(point));
         }
 
-        internal int GetTransformIndex(Transform transform)
+        internal int GetTransformIndex(Transform trans)
         {
             for (int i = 0; i < transformReferences.Length; i++)
             {
-                if (transformReferences[i].Equals(transform))
+                if (transformReferences[i].Equals(trans))
                     return i;
             }
 
             return -1;
         }
 
-        [Alchemy.Inspector.Button, ContextMenu("Save Start")]
+        [Button, ContextMenu("Save Start")]
         public void SaveAnimationStart()
         {
             Debug.Log("Saved Start Pose");
             SaveAnimation(AnimationPoint.start);
         }
 
-        [Alchemy.Inspector.Button, ContextMenu("Save End")]
-        public void SaveAnimationEnd() {
+        [Button, ContextMenu("Save End")]
+        public void SaveAnimationEnd()
+        {
             Debug.Log("Saved End Pose");
             SaveAnimation(AnimationPoint.end);
         }
 
         [Range(0, 1)]
         public float setTestValue = 0;
-        [Alchemy.Inspector.Button]
+
+        [Button]
         public void SetAnimation()
         {
             SetAnimation(setTestValue);
@@ -91,11 +95,13 @@ namespace Autohand
 
         public void SaveAnimation(AnimationPoint animationPoint)
         {
-            if(transformRoot == null)
+            if (transformRoot == null)
                 transformRoot = transform;
 
             int count = 0;
-            void GetRecursiveChildCount(Transform obj){
+
+            void GetRecursiveChildCount(Transform obj)
+            {
                 count++;
                 if (recordChildTransforms)
                     for (int k = 0; k < obj.childCount; k++)
@@ -111,20 +117,18 @@ namespace Autohand
                 maxValueRotations = new Quaternion[count];
                 maxValueScales = new Vector3[count];
             }
-            else if(animationPoint == AnimationPoint.start)
+            else if (animationPoint == AnimationPoint.start)
             {
                 minValuePositions = new Vector3[count];
                 minValueRotations = new Quaternion[count];
                 minValueScales = new Vector3[count];
             }
 
-
             int currIndex = 0;
             AssignChildrenPose(transformRoot);
 
-
-            void AssignChildrenPose(Transform obj) {
-
+            void AssignChildrenPose(Transform obj)
+            {
                 AssignPoint(currIndex, obj.localPosition, obj.localRotation, obj.localScale, obj);
                 currIndex++;
 
@@ -132,7 +136,6 @@ namespace Autohand
                     for (int j = 0; j < obj.childCount; j++)
                         AssignChildrenPose(obj.GetChild(j));
             }
-
 
             void AssignPoint(int point, Vector3 pos, Quaternion rot, Vector3 scale, Transform joint)
             {
