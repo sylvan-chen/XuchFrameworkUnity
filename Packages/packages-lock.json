@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.annulusgames.alchemy": {
-      "version": "file:com.annulusgames.alchemy",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.unity.addressables": {
       "version": "2.7.6",
       "depth": 0,
