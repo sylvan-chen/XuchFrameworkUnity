@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace XuchFramework.Gameplay
+namespace XuchFramework.Extensions.Movement
 {
     public class HandPlayerControllerLink : MonoBehaviour
     {

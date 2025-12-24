@@ -1,4 +1,4 @@
-﻿namespace XuchFramework.Gameplay
+﻿namespace XuchFramework.Extensions.Movement
 {
     public delegate void MountEvent(HandPlayer player, Mountable mountable);
 

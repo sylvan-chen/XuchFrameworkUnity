@@ -4,7 +4,6 @@ using Sirenix.OdinInspector;
 using XuchFramework.Core;
 using XuchFramework.Core.Utils;
 using UnityEngine;
-using XuchFramework.Gameplay;
 
 namespace XuchFramework.Extensions.Movement
 {
@@ -12,7 +11,7 @@ namespace XuchFramework.Extensions.Movement
 
     [RequireComponent(typeof(Rigidbody))]
     [DefaultExecutionOrder(5000)]
-    public class HandPlayer : MonoSingleton<HandPlayer>
+    public partial class HandPlayer : MonoSingleton<HandPlayer>
     {
         public enum TurningType
         {

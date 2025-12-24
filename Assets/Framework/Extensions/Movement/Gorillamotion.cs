@@ -2,7 +2,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace XuchFramework.Gameplay
+namespace XuchFramework.Extensions.Movement
 {
     [System.Obsolete]
     [DefaultExecutionOrder(4999)]
