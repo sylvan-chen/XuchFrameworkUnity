@@ -61,7 +61,7 @@ Improvements:
 - Hand logic is now split into additional scripts. None of these scripts need to be manually added. All these scripts and their recommended values will be automatically applied to each hand component.
 - Hand Follow now manages the hand movement instead of Hand.cs. Includes public values and functions for previous movement settings, including exposing additional movement settings that were previously internal
 - Hand Follow now includes options for dynamic hand mass. This will increase the hand mass based on its distance from the target position/rotation. This allows the hands to more realistically touch things without knocking them around.
-- Hand Follow Some of the default settings have been changed for hand-hand movement. Hands should now feel more “snappy” and less “wobbly” when dealing with rotation/weight. Hands feel less “caveman-like” when touching dynamic objects, no longer as forceful until you push against the objects. Important for good feeling hand tracking. 
+- Hand Follow Some of the default settings have been changed for hand-hand movement. Hands should now feel more Â“snappyÂ” and less Â“wobblyÂ” when dealing with rotation/weight. Hands feel less Â“caveman-likeÂ” when touching dynamic objects, no longer as forceful until you push against the objects. Important for good feeling hand tracking. 
 - Hand Follow now manages two-handed grabbing forces better by limiting the range of the move target to be based on each other hands target positions. Things like a steering wheel and pulling objects apart in opposite directions should feel more realistic
 - Hand Grabbable Highlighter now manages the internal highlight functions. Hand.cs still manages the highlight settings except internal OnHighlight and OnStopHighlight event delegates will need to be changed to hand.highlighter.OnHighlight += MyEventFunc
 - Hand Grabbable Highlighter will now by default favor highlighting objects near the fingers/fingertips instead of the palm face. Use the highlighter palmForwardRightDirection value to choose which angle will have more priority when grabbing
@@ -86,11 +86,11 @@ Improvements:
 
 Bug Fixes:
 - Fixed bug with full-body hands sometimes separating from the grab target
-- The Auto Hand Player uses a new method to move the body to match the head as closely as possible within tracking movement; the previous method was unstable and sometimes jittery. The new method also properly “lifts” the feet to prevent unwanted activation
+- The Auto Hand Player uses a new method to move the body to match the head as closely as possible within tracking movement; the previous method was unstable and sometimes jittery. The new method also properly Â“liftsÂ” the feet to prevent unwanted activation
 - Fixed bug where the grounding system would return false negative when walking on a static mesh collider like a staircase and standing against a step that is just too high to step up
 - Added assembly definitions to root scripts of each input package (Autohand, Autohand.MetaXR, Autohand.XR, Autohand.SteamVR, Autohand.OculusIntergation)
-- Head collision will now push the whole body back along the x-z axis instead of creating a sort of “movement debt” that was unrealistic and disorienting
-- Fixed possible phantom “flicker” that some people report when moving the player with thumbstick
+- Head collision will now push the whole body back along the x-z axis instead of creating a sort of Â“movement debtÂ” that was unrealistic and disorienting
+- Fixed possible phantom Â“flickerÂ” that some people report when moving the player with thumbstick
 - Increased stability and snappiness of two-handed grabbing
 - Hand now properly transitions pose when releasing
 - Highlights when targeting multiple objects will favor grabbing objects more in the direction of fingertips than the direction of the palm including a setting on the HandGrabbableHighlighter for personal adjustments
@@ -99,8 +99,8 @@ Bug Fixes:
 - Added fix for player head-body sync colliding with held colliders in some conditions
 - Added fix with Player SetPosition function not working as expected under some conditions
 - Added many new null checks across the project to prevent errors spamming when missing references or deleting certain objects
-- Found source of build bug “HideFlags.DontSave but is included in the build:” and fixed
-- You can now toggle “Grab Lock” by enabling/disabling the script
+- Found source of build bug Â“HideFlags.DontSave but is included in the build:Â” and fixed
+- You can now toggle Â“Grab LockÂ” by enabling/disabling the script
 - Fixed missing prefab in hand tracking scene
 - Added an automatic Rebinder() call in AutoHandVRIK to fix a bug for full body ik that breaks because of animator
 
@@ -161,7 +161,7 @@ Bug Fixes
 
 V3.2.3
 Improvements
-- Exposed values for movement based grab speed function under Hands “Advanced” section 
+- Exposed values for movement based grab speed function under Hands Â“AdvancedÂ” section 
 - Added values to grabbables for minHeldDrag and minHeldAngleDrag, this helps reduce the unrealistic wobble that occurs with some held objects
 - Created global toggle for controller XROffsetter
 

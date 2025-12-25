@@ -117,12 +117,12 @@ namespace Autohand
 
         [HideInInspector, NonSerialized,
          Tooltip(
-             "After this many seconds velocity data within a 'throw window' will be tossed out. (This allows you to get only use acceeleration data from the last 'x' seconds of the throw.)")]
+             "After this many seconds velocity data within a 'throw window' will be tossed out. (This allows you to get only use acceleration data from the last 'x' seconds of the throw.)")]
         public float throwVelocityExpireTime = 0.125f;
 
         [HideInInspector, NonSerialized,
          Tooltip(
-             "After this many seconds velocity data within a 'throw window' will be tossed out. (This allows you to get only use acceeleration data from the last 'x' seconds of the throw.)")]
+             "After this many seconds velocity data within a 'throw window' will be tossed out. (This allows you to get only use acceleration data from the last 'x' seconds of the throw.)")]
         public float throwAngularVelocityExpireTime = 0.25f;
 
         [HideInInspector, NonSerialized,
@@ -447,7 +447,7 @@ namespace Autohand
                 holdingObj.HeldFixedUpdate();
         }
 
-        //This is used to force the hand to always look like its where it should be even when physics is being weird
+        //This is used to force the hand to always look like it's where it should be even when physics is being weird
         //public virtual void OnPreRender() {
         //    if(!prerendered) {
         //        preRenderPos = transform.position;
@@ -463,7 +463,7 @@ namespace Autohand
         //    }
         //}
 
-        //This is used to force the hand to always look like its where it should be even when physics is being weird
+        //This is used to force the hand to always look like it's where it should be even when physics is being weird
         public virtual void OnWillRenderObject()
         {
             if (!prerendered)
