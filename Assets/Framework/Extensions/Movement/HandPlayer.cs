@@ -1,9 +1,11 @@
 ﻿using Autohand;
-using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using XuchFramework.Core;
 using XuchFramework.Core.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace XuchFramework.Extensions.Movement
 {
@@ -18,6 +20,9 @@ namespace XuchFramework.Extensions.Movement
             Snap,
             Smooth,
         }
+
+        [AutoHeader("Hand Player")]
+        public bool IgnoreMe;
 
         [Space(5)]
         [BoxGroup("Tracker"), SerializeField]
@@ -62,17 +67,37 @@ namespace XuchFramework.Extensions.Movement
 
         [AutoToggleHeader("Height")]
         public bool ShowHeight = true;
+        [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Offset from the eyes to the center of rotation (Neck). typically (0, -0.15, -0.08)")]
+        private Vector3 _cameraToHeadCenterOffset = new Vector3(0f, 0f, -0.08f);
+        [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("")]
+        private float _standingHeight = 0.35f;
         [SerializeField, EnableIf(nameof(ShowHeight))]
-        private float _heightOffset = 0f;
-        [SerializeField, EnableIf(nameof(ShowHeight))]
-        private float _targetHeight = 0.35f;
-        // [SerializeField, EnableIf(nameof(ShowHeight))]
-        // private float _sneakHeight = 0.15f;
+        private float _maxCrouchOffset = 0.3f;
         [SerializeField, EnableIf(nameof(ShowHeight)), Tooltip("Whether or not the capsule height should be adjusted to match the headCamera height")]
         public bool AutoAdjustColliderHeight = true;
         [SerializeField, EnableIf(nameof(ShowHeight)),
          Tooltip("Minimum and maximum auto adjusted height, to adjust height without auto adjustment change capsule collider height instead")]
         private Vector2 _minMaxHeight = new Vector2(0.5f, 2.5f);
+        [SerializeField, EnableIf(nameof(ShowHeight))]
+        private InputActionProperty _resetStandingHeightInput;
+
+        [AutoToggleHeader("Sneath")]
+        public bool EnableSneath = true;
+        [SerializeField, EnableIf(nameof(EnableSneath))]
+        private float _sneathHeight = 1f;
+        [SerializeField, EnableIf(nameof(EnableSneath))]
+        private float _sneathTimeout = 0.8f;
+        [SerializeField, EnableIf(nameof(EnableSneath))]
+        private Transform _sneathImg;
+        [SerializeField, EnableIf(nameof(EnableSneath))]
+        private Image _quitProcessImg;
+
+#if UNITY_EDITOR
+        [AutoToggleHeader("Debug"), OnValueChanged(nameof(OnEnableDebugChanged))]
+        public bool EnableDebug = false;
+        [SerializeField, EnableIf(nameof(EnableDebug)), OnValueChanged(nameof(OnShowHandFollowSpheresChanged))]
+        private bool _showHandFollowSpheres = true;
+#endif
 
         public HandPlayerEvent OnTurned;
         public HandPlayerEvent OnTeleported;
@@ -84,10 +109,12 @@ namespace XuchFramework.Extensions.Movement
         private Vector3 _targetTrackedPos;
         private Vector3 _trackingPosOffset;
 
+        private float _initialPlayerHeight;
+
         private float _turningAxis;
         private bool _isTurningAxisReset = true;
 
-        private bool _hasInitTracking = false;
+        private bool _isInitialized = false;
 
         public Hand HandLeft
         {
@@ -123,7 +150,15 @@ namespace XuchFramework.Extensions.Movement
         public LayerMask PlayerLayerMask { get; private set; }
         public Camera HeadCamera => _headCamera;
 
-        protected override UniTask OnInitialize()
+        public bool IsSneath { get; private set; }
+
+        /// <summary> Critical: Use the "center of head" to calculate player height, rather than head camera (camera presents the eyes, but we want the real height that not infuluced by looking up/down) </summary>
+        public float CurrentPlayerHeight
+        {
+            get { return _headCamera.transform.localPosition.y + (_headCamera.transform.localRotation * _cameraToHeadCenterOffset).y; }
+        }
+
+        protected override void OnInitialize()
         {
             Body = GetComponent<Rigidbody>();
             Body.freezeRotation = true;
@@ -138,22 +173,36 @@ namespace XuchFramework.Extensions.Movement
                 UseGorillamotion = false;
             }
 
-            if (_hasInitTracking)
-                return UniTask.CompletedTask;
-            if (_trackingContainer == null || _headCamera == null)
-                return UniTask.CompletedTask;
+            if (_isInitialized || _trackingContainer == null || _headCamera == null)
+                return;
 
             _lastUpdatePos = transform.position;
             _targetTrackedPos = _trackingContainer.position;
             _trackingPosOffset = Vector3.zero;
-            _hasInitTracking = true;
+            _initialPlayerHeight = CurrentPlayerHeight;
+            _isInitialized = true;
 
-            return UniTask.CompletedTask;
+            // GameLauncher.Instance.SetTempPlayerActivate(false);
+
+#if UNITY_EDITOR
+            if (EnableDebug)
+                OnEnableDebugChanged(EnableDebug);
+#endif
         }
 
         protected virtual void Start()
         {
             PlayerLayerMask = GameHelper.GetPhysicsLayerMask(gameObject.layer);
+        }
+
+        protected void OnEnable()
+        {
+            _resetStandingHeightInput.action.performed += ResetStandingHeight;
+        }
+
+        protected void OnDisable()
+        {
+            _resetStandingHeightInput.action.performed -= ResetStandingHeight;
         }
 
         private void EnableHand(Hand hand)
@@ -196,7 +245,7 @@ namespace XuchFramework.Extensions.Movement
 
         protected void FixedUpdate()
         {
-            if (!_hasInitTracking)
+            if (!_isInitialized)
                 return;
 
             if (UseGorillamotion)
@@ -207,11 +256,17 @@ namespace XuchFramework.Extensions.Movement
 
         protected virtual void Update()
         {
-            if (!_hasInitTracking)
+            if (!_isInitialized)
                 return;
 
             if (UseGorillamotion)
                 _gorilla.ApplyGorillamotion();
+
+            if (MountingObj != null)
+            {
+                transform.position = MountingObj.MountPoint.position;
+                Body.position = transform.position;
+            }
 
             UpdateTrackingContainer();
             UpdateTurn();
@@ -222,8 +277,14 @@ namespace XuchFramework.Extensions.Movement
             _targetTrackedPos += transform.position - _lastUpdatePos;
             _trackingContainer.position = _targetTrackedPos;
 
-            _heightOffset = _targetHeight - _headCamera.transform.localPosition.y;
-            _trackingContainer.localPosition += Vector3.up * _heightOffset;
+            // Player can crouch until getting to max crouch offset
+            float currentPlayerHeight = CurrentPlayerHeight;
+            float crouchOffset = Mathf.Clamp(_initialPlayerHeight - currentPlayerHeight, 0f, _maxCrouchOffset);
+            float targetPlayerHeight = _standingHeight - crouchOffset;
+
+            // Calculate the height offset to keep the player at the target height
+            var heightOffset = targetPlayerHeight - currentPlayerHeight;
+            _trackingContainer.localPosition += Vector3.up * heightOffset;
 
             // var targetPos = transform.position - _headCamera.transform.position;
             // targetPos.y = 0;
@@ -231,6 +292,43 @@ namespace XuchFramework.Extensions.Movement
             // _trackingContainer.position += _trackingPosOffset;
 
             _lastUpdatePos = transform.position;
+            CheckSneath();
+        }
+
+        private void CheckSneath()
+        {
+            float playerY = _headCamera.transform.TransformPoint(_cameraToHeadCenterOffset).y;
+            Physics.Raycast(transform.position, Vector3.down, out var hit, Mathf.Infinity, _gorilla.SurfaceLayerMask, QueryTriggerInteraction.Ignore);
+            float groundY = hit.point.y;
+
+            var viewHeight = playerY - groundY;
+            // Log.Debug($"View Height: {viewHeight}, Sneath Height: {_sneathHeight}, Is Sneath: {IsSneath}");
+
+            if (viewHeight <= _sneathHeight)
+            {
+                if (!IsSneath)
+                {
+                    IsSneath = true;
+                    _sneathImg.gameObject.SetActive(true);
+                }
+
+                if (DOTween.IsTweening(_sneathImg.gameObject))
+                {
+                    DOTween.Kill(_quitProcessImg, false);
+                    _quitProcessImg.gameObject.SetActive(false);
+                }
+            }
+            else if (viewHeight > _sneathHeight && IsSneath && !DOTween.IsTweening(_quitProcessImg))
+            {
+                _quitProcessImg.gameObject.SetActive(true);
+
+                _quitProcessImg.fillAmount = 1f;
+                _quitProcessImg.DOFillAmount(0, _sneathTimeout).OnComplete(() =>
+                {
+                    IsSneath = false;
+                    _sneathImg.gameObject.SetActive(false);
+                });
+            }
         }
 
         private void SyncBodyHead()
@@ -358,6 +456,13 @@ namespace XuchFramework.Extensions.Movement
                 Physics.IgnoreCollision(_headCollider, col, ignore);
         }
 
+        public void ResetStandingHeight(InputAction.CallbackContext inputContext)
+        {
+            var currentNeckLocalY = _headCamera.transform.localPosition.y + (_headCamera.transform.localRotation * _cameraToHeadCenterOffset).y;
+            Log.Debug($"[HandPlayer] Resetting initial neck height from {_initialPlayerHeight} to {currentNeckLocalY}");
+            _initialPlayerHeight = currentNeckLocalY;
+        }
+
         public void Turn(float turnAxis)
         {
             turnAxis = (Mathf.Abs(turnAxis) > _turnDeadzone) ? turnAxis : 0;
@@ -435,5 +540,40 @@ namespace XuchFramework.Extensions.Movement
 
         private bool IsSnapTurning => _turningType == TurningType.Snap;
         private bool IsSmoothTurning => _turningType == TurningType.Smooth;
+
+#if UNITY_EDITOR
+        private Transform _debugHandFollowSphereLeft;
+        private Transform _debugHandFollowSphereRight;
+
+        private void OnEnableDebugChanged(bool value)
+        {
+            if (!Application.isPlaying)
+                return;
+
+            if (value)
+            {
+                var handFollowSphere = Resources.Load<GameObject>("hand_follow_sphere").transform;
+                _debugHandFollowSphereLeft = Instantiate(handFollowSphere, _handLeft.follow);
+                _debugHandFollowSphereRight = Instantiate(handFollowSphere, _handRight.follow);
+                OnShowHandFollowSpheresChanged(_showHandFollowSpheres);
+            }
+            else
+            {
+                DestroyImmediate(_debugHandFollowSphereLeft.gameObject);
+                DestroyImmediate(_debugHandFollowSphereRight.gameObject);
+            }
+        }
+
+        private void OnShowHandFollowSpheresChanged(bool value)
+        {
+            if (!Application.isPlaying)
+                return;
+
+            if (_debugHandFollowSphereLeft != null)
+                _debugHandFollowSphereLeft.gameObject.SetActive(value);
+            if (_debugHandFollowSphereRight != null)
+                _debugHandFollowSphereRight.gameObject.SetActive(value);
+        }
+#endif
     }
 }

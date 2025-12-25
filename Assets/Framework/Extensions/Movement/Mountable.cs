@@ -1,35 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using Autohand;
-using DG.Tweening;
-using RootMotion.FinalIK;
 using Sirenix.OdinInspector;
+using XuchFramework.Core;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using XuchFramework.Core.Utils;
 
 namespace XuchFramework.Extensions.Movement
 {
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Gorillamotion2))]
     [DefaultExecutionOrder(4999)]
-    public class Mountable : MonoBehaviour
+    public class Mountable : MonoSingleton<Mountable>
     {
-        [Serializable, BoxGroup]
-        public class LimbInfo
-        {
-            public LimbIK IK;
-            public Vector3 PositionOffset;
-            public Vector3 RotationOffset;
-            [BoxGroup("Axis")]
-            public AxisMask ReverseAxis;
-            [BoxGroup("Axis")]
-            public AxisMask FreezePosition;
-            [BoxGroup("Axis")]
-            public AxisMask FreezeRotation;
-        }
-
         [Serializable]
         public class UnityMountEvent : UnityEvent<HandPlayer, Mountable> { }
 
@@ -51,11 +34,7 @@ namespace XuchFramework.Extensions.Movement
         [AutoToggleHeader("Turning")]
         public bool AllowTurning = true;
         [SerializeField, EnableIf(nameof(AllowTurning))]
-        private Transform _mountableHead;
-        [SerializeField, EnableIf(nameof(AllowTurning))]
-        private Vector3 _headRotationOffset;
-        // [SerializeField, EnableIf(nameof(AllowTurning))]
-        // private float _turningSpeed = 2f;
+        private Transform _headTarget;
 
         [AutoSmallHeader("Space Mapping")]
         public bool UseMapping = true;
@@ -87,8 +66,6 @@ namespace XuchFramework.Extensions.Movement
         public bool IgnoreMe1;
         [SerializeField]
         private float _limbRestoreDuration = 1f;
-        [SerializeField]
-        private List<LimbInfo> _limbs = new();
 
         [AutoToggleHeader("Events")]
         public bool EnableEvents = true;
@@ -103,32 +80,33 @@ namespace XuchFramework.Extensions.Movement
         public MountEvent OnBeforeDismountEvent;
         public MountEvent OnDismountEvent;
 
-        private Gorillamotion2 _gorilla;
         private Vector3 _initialHeadLocalEulerAngles;
 
         public Transform MountPoint => _mountPoint;
-        public Rigidbody Body { get; private set; }
-        public bool BeingMounted { get; private set; }
-        public HandPlayer MountedBy { get; private set; }
+        public Transform HeadTarget => _headTarget;
+        public Transform LimbTargetFrontLeft => _limbTargetFrontLeft;
+        public Transform LimbTargetFrontRight => _limbTargetFrontRight;
+        public Transform LimbTargetBackLeft => _limbTargetBackLeft;
+        public Transform LimbTargetBackRight => _limbTargetBackRight;
 
-        private void Awake()
+        public Rigidbody Body { get; private set; }
+        public Gorillamotion2 Gorilla { get; private set; }
+        public HandPlayer MountedBy { get; private set; }
+        public bool IsMounted { get; private set; }
+
+        protected override void OnInitialize()
         {
             Body = GetComponent<Rigidbody>();
-            _gorilla = GetComponent<Gorillamotion2>();
+            Gorilla = GetComponent<Gorillamotion2>();
 
-            SetIKActivate(false);
-        }
-
-        private void Start()
-        {
-            _initialHeadLocalEulerAngles = _mountableHead.localEulerAngles;
+            _initialHeadLocalEulerAngles = _headTarget.localEulerAngles;
         }
 
         private void FixedUpdate()
         {
             if (MountedBy != null)
             {
-                _gorilla.Jump();
+                Gorilla.Jump();
             }
         }
 
@@ -136,7 +114,7 @@ namespace XuchFramework.Extensions.Movement
         {
             if (MountedBy != null)
             {
-                _gorilla.ApplyGorillamotion();
+                Gorilla.ApplyGorillamotion();
             }
         }
 
@@ -146,13 +124,12 @@ namespace XuchFramework.Extensions.Movement
             {
                 UpdateTurning();
                 UpdateSpaceMapping();
-                UpdateIKTargets();
             }
         }
 
         private void UpdateTurning()
         {
-            _mountableHead.rotation = MountedBy.HeadCamera.transform.rotation * Quaternion.Euler(_headRotationOffset);
+            _headTarget.rotation = MountedBy.HeadCamera.transform.rotation;
 
             transform.rotation = Quaternion.Euler(0, MountedBy.HeadCamera.transform.eulerAngles.y, 0);
         }
@@ -239,39 +216,11 @@ namespace XuchFramework.Extensions.Movement
             }
         }
 
-        private void UpdateIKTargets()
-        {
-            for (int i = 0; i < _limbs.Count; i++)
-            {
-                var limb = _limbs[i];
-                var ikTarget = _limbs[i].IK.solver.target;
-
-                ikTarget.localPosition = new Vector3(
-                    limb.FreezePosition.X ? 0 : ikTarget.localPosition.x,
-                    limb.FreezePosition.Y ? 0 : ikTarget.localPosition.y,
-                    limb.FreezePosition.Z ? 0 : ikTarget.localPosition.z);
-
-                ikTarget.localRotation = Quaternion.Euler(
-                    new Vector3(
-                        limb.FreezeRotation.X ? 0 : ikTarget.localEulerAngles.x,
-                        limb.FreezeRotation.Y ? 0 : ikTarget.localEulerAngles.y,
-                        limb.FreezeRotation.Z ? 0 : ikTarget.localEulerAngles.z));
-
-                ikTarget.position += limb.PositionOffset;
-                ikTarget.rotation *= Quaternion.Euler(limb.RotationOffset);
-
-                ikTarget.localPosition = new Vector3(
-                    limb.ReverseAxis.X ? -ikTarget.localPosition.x : ikTarget.localPosition.x,
-                    limb.ReverseAxis.Y ? -ikTarget.localPosition.y : ikTarget.localPosition.y,
-                    limb.ReverseAxis.Z ? -ikTarget.localPosition.z : ikTarget.localPosition.z);
-            }
-        }
-
         internal void OnBeforeMount(HandPlayer player)
         {
             OnBeforeMountEvent?.Invoke(player, this);
 
-            BeingMounted = true;
+            IsMounted = true;
         }
 
         internal void OnMount(HandPlayer player)
@@ -280,10 +229,18 @@ namespace XuchFramework.Extensions.Movement
             OnMountEvent?.Invoke(player, this);
 
             MountedBy = player;
-            BeingMounted = false;
+
+            _headTarget.localEulerAngles = _initialHeadLocalEulerAngles;
 
             // TODO: 按侧边键开始控制，送侧边键停止控制
             StartControlMovement();
+        }
+
+        internal void OnBeforeDisMount(HandPlayer player)
+        {
+            OnBeforeDismountEvent?.Invoke(player, this);
+
+            IsMounted = false;
         }
 
         internal void OnDismount(HandPlayer player)
@@ -299,38 +256,9 @@ namespace XuchFramework.Extensions.Movement
             }
         }
 
-        private void StartControlMovement()
-        {
-            SetIKActivate(true);
-        }
+        private void StartControlMovement() { }
 
-        private void StopControlMovement()
-        {
-            SetIKActivate(false);
-
-            _mountableHead.localEulerAngles = _initialHeadLocalEulerAngles;
-        }
-
-        private void SetIKActivate(bool isActive)
-        {
-            foreach (var limb in _limbs)
-            {
-                DOTween.Kill(limb.IK.solver, false);
-
-                if (isActive)
-                {
-                    limb.IK.solver.IKPositionWeight = 1;
-                    limb.IK.solver.IKRotationWeight = 1;
-                }
-                else
-                {
-                    DOTween.To(() => limb.IK.solver.IKPositionWeight, x => limb.IK.solver.IKPositionWeight = x, 0f, _limbRestoreDuration)
-                        .SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
-                    DOTween.To(() => limb.IK.solver.IKRotationWeight, x => limb.IK.solver.IKRotationWeight = x, 0f, _limbRestoreDuration)
-                        .SetTarget(limb.IK.solver).SetEase(Ease.OutQuad);
-                }
-            }
-        }
+        private void StopControlMovement() { }
 
 #if UNITY_EDITOR
         [AutoToggleHeader("Debug")]

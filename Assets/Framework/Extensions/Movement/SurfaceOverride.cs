@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Autohand
+namespace XuchFramework.Extensions.Movement
 {
     public class SurfaceOverride : MonoBehaviour
     {

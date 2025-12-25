@@ -48,7 +48,8 @@ namespace XuchFramework.Core
             {
                 MakeSingleton();
                 _singletonState = MonoSingletonState.Initializing;
-                await OnInitialize();
+                OnInitialize();
+                await OnInitializeAsync();
                 _singletonState = MonoSingletonState.Initialized;
             }
         }
@@ -74,7 +75,9 @@ namespace XuchFramework.Core
             _instance = this as T;
         }
 
-        protected virtual UniTask OnInitialize()
+        protected virtual void OnInitialize() { }
+
+        protected virtual UniTask OnInitializeAsync()
         {
             return UniTask.CompletedTask;
         }
@@ -100,7 +103,8 @@ namespace XuchFramework.Core
                     DontDestroyOnLoad(gameObject);
                 }
                 _singletonState = MonoSingletonState.Initializing;
-                await OnInitialize();
+                OnInitialize();
+                await OnInitializeAsync();
                 _singletonState = MonoSingletonState.Initialized;
             }
         }

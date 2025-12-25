@@ -37,7 +37,7 @@
             Body.isKinematic = false;
 
             OnBeforeDismount?.Invoke(this, MountingObj);
-            MountingObj.OnBeforeDismountEvent?.Invoke(this, MountingObj);
+            MountingObj.OnBeforeDisMount(this);
 
             OnDismount?.Invoke(this, MountingObj);
             MountingObj.OnDismount(this);

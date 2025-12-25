@@ -34,11 +34,11 @@ namespace XuchFramework.Extensions.Movement
         [SerializeField, Indent, EnableIf(nameof(EnableMovement), nameof(_limitArmLength)), Tooltip("Max arm length on moving")]
         private float _maxArmLength = 1.5f;
         [SerializeField, EnableIf(nameof(EnableMovement))]
-        private bool _checkHeadClipping = false;
-        [SerializeField, Indent, EnableIf(nameof(EnableMovement), nameof(_checkHeadClipping))]
-        private SphereCollider _headCollider;
+        private bool _preventClipping = false;
+        [SerializeField, Indent, EnableIf(nameof(EnableMovement), nameof(_preventClipping))]
+        private CapsuleCollider _bodyCollider;
         [SerializeField, EnableIf(nameof(EnableMovement))]
-        private float _gravityStength = 10f;
+        private float _gravityStrength = 10f;
         [SerializeField, Tooltip("Distance between frames threshold to unstick from a surface")]
         private float _unstickDistance = 1f;
         [SerializeField, Tooltip("The default slide factor"), Range(0f, 1f)]
@@ -67,8 +67,6 @@ namespace XuchFramework.Extensions.Movement
         // [SerializeField, Indent, EnableIf(nameof(AllowTouchingHaptics))]
         // private float _slidingHapticAmplitude = 0.5f;
 
-        private Vector3 _lastHeadPos;
-        private Vector3 _lastBodyPos;
         private Vector3 _lastUpdatePos;
         private Vector3 _lastLeftHandPos, _lastRightHandPos;
         private float _lastLeftCollideTime = 0f, _lastRightCollideTime = 0f;
@@ -89,6 +87,8 @@ namespace XuchFramework.Extensions.Movement
         public bool IsHandTouching => IsLeftHandTouching || IsRightHandTouching;
         public bool IsLeftHandTouching { get; private set; } = false;
         public bool IsRightHandTouching { get; private set; } = false;
+
+        public LayerMask SurfaceLayerMask => _surfaceLayerMask;
 
         private void Awake()
         {
@@ -111,9 +111,6 @@ namespace XuchFramework.Extensions.Movement
 
             _lastUpdatePos = transform.position;
 
-            if (_headCollider != null && _checkHeadClipping)
-                _lastHeadPos = _headCollider.transform.position;
-
             if (_leftHand && _rightHand)
             {
                 _lastLeftHandPos = _leftHand.transform.position;
@@ -133,7 +130,7 @@ namespace XuchFramework.Extensions.Movement
             var currentLeftHandPos = GetHandPosition(_leftHand);
             var currentRightHandPos = GetHandPosition(_rightHand);
 
-            var gravityOffset = Physics.gravity * (_gravityStength * Time.deltaTime * Time.deltaTime);
+            var gravityOffset = Physics.gravity * (_gravityStrength * Time.deltaTime * Time.deltaTime);
 
             // Apply hand movement
 
@@ -153,7 +150,8 @@ namespace XuchFramework.Extensions.Movement
                 }
 
                 isLeftHandColliding = true;
-                Body.linearVelocity = Vector3.zero;
+                if (!Body.isKinematic)
+                    Body.linearVelocity = Vector3.zero;
             }
 
             var rightGravityOffset = IsRightHandTouching ? gravityOffset : Vector3.zero;
@@ -171,7 +169,8 @@ namespace XuchFramework.Extensions.Movement
                 }
 
                 isRightHandColliding = true;
-                Body.linearVelocity = Vector3.zero;
+                if (!Body.isKinematic)
+                    Body.linearVelocity = Vector3.zero;
             }
 
 #if UNITY_EDITOR
@@ -222,13 +221,13 @@ namespace XuchFramework.Extensions.Movement
 
             if (bodyMovement != Vector3.zero)
             {
-                PreventHeadClipping();
-
                 transform.position += bodyMovement;
                 Body.position = transform.position;
 
-                if (_checkHeadClipping)
-                    _lastHeadPos = _headCollider.transform.position;
+                if (_preventClipping)
+                {
+                    PreventClipping();
+                }
             }
 
 #if UNITY_EDITOR
@@ -292,26 +291,53 @@ namespace XuchFramework.Extensions.Movement
                 return hand.position;
             }
 
-            void PreventHeadClipping()
+            void PreventClipping()
             {
-                if (!_checkHeadClipping)
-                    return;
+                var currentPos = _bodyCollider.transform.position;
 
-                traveledVector = _headCollider.transform.position + bodyMovement - _lastHeadPos;
-                if (ApplySphereMovement(_lastHeadPos, _headCollider.radius, traveledVector, out var finalPosition, out _, false, true, out _))
+                int overlapCount = Physics.OverlapCapsuleNonAlloc(
+                    currentPos + _bodyCollider.center + Vector3.up * (_bodyCollider.height / 2 - _bodyCollider.radius),
+                    currentPos + _bodyCollider.center - Vector3.up * (_bodyCollider.height / 2 - _bodyCollider.radius),
+                    _bodyCollider.radius,
+                    _colliderNonAlloc128,
+                    _surfaceLayerMask,
+                    QueryTriggerInteraction.Ignore);
+
+                if (overlapCount > 0)
                 {
-                    bodyMovement = finalPosition - _lastHeadPos;
-
-                    // last check to make sure the head won't phase through geometry
-                    if (Physics.Raycast(
-                            _lastHeadPos,
-                            traveledVector,
-                            out _,
-                            traveledVector.magnitude + _headCollider.radius * GORILLA_TOUCHING_PRECISION * 0.999f,
-                            _surfaceLayerMask.value))
+                    int attempts = 0;
+                    while (overlapCount > 0 && attempts < 4)
                     {
-                        // If head is colliding, revert to previous position
-                        bodyMovement = _lastHeadPos - _headCollider.transform.position;
+                        var averageDepentration = Vector3.zero;
+                        for (int i = 0; i < overlapCount; i++)
+                        {
+                            var other = _colliderNonAlloc128[i];
+                            if (Physics.ComputePenetration(
+                                    other,
+                                    other.transform.position,
+                                    other.transform.rotation,
+                                    _bodyCollider,
+                                    currentPos,
+                                    transform.rotation,
+                                    out var closestDepentrationDirection,
+                                    out var closestDepentrationDistance))
+                            {
+                                averageDepentration += (closestDepentrationDirection * closestDepentrationDistance);
+                            }
+                        }
+
+                        transform.position -= averageDepentration;
+                        Body.position = transform.position;
+
+                        overlapCount = Physics.OverlapCapsuleNonAlloc(
+                            currentPos + _bodyCollider.center + Vector3.up * (_bodyCollider.height / 2 - _bodyCollider.radius),
+                            currentPos + _bodyCollider.center - Vector3.up * (_bodyCollider.height / 2 - _bodyCollider.radius),
+                            _bodyCollider.radius,
+                            _colliderNonAlloc128,
+                            _surfaceLayerMask,
+                            QueryTriggerInteraction.Ignore);
+
+                        attempts++;
                     }
                 }
             }
@@ -337,6 +363,8 @@ namespace XuchFramework.Extensions.Movement
                 }
             }
         }
+
+        private Collider[] _colliderNonAlloc128 = new Collider[128];
 
         public void Jump()
         {
@@ -604,10 +632,13 @@ namespace XuchFramework.Extensions.Movement
 #if UNITY_EDITOR
         [AutoToggleHeader("Debug"), OnValueChanged("OnEnableDebugChanged")]
         public bool EnableDebug = false;
+
         [SerializeField, EnableIf(nameof(EnableDebug))]
         private bool _visualizeTravelVector = true;
+
         [SerializeField, EnableIf(nameof(EnableDebug))]
         private bool _visualizeFinalPosition = true;
+
         [SerializeField, EnableIf(nameof(EnableDebug))]
         private bool _visualizeLastHandPosition = true;
 
