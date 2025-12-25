@@ -30,13 +30,11 @@ namespace XuchFramework.Core
         private readonly Dictionary<int, UIPanelBase> _allPanels = new();
         private readonly Dictionary<int, UIPanelBase> _openedPanels = new();
 
-        protected override UniTask OnInitialize()
+        protected override void OnInitialize()
         {
             InitUIRoot();
             InitUICamera();
             InitUILayers();
-
-            return UniTask.CompletedTask;
         }
 
         protected override void OnDispose()

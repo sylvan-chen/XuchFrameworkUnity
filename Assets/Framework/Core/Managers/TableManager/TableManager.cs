@@ -23,14 +23,12 @@ namespace XuchFramework.Core
         // typeof(T) -> (id -> T)
         private readonly Dictionary<Type, Dictionary<int, ITableConfig>> _cachedTables = new();
 
-        protected override UniTask OnInitialize()
+        protected override void OnInitialize()
         {
             if (_preloadOnInit)
             {
                 LoadAllTables(_preloadTableAddressLabel, _tableClassNamespace, true).Forget();
             }
-
-            return UniTask.CompletedTask;
         }
 
         protected override void OnDispose()
@@ -38,13 +36,11 @@ namespace XuchFramework.Core
             ClearAllConfigCache();
         }
 
-        public async UniTask LoadAllTables(
-            string preloadTableAddressLabel, string tableClassNamespace, bool isOverride = false)
+        public async UniTask LoadAllTables(string preloadTableAddressLabel, string tableClassNamespace, bool isOverride = false)
         {
             Log.Debug("[TableManager] Start loading tables...");
 
-            var handle =
-                await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(preloadTableAddressLabel);
+            var handle = await GameModule<ResourceManager>.Instance.LoadAssetsAsync<TextAsset>(preloadTableAddressLabel);
 
             if (!handle.IsValid)
             {

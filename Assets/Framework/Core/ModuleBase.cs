@@ -13,7 +13,8 @@ namespace XuchFramework.Core
         {
             try
             {
-                await OnInitialize();
+                OnInitialize();
+                await OnInitializeAsync();
                 IsInitialized = true;
                 Log.Debug($"{GetType().Name} initialized");
             }
@@ -27,7 +28,8 @@ namespace XuchFramework.Core
         {
             try
             {
-                await OnPostInitialize();
+                OnPostInitialize();
+                await OnPostInitializeAsync();
                 Log.Debug($"{GetType().Name} post-initialized");
             }
             catch (Exception ex)
@@ -69,12 +71,16 @@ namespace XuchFramework.Core
             OnFixedUpdate(fixedDeltaTime);
         }
 
-        protected virtual UniTask OnInitialize()
+        protected virtual void OnInitialize() { }
+
+        protected virtual UniTask OnInitializeAsync()
         {
             return UniTask.CompletedTask;
         }
 
-        protected virtual UniTask OnPostInitialize()
+        protected virtual void OnPostInitialize() { }
+
+        protected virtual UniTask OnPostInitializeAsync()
         {
             return UniTask.CompletedTask;
         }

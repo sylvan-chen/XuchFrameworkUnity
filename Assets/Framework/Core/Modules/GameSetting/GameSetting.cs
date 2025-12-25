@@ -51,7 +51,7 @@ namespace XuchFramework.Core
             }
         }
 
-        protected override UniTask OnInitialize()
+        protected override void OnInitialize()
         {
 #if UNITY_5_3_OR_NEWER
             Application.targetFrameRate = _frameRate;
@@ -62,7 +62,6 @@ namespace XuchFramework.Core
             Log.Fatal("Framework just support Unity 5.3 or later");
             Application.Quit();
 #endif
-            return UniTask.CompletedTask;
         }
 
         private void OnEnable()

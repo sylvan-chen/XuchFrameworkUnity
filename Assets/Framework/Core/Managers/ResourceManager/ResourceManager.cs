@@ -16,7 +16,7 @@ namespace XuchFramework.Core
     {
         #region Lifecycle
 
-        protected override async UniTask OnInitialize()
+        protected override async UniTask OnInitializeAsync()
         {
             // pre-initialize Addressable (Optional, Addressable will auto-initialize on first use)
             var handle = Addressables.InitializeAsync();

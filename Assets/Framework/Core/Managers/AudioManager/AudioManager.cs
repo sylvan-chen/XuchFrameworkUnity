@@ -30,7 +30,7 @@ namespace XuchFramework.Core
 
         #region Lifecycle
 
-        protected override async UniTask OnPostInitialize()
+        protected override async UniTask OnPostInitializeAsync()
         {
             if (_preloadBanks && _preloadBankNames != null && _preloadBankNames.Count > 0)
             {
