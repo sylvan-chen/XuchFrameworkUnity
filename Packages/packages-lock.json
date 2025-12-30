@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.tencent.puerts.core": {
+      "version": "file:puerts/core",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.tencent.puerts.v8": {
+      "version": "file:puerts/v8",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.tencent.puerts.core": "3.0.0"
+      }
+    },
     "com.unity.addressables": {
       "version": "2.7.6",
       "depth": 0,

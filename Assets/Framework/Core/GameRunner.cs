@@ -79,13 +79,13 @@ namespace XuchFramework.Core
 
             var type = module.GetType();
             var genericType = typeof(GameModule<>).MakeGenericType(type);
-            var method = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
-            if (method == null)
+            var setInstanceMethod = genericType.GetMethod("SetInstance", BindingFlags.Static | BindingFlags.NonPublic);
+            if (setInstanceMethod == null)
             {
                 Log.Error($"[GameRunner] GameModule must have method 'SetInstance'. Error type for {genericType.FullName}");
                 return;
             }
-            method.Invoke(null, new object[] { module });
+            setInstanceMethod.Invoke(null, new object[] { module });
 
             _cachedModules.Add(module);
         }

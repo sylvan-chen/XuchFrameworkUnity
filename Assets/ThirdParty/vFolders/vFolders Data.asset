@@ -62,15 +62,7 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 1
     - iconNameOrGuid: 
-      colorIndex: 6
-      isIconRecursive: 0
-      isColorRecursive: 1
-    - iconNameOrGuid: 
-      colorIndex: 10
-      isIconRecursive: 0
-      isColorRecursive: 1
-    - iconNameOrGuid: 
-      colorIndex: 3
+      colorIndex: 5
       isIconRecursive: 0
       isColorRecursive: 1
     - iconNameOrGuid: 
@@ -79,6 +71,14 @@ MonoBehaviour:
       isColorRecursive: 1
     - iconNameOrGuid: 
       colorIndex: 4
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 3
+      isIconRecursive: 0
+      isColorRecursive: 1
+    - iconNameOrGuid: 
+      colorIndex: 6
       isIconRecursive: 0
       isColorRecursive: 1
     - iconNameOrGuid: 
