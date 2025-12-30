@@ -621,7 +621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _preloadOnInit: 0
-  _tableAddressLabel: table
+  _preloadTableAddressLabel: table
   _tableClassNamespace: Xuch.Table
 --- !u!1 &4013715260249595280
 GameObject:

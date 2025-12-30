@@ -83,9 +83,9 @@ namespace XuchFramework.Core
 
         private Camera CreateNewUICamera()
         {
-            // Exclude UI layer from main camera
+            // Exclude UI layer from the main camera
             Camera.main.ExcludeLayer("UI");
-            // Create new UI camera for UI rendering
+            // Create a new UI camera for UI rendering
             var cameraObj = new GameObject("[UICamera]") { layer = LayerMask.NameToLayer("UI") };
             cameraObj.transform.SetParent(_uiRoot);
             cameraObj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
