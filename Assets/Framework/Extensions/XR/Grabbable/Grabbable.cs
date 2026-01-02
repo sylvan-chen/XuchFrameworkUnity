@@ -3,15 +3,6 @@ using UnityEngine;
 
 namespace Framework.Extensions.XR
 {
-    public enum GrabbableState
-    {
-        Idle,
-        BeingGrabbed,
-        Held,
-        BeingReleased,
-        Destroying
-    }
-
     public class Grabbable : MonoBehaviour
     {
         [SerializeField]
@@ -29,7 +20,6 @@ namespace Framework.Extensions.XR
         public List<Hand> BeingGrabbedBy { get; private set; } = new List<Hand>();
         public List<Hand> WaitingToGrabBy { get; private set; } = new List<Hand>();
 
-        public GrabbableState State { get; private set; } = GrabbableState.Idle;
         public bool BeingGrabbed { get; private set; } = false;
         public bool BeingDestroyed { get; private set; } = false;
 

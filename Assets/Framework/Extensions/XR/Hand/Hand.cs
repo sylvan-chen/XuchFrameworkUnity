@@ -6,7 +6,7 @@ namespace Framework.Extensions.XR
     {
         /// <summary>On grab, hand will move to the grabbable, create grab connection, then return to follow position</summary>
         HandToGrabbable,
-        /// <summary>On grab, grabbable will move to the hand, then create grab connection</summary>
+        /// <summary>On grab, grabbable will move to the hand, then create a grab connection</summary>
         GrabbableToHand,
         /// <summary>On grab, grabbable instantly travel to the hand</summary>
         InstantGrab,

@@ -1071,7 +1071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5620120453119883301}
   - component: {fileID: 4918976352339118380}
-  - component: {fileID: 1275800169281455356}
+  - component: {fileID: 542985198979340207}
   m_Layer: 0
   m_Name: launcher
   m_TagString: Untagged
@@ -1112,9 +1112,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _singletonState: 0
-  _entryType: 1
-  _gameEntry: {fileID: 0}
---- !u!114 &1275800169281455356
+  _entryType: 0
+  _gameEntry: {fileID: 542985198979340207}
+--- !u!114 &542985198979340207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1123,14 +1123,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5896633994254437669}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53e8eb92e29c3054abf45d282ae4db85, type: 3}
+  m_Script: {fileID: 11500000, guid: c3ada814b1a4402f9e6c202e08da04ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _singletonState: 0
-  _startupProcedureTypeName: Gameplay.Procedures.ProcedureStartup
-  _availableProcedureTypeNames:
-  - Gameplay.Procedures.ProcedureEnterGame
-  - Gameplay.Procedures.ProcedureStartup
 --- !u!1 &5945820264901679600
 GameObject:
   m_ObjectHideFlags: 0

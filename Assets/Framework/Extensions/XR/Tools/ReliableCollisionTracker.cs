@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 using UnityEngine;
 
 namespace Framework.Extensions.XR
@@ -16,100 +17,160 @@ namespace Framework.Extensions.XR
     /// </summary>
     public class ReliableCollisionTracker : MonoBehaviour
     {
-        private const int MAX_COLLISIONS_TRACKED = 256;
+        private const int TRACKING_CAPACITY = 256;
 
         public bool DisableCollisionTracking = false;
         public bool DisableTriggerTracking = false;
 
         public event CollisionEvent OnCollisionFirstEnter;
-        public event CollisionEvent OnCollisionFirstExit;
+        public event CollisionEvent OnCollisionLastExit;
         public event CollisionEvent OnTriggerFirstEnter;
-        public event CollisionEvent OnTriggerFirstExit;
+        public event CollisionEvent OnTriggerLastExit;
 
-        public int CollisionCount => CollisionObjects.Count;
-        public int TriggerCount => TriggerObjects.Count;
+        public int CollisionCount => _collisionObjects.Count;
+        public int TriggerCount => _triggerObjects.Count;
 
-        public List<GameObject> TriggerObjects { get; protected set; } = new List<GameObject>(MAX_COLLISIONS_TRACKED);
-        public List<GameObject> NextTriggerObjects { get; protected set; } = new List<GameObject>(MAX_COLLISIONS_TRACKED);
+        private readonly List<GameObject> _triggerObjects = new List<GameObject>(TRACKING_CAPACITY);
+        private readonly List<GameObject> _nextTriggerObjects = new List<GameObject>(TRACKING_CAPACITY);
 
-        public List<GameObject> CollisionObjects { get; protected set; } = new List<GameObject>(MAX_COLLISIONS_TRACKED);
-        public List<GameObject> NextCollisionObjects { get; protected set; } = new List<GameObject>(MAX_COLLISIONS_TRACKED);
+        private readonly List<GameObject> _collisionObjects = new List<GameObject>(TRACKING_CAPACITY);
+        private readonly List<GameObject> _nextCollisionObjects = new List<GameObject>(TRACKING_CAPACITY);
 
-        private List<Collision> _collisions { get; set; } = new List<Collision>(MAX_COLLISIONS_TRACKED);
-
-        private UniTask _lateFixedUpdate;
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource _lateFixedUpdateCts;
 
         public void Clear()
         {
-            TriggerObjects.Clear();
-            NextTriggerObjects.Clear();
-            CollisionObjects.Clear();
-            NextCollisionObjects.Clear();
-            _collisions.Clear();
+            _triggerObjects.Clear();
+            _nextTriggerObjects.Clear();
+            _collisionObjects.Clear();
+            _nextCollisionObjects.Clear();
         }
 
         private void OnEnable()
         {
-            _cts = new CancellationTokenSource();
-            _lateFixedUpdate = LateFixedUpdate(_cts.Token);
+            _lateFixedUpdateCts = new CancellationTokenSource();
+            LateFixedUpdate(_lateFixedUpdateCts.Token).Forget();
         }
 
         private void OnDisable()
         {
-            for (int i = 0; i < CollisionObjects.Count; i++)
+            for (int i = 0; i < _collisionObjects.Count; i++)
             {
-                if (CollisionObjects[i])
+                if (_collisionObjects[i])
                 {
-                    OnCollisionFirstExit?.Invoke(CollisionObjects[i]);
+                    OnCollisionLastExit?.Invoke(_collisionObjects[i]);
                 }
             }
 
-            for (int i = 0; i < TriggerObjects.Count; i++)
+            for (int i = 0; i < _triggerObjects.Count; i++)
             {
-                if (TriggerObjects[i])
+                if (_triggerObjects[i])
                 {
-                    OnTriggerFirstExit?.Invoke(TriggerObjects[i]);
+                    OnTriggerLastExit?.Invoke(_triggerObjects[i]);
                 }
             }
 
-            _cts.Cancel();
-            _cts.Dispose();
+            _lateFixedUpdateCts.Cancel();
+            _lateFixedUpdateCts.Dispose();
         }
 
         private void OnDestroy()
         {
-            _cts.Cancel();
-            _cts.Dispose();
+            if (_lateFixedUpdateCts != null)
+            {
+                _lateFixedUpdateCts.Cancel();
+                _lateFixedUpdateCts.Dispose();
+            }
         }
 
-        private async UniTask LateFixedUpdate(CancellationToken cancellationToken = default)
+        private async UniTaskVoid LateFixedUpdate(CancellationToken cancellationToken = default)
         {
-            while (true)
+            await foreach (var _ in UniTaskAsyncEnumerable.EveryUpdate(PlayerLoopTiming.LastFixedUpdate).WithCancellation(cancellationToken))
             {
-                await UniTask.WaitForFixedUpdate(cancellationToken);
-
-                CheckTrackedObjects();
+                CheckCollisionTracking();
+                CheckTriggerTracking();
             }
 
-            void CheckTrackedObjects()
+            void CheckCollisionTracking()
             {
-                if (!DisableCollisionTracking)
-                {
-                    for (int i = 0; i < CollisionObjects.Count; i++)
-                    {
-                        var collisionObject = CollisionObjects[i];
-                        if (!collisionObject.activeInHierarchy || !NextCollisionObjects.Contains(collisionObject))
-                        {
-                            OnCollisionFirstExit?.Invoke(collisionObject);
-                        }
-                    }
+                if (DisableCollisionTracking) return;
 
-                    for (int i = 0; i < NextCollisionObjects.Count; i++)
+                for (int i = 0; i < _collisionObjects.Count; i++)
+                {
+                    var collisionObject = _collisionObjects[i];
+                    if (!collisionObject.activeInHierarchy || !_nextCollisionObjects.Contains(collisionObject))
                     {
-                        
+                        OnCollisionLastExit?.Invoke(collisionObject);
                     }
                 }
+
+                for (int i = _nextCollisionObjects.Count - 1; i >= 0; i--)
+                {
+                    var nextCollisionObject = _nextCollisionObjects[i];
+                    if (nextCollisionObject == null || !nextCollisionObject.activeInHierarchy)
+                    {
+                        _nextCollisionObjects.RemoveAt(i);
+                    }
+                    else if (!_collisionObjects.Contains(nextCollisionObject))
+                    {
+                        OnCollisionFirstEnter?.Invoke(nextCollisionObject);
+                    }
+                }
+
+                _collisionObjects.Clear();
+                _collisionObjects.AddRange(_nextCollisionObjects);
+                _nextCollisionObjects.Clear();
+            }
+
+            void CheckTriggerTracking()
+            {
+                if (DisableTriggerTracking) return;
+
+                for (int i = 0; i < _triggerObjects.Count; i++)
+                {
+                    var triggerObject = _triggerObjects[i];
+                    if (!triggerObject.activeInHierarchy || !_nextTriggerObjects.Contains(triggerObject))
+                    {
+                        OnTriggerLastExit?.Invoke(triggerObject);
+                    }
+                }
+
+                for (int i = _nextTriggerObjects.Count - 1; i >= 0; i--)
+                {
+                    var nextTriggerObject = _nextTriggerObjects[i];
+                    if (nextTriggerObject == null || !nextTriggerObject.activeInHierarchy)
+                    {
+                        _nextTriggerObjects.RemoveAt(i);
+                    }
+                    else if (!_triggerObjects.Contains(nextTriggerObject))
+                    {
+                        OnTriggerFirstEnter?.Invoke(nextTriggerObject);
+                    }
+                }
+
+                _triggerObjects.Clear();
+                _triggerObjects.AddRange(_nextTriggerObjects);
+                _nextTriggerObjects.Clear();
+            }
+        }
+
+        private void OnCollisionStay(Collision other)
+        {
+            if (DisableCollisionTracking) return;
+
+            if (!_collisionObjects.Contains(other.collider.gameObject))
+            {
+                _nextCollisionObjects.Add(other.collider.gameObject);
+            }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (DisableTriggerTracking) return;
+
+            if (!_triggerObjects.Contains(other.gameObject))
+            {
+                _nextTriggerObjects.Add(other.gameObject);
             }
         }
     }

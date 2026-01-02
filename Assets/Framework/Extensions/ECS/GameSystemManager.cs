@@ -1,16 +1,18 @@
-﻿using XuchFramework.Core;
+﻿using UnityEngine;
+using XuchFramework.Core;
 
 namespace XuchFramework.Extensions.ECS
 {
     public class GameSystemManager : ModuleBase
     {
-        private GameSystemBase[] _systems;
+        [SerializeField]
+        private Transform _gameSystemRoot;
 
-        protected override void OnInitialize() { }
+        private GameSystemBase[] _systems;
 
         protected override void OnPostInitialize()
         {
-            _systems = GetComponentsInChildren<GameSystemBase>();
+            _systems = _gameSystemRoot.GetComponentsInChildren<GameSystemBase>();
 
             for (int i = 0; i < _systems.Length; i++)
             {
