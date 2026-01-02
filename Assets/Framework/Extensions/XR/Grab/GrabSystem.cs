@@ -1,4 +1,4 @@
-using XuchFramework.Extensions.ECS;
+using XuchFramework.Core.ECS;
 
 namespace Framework.Extensions.XR
 {

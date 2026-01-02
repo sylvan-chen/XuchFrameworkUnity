@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using XuchFramework.Core;
 
-namespace XuchFramework.Extensions.ECS
+namespace XuchFramework.Core.ECS
 {
     public class GameSystemManager : ModuleBase
     {

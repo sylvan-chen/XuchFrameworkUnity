@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using XuchFramework.Core.Utils;
 
-namespace XuchFramework.Extensions.ECS
+namespace XuchFramework.Core.ECS
 {
     public class GameContext : Singleton<GameContext>
     {

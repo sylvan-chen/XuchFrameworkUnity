@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace XuchFramework.Extensions.ECS
+namespace XuchFramework.Core.ECS
 {
     public abstract class GameSystemBase : MonoBehaviour
     {
