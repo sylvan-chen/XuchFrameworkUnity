@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Framework.Extensions.XR
+namespace XuchFramework.Extensions.XR
 {
     public class Grabbable : MonoBehaviour
     {

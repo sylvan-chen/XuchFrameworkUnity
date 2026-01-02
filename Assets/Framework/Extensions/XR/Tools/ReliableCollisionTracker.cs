@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using UnityEngine;
 
-namespace Framework.Extensions.XR
+namespace XuchFramework.Extensions.XR
 {
     public delegate void CollisionEvent(GameObject from);
 

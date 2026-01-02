@@ -1,4 +1,4 @@
-namespace Framework.Extensions.XR
+namespace XuchFramework.Extensions.XR
 {
     public enum GrabbableGrabState
     {

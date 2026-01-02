@@ -1,6 +1,6 @@
 using XuchFramework.Core.ECS;
 
-namespace Framework.Extensions.XR
+namespace XuchFramework.Extensions.XR
 {
     public class GrabSystem : GameSystemBase
     {

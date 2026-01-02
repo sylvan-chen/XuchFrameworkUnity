@@ -1,4 +1,4 @@
-namespace Framework.Extensions.ECS
+namespace XuchFramework.Extensions.ECS
 {
     public interface IData
     {
