@@ -6,14 +6,14 @@ namespace XuchFramework.Extensions.ECS
     {
         private int entityCounter = 0;
 
-        private List<ISparseSet> _componentPools = new();
+        private readonly List<ISparseSet> _componentPools = new();
 
         public int CreateEntity()
         {
             return entityCounter++;
         }
 
-        public SparseSet<T> GetSparseSet<T>() where T : IComponent
+        public SparseSet<T> GetPool<T>() where T : IComponent
         {
             int typeId = ComponentType<T>.Id;
 
@@ -28,6 +28,26 @@ namespace XuchFramework.Extensions.ECS
             }
 
             return _componentPools[typeId] as SparseSet<T>;
+        }
+
+        public void AddComponent<T>(int entityId, T component) where T : IComponent
+        {
+            GetPool<T>().Add(entityId, component);
+        }
+
+        public void RemoveComponent<T>(int entity) where T : IComponent
+        {
+            GetPool<T>().Remove(entity);
+        }
+
+        public T GetComponent<T>(int entity) where T : IComponent
+        {
+            return GetPool<T>().Get(entity);
+        }
+
+        public bool HasComponent<T>(int entity) where T : IComponent
+        {
+            return GetPool<T>().Has(entity);
         }
     }
 }
