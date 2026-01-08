@@ -2,6 +2,32 @@ using System;
 
 namespace XuchFramework.Extensions.ECS
 {
+    #region Entity
+
+    public readonly struct Entity : IEquatable<Entity>
+    {
+        public readonly int Index;
+        public readonly int Version;
+
+        public Entity(int index, int version)
+        {
+            Index = index;
+            Version = version;
+        }
+
+        public bool Equals(Entity other) => Index == other.Index && Version == other.Version;
+        public override bool Equals(object obj) => obj is Entity other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(Index, Version);
+        public override string ToString() => $"Entity({Index}:{Version})";
+
+        public static bool operator ==(Entity a, Entity b) => a.Index == b.Index && a.Version == b.Version;
+        public static bool operator !=(Entity a, Entity b) => !(a == b);
+
+        public static Entity Null => new Entity(-1, -1);
+    }
+
+    #endregion
+
     #region Component
 
     internal static class ComponentCounter
@@ -46,43 +72,45 @@ namespace XuchFramework.Extensions.ECS
 
     public interface ISparseSet
     {
-        public void Remove(int entityId);
-        public bool Has(int entityId);
+        public void Remove(int entityIndex);
+        public bool Has(int entityIndex);
         public int Count { get; }
-        public int[] Entities { get; }
+        public Entity[] Entities { get; }
     }
 
     public class SparseSet<T> : ISparseSet
     {
-        public T[] Components;               // Dense array
-        public int[] EntityToComponentIndex; // Sparse array
+        public T[] Components;                    // Dense array
+        public int[] EntityIndexToComponentIndex; // Sparse array
 
-        public int[] ComponentIndexToEntity;
+        public Entity[] ComponentIndexToEntity;
 
         public int Count { get; private set; } = 0;
 
         private int _entityCapacity = 64;
         private int _componentCapacity = 16;
 
-        public int[] Entities => ComponentIndexToEntity;
+        public Entity[] Entities => ComponentIndexToEntity;
 
         public SparseSet()
         {
             Components = new T[_componentCapacity];
-            EntityToComponentIndex = new int[_entityCapacity];
-            ComponentIndexToEntity = new int[_componentCapacity];
+            EntityIndexToComponentIndex = new int[_entityCapacity];
+            ComponentIndexToEntity = new Entity[_componentCapacity];
 
             // -1 means null
-            Array.Fill(EntityToComponentIndex, -1);
+            Array.Fill(EntityIndexToComponentIndex, -1);
         }
 
-        public void Add(int entity, T component)
+        public void Add(Entity entity, T component)
         {
-            if (entity >= EntityToComponentIndex.Length)
+            int index = entity.Index;
+
+            if (index >= EntityIndexToComponentIndex.Length)
             {
-                int newSize = Math.Max(entity + 1, EntityToComponentIndex.Length * 2);
-                Array.Resize(ref EntityToComponentIndex, newSize);
-                for (int i = _entityCapacity; i < newSize; i++) EntityToComponentIndex[i] = -1;
+                int newSize = Math.Max(index + 1, EntityIndexToComponentIndex.Length * 2);
+                Array.Resize(ref EntityIndexToComponentIndex, newSize);
+                for (int i = _entityCapacity; i < newSize; i++) EntityIndexToComponentIndex[i] = -1;
                 _entityCapacity = newSize;
             }
 
@@ -95,46 +123,48 @@ namespace XuchFramework.Extensions.ECS
             }
 
             // If entity already has components, replace it
-            if (EntityToComponentIndex[entity] != -1)
+            if (EntityIndexToComponentIndex[index] != -1)
             {
-                Components[EntityToComponentIndex[entity]] = component;
+                Components[EntityIndexToComponentIndex[index]] = component;
+                ComponentIndexToEntity[EntityIndexToComponentIndex[index]] = entity;
                 return;
             }
 
-            EntityToComponentIndex[entity] = Count;
+            EntityIndexToComponentIndex[index] = Count;
             ComponentIndexToEntity[Count] = entity;
             Components[Count] = component;
             Count++;
         }
 
-        public void Remove(int entity)
+        public void Remove(int entityIndex)
         {
-            if (entity >= EntityToComponentIndex.Length || EntityToComponentIndex[entity] == -1) return;
+            if (entityIndex >= EntityIndexToComponentIndex.Length || EntityIndexToComponentIndex[entityIndex] == -1) return;
 
-            int indexToRemove = EntityToComponentIndex[entity];
+            int indexToRemove = EntityIndexToComponentIndex[entityIndex];
             int lastIndex = Count - 1;
 
             T lastData = Components[lastIndex];
-            int lastEntity = ComponentIndexToEntity[lastIndex];
+            Entity lastEntity = ComponentIndexToEntity[lastIndex];
 
             Components[indexToRemove] = lastData;
-            EntityToComponentIndex[lastEntity] = indexToRemove;
             ComponentIndexToEntity[indexToRemove] = lastEntity;
 
+            EntityIndexToComponentIndex[lastEntity.Index] = indexToRemove;
+
             Components[lastIndex] = default;
-            EntityToComponentIndex[entity] = -1;
+            EntityIndexToComponentIndex[entityIndex] = -1;
 
             Count--;
         }
 
-        public bool Has(int entity)
+        public bool Has(int entityIndex)
         {
-            return entity < EntityToComponentIndex.Length && EntityToComponentIndex[entity] != -1;
+            return entityIndex < EntityIndexToComponentIndex.Length && EntityIndexToComponentIndex[entityIndex] != -1;
         }
 
-        public ref T Get(int entity)
+        public ref T Get(int entityIndex)
         {
-            return ref Components[EntityToComponentIndex[entity]];
+            return ref Components[EntityIndexToComponentIndex[entityIndex]];
         }
     }
 
@@ -147,17 +177,17 @@ namespace XuchFramework.Extensions.ECS
             _pool = world.GetPool<T>();
         }
 
-        public delegate void ComponentAction(int entity, ref T component);
+        public delegate void ComponentAction(Entity entity, ref T component);
 
         public void ForEach(ComponentAction action)
         {
             int count = _pool.Count;
-            int[] entities = _pool.Entities;
+            Entity[] entities = _pool.Entities;
 
             for (int i = 0; i < count; i++)
             {
-                int entity = entities[i];
-                action(entity, ref _pool.Get(entity));
+                Entity entity = entities[i];
+                action(entity, ref _pool.Get(entity.Index));
             }
         }
     }
@@ -167,32 +197,42 @@ namespace XuchFramework.Extensions.ECS
         private readonly SparseSet<T1> _pool1;
         private readonly SparseSet<T2> _pool2;
 
-        private readonly bool _pool1Smaller;
+        private readonly ISparseSet _smallerSet;
+        private readonly ISparseSet _otherSet;
 
         public Selector(WorldContext world)
         {
             _pool1 = world.GetPool<T1>();
             _pool2 = world.GetPool<T2>();
-            _pool1Smaller = _pool1.Count < _pool2.Count;
+
+            if (_pool1.Count < _pool2.Count)
+            {
+                _smallerSet = _pool1;
+                _otherSet = _pool2;
+            }
+            else
+            {
+                _smallerSet = _pool2;
+                _otherSet = _pool1;
+            }
         }
 
-        public delegate void ComponentAction(int entity, ref T1 c1, ref T2 c2);
+        public delegate void ComponentAction(Entity entity, ref T1 c1, ref T2 c2);
 
         public void ForEach(ComponentAction action)
         {
-            ISparseSet smallerSet = _pool1Smaller ? _pool1 : _pool2;
-            ISparseSet otherSet = _pool1Smaller ? _pool2 : _pool1;
-
-            int count = smallerSet.Count;
-            int[] entities = smallerSet.Entities;
+            int count = _smallerSet.Count;
+            Entity[] entities = _smallerSet.Entities;
 
             for (int i = 0; i < count; i++)
             {
-                int entity = entities[i];
-                if (otherSet.Has(entity))
+                Entity entity = entities[i];
+                int entityIndex = entity.Index;
+
+                if (_otherSet.Has(entityIndex))
                 {
-                    ref var component1 = ref _pool1.Get(entity);
-                    ref var component2 = ref _pool2.Get(entity);
+                    ref var component1 = ref _pool1.Get(entityIndex);
+                    ref var component2 = ref _pool2.Get(entityIndex);
                     action(entity, ref component1, ref component2);
                 }
             }
@@ -239,48 +279,28 @@ namespace XuchFramework.Extensions.ECS
             }
         }
 
-        public delegate void ComponentAction(int entity, ref T1 c1, ref T2 c2, ref T3 c3);
+        public delegate void ComponentAction(Entity entity, ref T1 c1, ref T2 c2, ref T3 c3);
 
         public void ForEach(ComponentAction action)
         {
             int count = smallestPool.Count;
-            int[] entities = smallestPool.Entities;
+            Entity[] entities = smallestPool.Entities;
 
             for (int i = 0; i < count; i++)
             {
-                int entity = entities[i];
+                Entity entity = entities[i];
+                int entityIndex = entity.Index;
 
-                if (otherA.Has(entity) && otherB.Has(entity))
+                if (otherA.Has(entityIndex) && otherB.Has(entityIndex))
                 {
-                    ref var c1 = ref _pool1.Get(entity);
-                    ref var c2 = ref _pool2.Get(entity);
-                    ref var c3 = ref _pool3.Get(entity);
+                    ref var c1 = ref _pool1.Get(entityIndex);
+                    ref var c2 = ref _pool2.Get(entityIndex);
+                    ref var c3 = ref _pool3.Get(entityIndex);
 
                     action(entity, ref c1, ref c2, ref c3);
                 }
             }
         }
-    }
-
-    public readonly struct Selector<T1, T2, T3, T4>
-    {
-        private readonly SparseSet<T1> _pool1;
-        private readonly SparseSet<T2> _pool2;
-        private readonly SparseSet<T3> _pool3;
-        private readonly SparseSet<T4> _pool4;
-
-        private readonly ISparseSet smallestPool;
-        private readonly ISparseSet otherA;
-        private readonly ISparseSet otherB;
-        private readonly ISparseSet otherC;
-
-        // public Selector(WorldContext world)
-        // {
-        //     _pool1 = world.GetPool<T1>();
-        //     _pool2 = world.GetPool<T2>();
-        //     _pool3 = world.GetPool<T3>();
-        //     _pool4 = world.GetPool<T4>();
-        // }
     }
 
     #endregion
