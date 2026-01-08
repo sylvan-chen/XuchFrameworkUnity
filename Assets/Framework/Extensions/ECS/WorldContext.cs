@@ -9,7 +9,7 @@ namespace XuchFramework.Extensions.ECS
         private readonly Queue<int> _entityIndexPool = new();
         private readonly List<int> _entityVersions = new List<int>();
 
-        // _allPolls stores pools with less capacity, so it's efficient for destroying entity
+        // _allPools stores pools with less capacity, so it's efficient for destroying entity
         // _lookUpPools stores pools using the biggest index as capacity, so it's efficient for query (just _lookUpPools[typeId], O(1))
         // Like this:
         // - _allPools: [ set1(id_1), set2(id_2), set3(id_100) ]
@@ -28,10 +28,10 @@ namespace XuchFramework.Extensions.ECS
             {
                 index = _entityIndexCounter++;
                 while (_entityVersions.Count <= index) _entityVersions.Add(0);
-                _entityVersions[index] = 0;
+                _entityVersions[index] = 1;
             }
 
-            return new Entity(index, _entityVersions[index]++);
+            return new Entity(index, _entityVersions[index]);
         }
 
         public void DestroyEntity(Entity entity)
@@ -98,6 +98,16 @@ namespace XuchFramework.Extensions.ECS
         public Selector<T> Query<T>()
         {
             return new Selector<T>(this);
+        }
+
+        public Selector<T1, T2> Query<T1, T2>()
+        {
+            return new Selector<T1, T2>(this);
+        }
+
+        public Selector<T1, T2, T3> Query<T1, T2, T3>()
+        {
+            return new Selector<T1, T2, T3>(this);
         }
     }
 }
