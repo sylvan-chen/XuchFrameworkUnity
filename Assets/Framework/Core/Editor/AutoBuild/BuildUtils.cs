@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using XuchFramework.Core;
+using Framework.Core;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildUtils
     {

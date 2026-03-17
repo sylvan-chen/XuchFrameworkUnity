@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     /// <summary>
     /// 1. Auto scan all Scene assets in the project (excluding those in Packages)

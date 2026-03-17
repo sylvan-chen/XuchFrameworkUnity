@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core;
-using XuchFramework.Core.Utils;
+using Framework.Core;
+using Framework.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildPipeline_BuildLua
     {
@@ -71,11 +71,11 @@ namespace XuchFramework.Editor
                         continue;
                     }
 
-                    var luaCode = GameHelper.ReadAllTextSafe(luaFilePath);
-                    var encryptedLuaCode = GameHelper.Encrypt(luaCode);
+                    var luaCode = GameUtils.ReadAllTextSafe(luaFilePath);
+                    var encryptedLuaCode = GameUtils.Encrypt(luaCode);
                     var saveFileName = Path.GetFileNameWithoutExtension(luaFilePath) + ".bytes";
                     var encryptedFilePath = Path.Combine(encryptedLuaScriptsOutputDirectory, saveFileName);
-                    GameHelper.WriteAllTextSafe(encryptedFilePath, encryptedLuaCode);
+                    GameUtils.WriteAllTextSafe(encryptedFilePath, encryptedLuaCode);
                 }
 
                 AssetDatabase.Refresh();

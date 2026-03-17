@@ -1,10 +1,10 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core;
-using XuchFramework.Core.Utils;
+using Framework.Core;
+using Framework.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public class LuaBuildProfileSettingWindow : EditorWindow
     {
@@ -33,7 +33,7 @@ namespace XuchFramework.Editor
             }
 
             if (_luaBuildProfile.IgnoredDirectoryNames != null)
-                _ignoredDirectoriesStr = GameHelper.ConvertArrayToStr(_luaBuildProfile.IgnoredDirectoryNames);
+                _ignoredDirectoriesStr = GameUtils.ConvertArrayToStr(_luaBuildProfile.IgnoredDirectoryNames);
         }
 
         [MenuItem("Build/Lua Build Profile", priority = 50)]
@@ -111,7 +111,7 @@ namespace XuchFramework.Editor
             EditorGUILayout.LabelField("- Split directory names with spaces");
             EditorGUILayout.LabelField("- eg. type_hints test temp");
             _ignoredDirectoriesStr = EditorGUILayout.TextField(_ignoredDirectoriesStr, GUILayout.MinWidth(200));
-            _luaBuildProfile.IgnoredDirectoryNames = GameHelper.ConvertStrToArray(_ignoredDirectoriesStr);
+            _luaBuildProfile.IgnoredDirectoryNames = GameUtils.ConvertStrToArray(_ignoredDirectoriesStr);
 
             EditorGUILayout.Space(10);
 
@@ -136,7 +136,7 @@ namespace XuchFramework.Editor
                 _luaBuildProfile.EncryptedLuaScriptsOutputDirectory = DEFAULT_ENCRYPTED_LUA_SCRIPTS_OUTPUT_DIRECTORY;
                 _luaBuildProfile.IgnoredDirectoryNames = DEFAULT_IGNORED_DIRECTORIES;
 
-                _ignoredDirectoriesStr = GameHelper.ConvertArrayToStr(_luaBuildProfile.IgnoredDirectoryNames);
+                _ignoredDirectoriesStr = GameUtils.ConvertArrayToStr(_luaBuildProfile.IgnoredDirectoryNames);
 
                 _luaBuildProfile.AddressableGroupName = DEFAULT_ADDRESSABLE_GROUP_NAME;
                 _luaBuildProfile.AddressableLabel = DEFAULT_ADDRESSABLE_LABEL;
@@ -160,7 +160,7 @@ namespace XuchFramework.Editor
         private string GetFullRegularPath(string path)
         {
             var fullPath = Path.GetFullPath(path, Application.dataPath);
-            return GameHelper.GetRegularPath(fullPath);
+            return GameUtils.GetRegularPath(fullPath);
         }
 
         private void SaveCurrentProfile()

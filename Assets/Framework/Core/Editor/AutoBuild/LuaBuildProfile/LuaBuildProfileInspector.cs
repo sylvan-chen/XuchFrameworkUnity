@@ -1,9 +1,9 @@
 using System.IO;
+using Framework.Utils;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     [CustomEditor(typeof(LuaBuildProfile))]
     public class LuaBuildProfileInspector : InspectorBase
@@ -48,8 +48,8 @@ namespace XuchFramework.Editor
             _luaScriptsDirectory.stringValue = Path.GetFullPath(_luaScriptsDirectory.stringValue, Application.dataPath);
             _encryptedLuaScriptsOutputDirectory.stringValue = Path.GetFullPath(_encryptedLuaScriptsOutputDirectory.stringValue, Application.dataPath);
 
-            _luaScriptsDirectory.stringValue = GameHelper.GetRegularPath(_luaScriptsDirectory.stringValue);
-            _encryptedLuaScriptsOutputDirectory.stringValue = GameHelper.GetRegularPath(_encryptedLuaScriptsOutputDirectory.stringValue);
+            _luaScriptsDirectory.stringValue = GameUtils.GetRegularPath(_luaScriptsDirectory.stringValue);
+            _encryptedLuaScriptsOutputDirectory.stringValue = GameUtils.GetRegularPath(_encryptedLuaScriptsOutputDirectory.stringValue);
         }
     }
 }

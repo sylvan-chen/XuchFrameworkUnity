@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public enum PlayerCompressionType
     {
@@ -9,7 +9,7 @@ namespace XuchFramework.Editor
         LZ4HC = 1,
     }
 
-    [CreateAssetMenu(fileName = "BuildConfig", menuName = "XuchFramework/Settings/Build Config")]
+    [CreateAssetMenu(fileName = "BuildConfig", menuName = "EdenFramework/Settings/Build Config")]
     public class BuildConfig : ScriptableObject
     {
         public BuildTarget BuildTarget;

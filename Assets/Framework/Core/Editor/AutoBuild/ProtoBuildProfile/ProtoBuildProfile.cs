@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
-    [CreateAssetMenu(fileName = "ProtoBuildProfile", menuName = "XuchFramework/Settings/ProtoBuildProfile")]
+    [CreateAssetMenu(fileName = "ProtoBuildProfile", menuName = "EdenFramework/Settings/ProtoBuildProfile")]
     public sealed class ProtoBuildProfile : ScriptableObject
     {
         public string ProtosDirectory = "../Proto";

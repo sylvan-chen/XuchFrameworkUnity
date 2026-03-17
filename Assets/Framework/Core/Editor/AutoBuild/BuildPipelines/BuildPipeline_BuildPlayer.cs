@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using XuchFramework.Core;
+using Framework.Core;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildPipeline_BuildPlayer
     {
@@ -40,7 +40,7 @@ namespace XuchFramework.Editor
             }
             else
             {
-                throw new Exception($"[AutoBuilder] BuildPlayer - Build Failed ({report.summary.totalErrors} Errors): {report.SummarizeErrors()}");
+                throw new Exception($"[AutoBuilder] BuildPlayer - Build Failed: {report.SummarizeErrors()}");
             }
         }
 

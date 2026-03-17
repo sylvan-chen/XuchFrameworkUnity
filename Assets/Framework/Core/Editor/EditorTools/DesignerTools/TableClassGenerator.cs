@@ -6,15 +6,15 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core.Utils;
+using Framework.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public class TableClassGenerator : EditorWindow
     {
         private const string DEFAULT_JSON_DIR = "DEFAULT:./Res/tables";
         private const string DEFAULT_OUTPUT_DIR = "DEFAULT:./TableConfigs";
-        private const string DEFAULT_NAMESPACE = "XuchFramework.Table";
+        private const string DEFAULT_NAMESPACE = "EdenFramework.Table";
 
         private const string JSON_DIR_KEY = "ConfigGenerator_JsonDir";
         private const string OUTPUT_DIR_KEY = "ConfigGenerator_OutputDir";
@@ -27,7 +27,7 @@ namespace XuchFramework.Editor
         private string _namespaceName = DEFAULT_NAMESPACE;
         private Vector2 _jsonFilesScroll;
 
-        [MenuItem("Tools/Designer Tools/Table Class Generator", priority = 10002)]
+        [MenuItem("Tools/策划工具/配置表 C# 结构生成器", priority = 10100)]
         private static void ShowWindow()
         {
             var window = GetWindow<TableClassGenerator>();
@@ -59,8 +59,7 @@ namespace XuchFramework.Editor
             // Title
             GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
             {
-                fontSize = 16,
-                alignment = TextAnchor.MiddleCenter
+                fontSize = 16, alignment = TextAnchor.MiddleCenter
             };
             EditorGUILayout.LabelField("Table Class Generator", titleStyle);
 
@@ -98,7 +97,11 @@ namespace XuchFramework.Editor
                 _outputDirectory = EditorGUILayout.TextField("Output Directory:", _outputDirectory);
                 if (GUILayout.Button("...", GUILayout.Width(60)))
                 {
-                    string selectedPath = EditorUtility.OpenFolderPanel("Choose Output Directory", _outputDirectory, "");
+                    string selectedPath = EditorUtility.OpenFolderPanel(
+                        "Choose Output Directory",
+                        _outputDirectory,
+                        ""
+                    );
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
                         _outputDirectory = selectedPath;
@@ -130,8 +133,14 @@ namespace XuchFramework.Editor
                     GUILayout.Label("JSON Files", EditorStyles.boldLabel);
                     EditorGUILayout.Space(5);
 
-                    float listMaxHeight = Mathf.Min(220f, (jsonFiles.Length * (EditorGUIUtility.singleLineHeight + 2)) + 8f);
-                    using (var scroll = new EditorGUILayout.ScrollViewScope(_jsonFilesScroll, GUILayout.Height(listMaxHeight)))
+                    float listMaxHeight = Mathf.Min(
+                        220f,
+                        (jsonFiles.Length * (EditorGUIUtility.singleLineHeight + 2)) + 8f
+                    );
+                    using (var scroll = new EditorGUILayout.ScrollViewScope(
+                               _jsonFilesScroll,
+                               GUILayout.Height(listMaxHeight)
+                           ))
                     {
                         _jsonFilesScroll = scroll.scrollPosition;
                         foreach (var f in jsonFiles)
@@ -156,7 +165,8 @@ namespace XuchFramework.Editor
             if (GUILayout.Button("Generate", GUILayout.Height(35)))
             {
                 Debug.Log(
-                    $"[TableClassGenerator] Generated: JSON Directory = {_jsonDirectory}, Output Directory = {_outputDirectory}, Namespace = {_namespaceName}");
+                    $"[TableClassGenerator] Generated: JSON Directory = {_jsonDirectory}, Output Directory = {_outputDirectory}, Namespace = {_namespaceName}"
+                );
                 GenerateClasses();
             }
             GUI.backgroundColor = Color.white;
@@ -191,7 +201,9 @@ namespace XuchFramework.Editor
 
             if (files.Length == 0)
             {
-                Debug.LogWarning($"[TableClassGenerator] No JSON files found in {_jsonDirectory} (Searching Options: {_searchOption})");
+                Debug.LogWarning(
+                    $"[TableClassGenerator] No JSON files found in {_jsonDirectory} (Searching Options: {_searchOption})"
+                );
                 return;
             }
 
@@ -208,7 +220,11 @@ namespace XuchFramework.Editor
                     float progress = i * progressStep;
                     string fileName = Path.GetFileNameWithoutExtension(file);
 
-                    EditorUtility.DisplayProgressBar("Generating", $"Handle files: {fileName} ({i + 1}/{files.Length})", progress);
+                    EditorUtility.DisplayProgressBar(
+                        "Generating",
+                        $"Handle files: {fileName} ({i + 1}/{files.Length})",
+                        progress
+                    );
 
                     string jsonContent = File.ReadAllText(file);
                     try
@@ -217,13 +233,17 @@ namespace XuchFramework.Editor
 
                         if (rootArr == null)
                         {
-                            Debug.LogError($"[TableClassGenerator] Failed to parse JSON, root element must be array: {file}");
+                            Debug.LogError(
+                                $"[TableClassGenerator] Failed to parse JSON, root element must be array: {file}"
+                            );
                             continue;
                         }
 
                         if (rootArr.Count == 0 || rootArr[0].Type != JTokenType.Object)
                         {
-                            Debug.LogError($"[TableClassGenerator] Failed to parse JSON, no element in root array: {file}");
+                            Debug.LogError(
+                                $"[TableClassGenerator] Failed to parse JSON, no element in root array: {file}"
+                            );
                             continue;
                         }
 
@@ -234,7 +254,7 @@ namespace XuchFramework.Editor
                             continue;
                         }
 
-                        string className = GameHelper.ToPascalCase(fileName);
+                        string className = GameUtils.ToPascalCase(fileName);
                         string code = GenerateClassCode(file, className, sampleObj);
 
                         string outputPath = Path.Combine(_outputDirectory, $"Config{className}.cs");
@@ -256,7 +276,8 @@ namespace XuchFramework.Editor
                 EditorUtility.DisplayDialog(
                     "Generate Done",
                     $"Generated {successCount}/{files.Length} class files\nOutput directory: {_outputDirectory}",
-                    "OK");
+                    "OK"
+                );
             }
             catch (System.Exception ex)
             {
@@ -273,8 +294,7 @@ namespace XuchFramework.Editor
 
         private string NormalizePath(string path)
         {
-            if (string.IsNullOrEmpty(path))
-                return path;
+            if (string.IsNullOrEmpty(path)) return path;
 
             // DEFAULT will be converted to Application.dataPath
             if (path.StartsWith("DEFAULT:"))
@@ -287,12 +307,10 @@ namespace XuchFramework.Editor
 
             foreach (var seg in segments)
             {
-                if (seg == ".")
-                    continue;    // Remove "/."
-                if (seg == "..") // Remove "/.." and the segment before it
+                if (seg == ".") continue; // Remove "/."
+                if (seg == "..")          // Remove "/.." and the segment before it
                 {
-                    if (stack.Count > 0)
-                        stack.Pop();
+                    if (stack.Count > 0) stack.Pop();
                     continue;
                 }
 
@@ -311,7 +329,7 @@ namespace XuchFramework.Editor
             foreach (var property in jsonObj.Properties())
             {
                 string propertyType = InferTypeName(property.Value);
-                string propertyName = GameHelper.ToPascalCase(property.Name);
+                string propertyName = GameUtils.ToPascalCase(property.Name);
 
                 propertyDefs.Add($"[JsonProperty(\"{property.Name}\")]");
                 propertyDefs.Add($"public {propertyType} {propertyName} {{ get; set; }}");
@@ -329,28 +347,28 @@ namespace XuchFramework.Editor
             sb.AppendLine("/// </auto-generated>");
             sb.AppendLine("/// ------------------------------------------------------------------------------");
             sb.AppendLine();
-            sb.AppendLine("using XuchFramework.Core;");
+            sb.AppendLine("using EdenFramework.Core;");
             sb.AppendLine("using Newtonsoft.Json;");
-            // sb.AppendLine("using System.Collections.Generic;");
+            sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine();
             sb.AppendLine($"namespace {_namespaceName}");
             sb.AppendLine("{");
             sb.AppendLine("    [System.Serializable]");
-            sb.AppendLine($"    public class Config{className} : ITableConfig");
+            sb.AppendLine($"    public class {className} : ITableConfig");
             sb.AppendLine("    {");
             sb.AppendLine($"        {string.Join("\n        ", propertyDefs)}");
             sb.AppendLine("    }");
-            // sb.AppendLine();
-            // sb.AppendLine("    [System.Serializable]");
-            // sb.AppendLine($"    public class Table{className}");
-            // sb.AppendLine("    {");
-            // sb.AppendLine($"        public Dictionary<int, Config{className}> Configs;");
-            // sb.AppendLine();
-            // sb.AppendLine($"        public Config{className} GetConfigById(int id)");
-            // sb.AppendLine("        {");
-            // sb.AppendLine("            return Configs.TryGetValue(id, out var config) ? config : null;");
-            // sb.AppendLine("        }");
-            // sb.AppendLine("    }");
+            sb.AppendLine();
+            sb.AppendLine("    [System.Serializable]");
+            sb.AppendLine($"    public class Table{className}");
+            sb.AppendLine("    {");
+            sb.AppendLine($"        public Dictionary<int, Config{className}> Configs;");
+            sb.AppendLine();
+            sb.AppendLine($"        public Config{className} GetConfigById(int id)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            return Configs.TryGetValue(id, out var config) ? config : null;");
+            sb.AppendLine("        }");
+            sb.AppendLine("    }");
             sb.AppendLine("}");
 
             return sb.ToString();

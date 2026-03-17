@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public class AutoBuildWindow : EditorWindow
     {

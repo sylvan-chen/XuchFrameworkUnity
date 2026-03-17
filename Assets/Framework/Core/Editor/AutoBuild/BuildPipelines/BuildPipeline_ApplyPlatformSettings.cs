@@ -3,7 +3,7 @@ using Unity.Android.Types;
 #endif
 using UnityEditor;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildPipeline_ApplyPlatformSettings
     {
@@ -44,7 +44,7 @@ namespace XuchFramework.Editor
 
             AssetDatabase.SaveAssets();
 
-            BuildUtils.ShowProcessBar("Apply platform settings", "Done!", 1f);
+            BuildUtils.ShowProcessBar("Apply platform settings", "Apply finished.", 1f);
         }
     }
 }

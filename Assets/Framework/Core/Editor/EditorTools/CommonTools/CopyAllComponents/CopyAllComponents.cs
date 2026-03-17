@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public class CopyAllComponent : EditorWindow
     {

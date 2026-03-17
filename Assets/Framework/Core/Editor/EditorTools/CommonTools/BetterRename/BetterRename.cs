@@ -2,16 +2,16 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public class BetterRename
     {
-        [MenuItem("Tools/Common Tools/Rename to Lowercase Recursively", priority = 10000)]
+        [MenuItem("Tools/通用工具/递归小写重命名", priority = 10000)]
         private static void RenameToLowerCase()
         {
             if (Selection.activeObject == null)
             {
-                EditorUtility.DisplayDialog("Error", "Select a folder first", "OK");
+                EditorUtility.DisplayDialog("错误", "请选择一个目录", "确认");
                 return;
             }
 
@@ -19,21 +19,17 @@ namespace XuchFramework.Editor
 
             if (string.IsNullOrEmpty(selectedPath))
             {
-                EditorUtility.DisplayDialog("Error", "Failed to get path of select object", "OK");
+                EditorUtility.DisplayDialog("错误", "获取目录路径失败", "确认");
                 return;
             }
 
             if (!AssetDatabase.IsValidFolder(selectedPath))
             {
-                EditorUtility.DisplayDialog("Error", "Please select a folder (not file)", "OK");
+                EditorUtility.DisplayDialog("错误", "请选择一个目录而不是文件", "确认");
                 return;
             }
 
-            if (!EditorUtility.DisplayDialog(
-                    "Rename to lowercase",
-                    $"Renaming all folder and files to lowercase recursively for '{selectedPath}', continue?",
-                    "OK",
-                    "Cancel"))
+            if (!EditorUtility.DisplayDialog("递归小写重命名", $"递归重命名所有目录和文件为小写 ('{selectedPath}')，确认?", "确认", "取消"))
             {
                 return;
             }
@@ -42,11 +38,11 @@ namespace XuchFramework.Editor
             {
                 RenameDirectory(selectedPath);
                 AssetDatabase.Refresh();
-                EditorUtility.DisplayDialog("Done", "Rename finish", "OK");
+                EditorUtility.DisplayDialog("完成", "重命名完成", "确认");
             }
             catch (System.Exception ex)
             {
-                EditorUtility.DisplayDialog("Error", $"Rename failed: {ex.Message}", "OK");
+                EditorUtility.DisplayDialog("错误", $"重命名失败：{ex.Message}", "确认");
                 Debug.LogError($"[BetterRename] Rename failed: {ex}");
             }
         }
@@ -65,7 +61,7 @@ namespace XuchFramework.Editor
                     string error = AssetDatabase.RenameAsset(directory, newName);
                     if (!string.IsNullOrEmpty(error))
                     {
-                        Debug.LogError($"[BetterRename] Failed to rename directory '{directory}': {error}");
+                        Debug.LogError($"[BetterRename] 重命名目录失败 '{directory}': {error}");
                     }
                 }
             }
@@ -73,8 +69,7 @@ namespace XuchFramework.Editor
             foreach (string file in Directory.GetFiles(path))
             {
                 // Skip .meta files
-                if (file.EndsWith(".meta"))
-                    continue;
+                if (file.EndsWith(".meta")) continue;
 
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 string extension = Path.GetExtension(file);
@@ -85,9 +80,45 @@ namespace XuchFramework.Editor
                     string error = AssetDatabase.RenameAsset(file, newName);
                     if (!string.IsNullOrEmpty(error))
                     {
-                        Debug.LogError($"[BetterRename] Failed to rename file '{file}': {error}");
+                        Debug.LogError($"[BetterRename] 重命名文件失败 '{file}': {error}");
                     }
                 }
+            }
+        }
+
+        [MenuItem("GameObject/Rename Recursive (snake_case)", false, 0)]
+        public static void RenameSelectedToSnakeCase()
+        {
+            // 获取当前选中的所有 GameObject
+            GameObject[] selectedObjects = Selection.gameObjects;
+
+            if (selectedObjects.Length == 0)
+            {
+                Debug.LogWarning("请先在 Hierarchy 中选择要重命名的节点！");
+                return;
+            }
+
+            // 遍历所有选中的根节点进行递归重命名
+            foreach (GameObject go in selectedObjects)
+            {
+                RenameRecursive(go.transform);
+            }
+
+            Debug.Log("重命名完成！如果结果不满意，可以按 Ctrl+Z (Cmd+Z) 撤销。");
+        }
+
+        private static void RenameRecursive(Transform current)
+        {
+            // 注册 Undo 操作，以便支持 Ctrl+Z 撤销
+            Undo.RecordObject(current.gameObject, "Rename to snake_case");
+
+            // 转换名称
+            current.gameObject.name = ConvertToSnakeCase(current.gameObject.name);
+
+            // 遍历并递归所有子节点
+            foreach (Transform child in current)
+            {
+                RenameRecursive(child);
             }
         }
 
@@ -99,8 +130,7 @@ namespace XuchFramework.Editor
         /// </summary>
         private static string ConvertToSnakeCase(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                return name;
+            if (string.IsNullOrEmpty(name)) return name;
 
             var sb = new System.Text.StringBuilder();
 
@@ -110,17 +140,16 @@ namespace XuchFramework.Editor
 
                 if (c is ' ' or '_' or '-')
                 {
-                    if (sb.Length > 0 && sb[sb.Length - 1] != '_')
-                        sb.Append('_');
+                    if (sb.Length > 0 && sb[sb.Length - 1] != '_') sb.Append('_');
                     continue;
                 }
 
                 if (char.IsUpper(c))
                 {
-                    // Condition of adding underscore before uppercase letter:
-                    // 1. Not the first character
-                    // 2. Previous character is not underscore
-                    // 3. Previous character is lowercase, or next character is lowercase (handle consecutive uppercase like 'XMLParser')
+                    // 在大写字符前加下划线的条件：
+                    // 1. 不是第一个字符
+                    // 2. 上一个字符不是下划线
+                    // 3. 上一个或者下一个字符是小写（检查下一个字符的目的是处理 'XMLParser' 这种情况）
                     if (sb.Length > 0 && sb[sb.Length - 1] != '_')
                     {
                         bool prevIsLower = i > 0 && char.IsLower(name[i - 1]);
@@ -143,11 +172,10 @@ namespace XuchFramework.Editor
         }
 
         // Verify menu item is valid only when a folder is selected
-        [MenuItem("Tools/Common Tools/Rename to Lowercase Recursively", true, priority = 10000)]
+        [MenuItem("Tools/通用工具/递归小写重命名", true, priority = 10000)]
         private static bool ValidateRenameToLowerCase()
         {
-            if (Selection.activeObject == null)
-                return false;
+            if (Selection.activeObject == null) return false;
 
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
             return !string.IsNullOrEmpty(path) && AssetDatabase.IsValidFolder(path);

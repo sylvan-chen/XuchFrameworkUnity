@@ -9,6 +9,7 @@ EditorBuildSettings:
     path: Assets/Res/core/scenes/boot.unity
     guid: 32ccee55fb1d18d41a76f56759c30e84
   m_configObjects:
+    addressableimportsettingslist: {fileID: 11400000, guid: 5a4526ef1c7502d4b96d380ebdfda8d3, type: 2}
     com.unity.addressableassets: {fileID: 11400000, guid: 1409f9529ab5345408137b91edcb1048, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 7c308a7cf20df1f4f891cd2b182afeda, type: 3}
   m_UseUCBPForAssetBundles: 0

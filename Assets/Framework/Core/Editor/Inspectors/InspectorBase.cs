@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public abstract class InspectorBase : UnityEditor.Editor
     {

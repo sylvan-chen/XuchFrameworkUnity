@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Build;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildPipeline_ApplyBuildConfig
     {
@@ -64,7 +64,7 @@ namespace XuchFramework.Editor
 
             AssetDatabase.SaveAssets();
 
-            BuildUtils.ShowProcessBar("Apply build config", "Done!", 1f);
+            BuildUtils.ShowProcessBar("Apply build config", "Apply finished.", 1f);
         }
     }
 }

@@ -3,9 +3,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using System;
 using System.Reflection;
+using Framework.Core;
 using UnityEngine.UIElements;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     [InitializeOnLoad]
     public static class SceneQuickOpen
@@ -13,8 +14,7 @@ namespace XuchFramework.Editor
         private static readonly Type _toolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
         private static ScriptableObject _currentToolbar;
         private static bool _isInitialized = false;
-        private static string _bootScenePath = "Assets/Res/core/scenes/boot.unity";
-        private static string _bootSceneName = "boot";
+        private static string _previousScenePath = string.Empty;
 
         [MenuItem("Scenes/Scene Browser", priority = 0)]
         public static void OpenSceneBrowser()
@@ -22,96 +22,56 @@ namespace XuchFramework.Editor
             SceneQuickOpenWindow.ShowWindow();
         }
 
-        [MenuItem("Scenes/Set Boot/Current")]
-        public static void SetCurrentSceneAsBoot()
-        {
-            var currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            if (string.IsNullOrEmpty(currentScene.path))
-            {
-                Debug.LogWarning("[SceneQuickOpen] Current scene is not saved. Please save the scene first.");
-                return;
-            }
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            {
-                _bootScenePath = currentScene.path;
-                _bootSceneName = currentScene.name;
-
-                Debug.Log($"[SceneQuickOpen] Boot scene set to: {_bootSceneName} ({_bootScenePath})");
-            }
-        }
-
-        [MenuItem("Scenes/Set Boot/First Enabled in Build Profiles")]
-        public static void SetFirstEnabledInBuildProfilesAsBoot()
-        {
-            var scenes = EditorBuildSettings.scenes;
-            if (scenes == null || scenes.Length == 0)
-            {
-                Debug.LogWarning("[SceneQuickOpen] No scenes in Build Profiles.");
-                return;
-            }
-
-            foreach (var scene in scenes)
-            {
-                if (scene.enabled)
-                {
-                    _bootScenePath = scene.path;
-                    _bootSceneName = System.IO.Path.GetFileNameWithoutExtension(scene.path);
-                    Debug.Log($"[SceneQuickOpen] Boot scene set to: {_bootSceneName} ({_bootScenePath})");
-                    return;
-                }
-            }
-
-            Debug.LogWarning("[SceneQuickOpen] No enabled scenes in Build Settings.");
-        }
-
-        // Add a Boot button to toolbar on right of Play button
         static SceneQuickOpen()
         {
-            SetFirstEnabledInBuildProfilesAsBoot();
             EditorApplication.update += OnUpdate;
         }
 
         private static void OnUpdate()
         {
-            if (_isInitialized)
-                return;
+            if (_isInitialized) return;
 
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
-                return;
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
 
             UnityEngine.Object[] toolbars = Resources.FindObjectsOfTypeAll(_toolbarType);
             _currentToolbar = toolbars.Length > 0 ? (ScriptableObject)toolbars[0] : null;
-            if (_currentToolbar == null)
-                return;
+            if (_currentToolbar == null) return;
 
-            FieldInfo root = _currentToolbar.GetType().GetField("m_Root", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (root == null)
-                return;
+            FieldInfo root = _currentToolbar.GetType()
+                .GetField("m_Root", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (root == null) return;
 
-            if (root.GetValue(_currentToolbar) is not VisualElement concreteRoot)
-                return;
+            if (root.GetValue(_currentToolbar) is not VisualElement concreteRoot) return;
 
             // The area of original Play button
             // This is based on Unity 6000.0.59f2, may not work in other versions, you should change the name accordingly
             VisualElement toolbarZone = concreteRoot.Q("ToolbarZonePlayMode");
             if (toolbarZone == null)
             {
-                Debug.LogWarning("[SceneQuickOpen] Add BootButton failed. Original PlayButton area 'ToolbarZonePlayMode' not found!");
+                Debug.LogWarning(
+                    "[SceneQuickOpen] Add BootButton failed. Original PlayButton area 'ToolbarZonePlayMode' not found!"
+                );
                 return;
             }
 
-            var button = new Button(() =>
-            {
-                if (!UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Equals(_bootSceneName, StringComparison.OrdinalIgnoreCase))
+            var button = new Button(
+                () =>
                 {
-                    EditorSceneManager.OpenScene(_bootScenePath);
+                    if (EditorBuildSettings.scenes.Length == 0)
+                    {
+                        Log.Error("[SceneQuickOpen] No scenes exists in Build Settings!");
+                        return;
+                    }
+
+                    _previousScenePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
+                    if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+
+                    string firstScenePath = EditorBuildSettings.scenes[0].path;
+                    EditorSceneManager.OpenScene(firstScenePath);
+
+                    EditorApplication.ExecuteMenuItem("Edit/Play");
                 }
-                EditorApplication.ExecuteMenuItem("Edit/Play");
-            })
-            {
-                text = "▶ Boot",
-                name = "BootButton"
-            };
+            ) { text = "▶ Boot", name = "BootButton" };
 
             button.RemoveFromClassList("unity-button");
             button.RemoveFromClassList("unity-text-element");

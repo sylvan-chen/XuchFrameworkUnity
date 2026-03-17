@@ -1,8 +1,8 @@
 using System;
+using Framework.Core;
 using UnityEditor;
-using XuchFramework.Core;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class AutoBuilder
     {
@@ -28,7 +28,6 @@ namespace XuchFramework.Editor
             catch (Exception e)
             {
                 Log.Error($"[AutoBuilder] Build Failed: {e.Message}\n{e.StackTrace}");
-                throw;
             }
             finally
             {

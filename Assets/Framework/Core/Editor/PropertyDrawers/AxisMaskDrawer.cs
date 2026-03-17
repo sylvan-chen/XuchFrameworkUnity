@@ -1,8 +1,8 @@
+using Framework.Utils;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     [CustomPropertyDrawer(typeof(AxisMask))]
     public class AxisMaskDrawer : PropertyDrawer

@@ -1,9 +1,9 @@
 using System.IO;
+using Framework.Utils;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     [CustomEditor(typeof(ProtoBuildProfile))]
     public class ProtoBuildProfileInspector : InspectorBase
@@ -48,8 +48,8 @@ namespace XuchFramework.Editor
             _protoDirectory.stringValue = Path.GetFullPath(_protoDirectory.stringValue, Application.dataPath);
             _encryptedProtoOutputDirectory.stringValue = Path.GetFullPath(_encryptedProtoOutputDirectory.stringValue, Application.dataPath);
 
-            _protoDirectory.stringValue = GameHelper.GetRegularPath(_protoDirectory.stringValue);
-            _encryptedProtoOutputDirectory.stringValue = GameHelper.GetRegularPath(_encryptedProtoOutputDirectory.stringValue);
+            _protoDirectory.stringValue = GameUtils.GetRegularPath(_protoDirectory.stringValue);
+            _encryptedProtoOutputDirectory.stringValue = GameUtils.GetRegularPath(_encryptedProtoOutputDirectory.stringValue);
         }
     }
 }

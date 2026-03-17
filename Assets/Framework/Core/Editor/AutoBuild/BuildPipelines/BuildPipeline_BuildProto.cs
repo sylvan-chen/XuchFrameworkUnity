@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using XuchFramework.Core;
-using XuchFramework.Core.Utils;
+using Framework.Core;
+using Framework.Utils;
 
-namespace XuchFramework.Editor
+namespace Framework.Editor
 {
     public static class BuildPipeline_BuildProto
     {
@@ -58,11 +58,11 @@ namespace XuchFramework.Editor
                         continue;
                     }
 
-                    var protoCode = GameHelper.ReadAllTextSafe(protoPath);
-                    var encryptedProtoCode = GameHelper.Encrypt(protoCode);
+                    var protoCode = GameUtils.ReadAllTextSafe(protoPath);
+                    var encryptedProtoCode = GameUtils.Encrypt(protoCode);
                     var saveFileName = Path.GetFileNameWithoutExtension(protoPath) + ".bytes";
                     var encryptedFilePath = Path.Combine(encryptedProtoOutputDirectory, saveFileName);
-                    GameHelper.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
+                    GameUtils.WriteAllTextSafe(encryptedFilePath, encryptedProtoCode);
                 }
 
                 AssetDatabase.Refresh();

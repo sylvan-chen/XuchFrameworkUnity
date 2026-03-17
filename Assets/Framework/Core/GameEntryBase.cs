@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace XuchFramework.Core
+namespace Framework.Core
 {
     public abstract class GameEntryBase : MonoBehaviour
     {
